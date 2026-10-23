@@ -6,13 +6,13 @@ import path from 'node:path';
 
 // Run against the current dev server. These are real WebGL frames, not mock renders.
 const origin = process.env.EVIDENCE_ORIGIN || 'http://127.0.0.1:5173';
-const output = path.resolve('docs/evidence');
+const output = path.resolve(process.env.EVIDENCE_OUTPUT || 'docs/evidence');
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const positions = {};
 async function enter(page, mode = 'laptop') {
   await page.goto(origin);
-  await expect(page.locator('#world')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('#world')).toHaveAttribute('data-ready', 'true', { timeout: 15_000 });
   await page.locator('#input-mode').selectOption(mode); await page.locator('#start').click();
   await page.addStyleTag({ content: '#toast { display: none !important; }' });
   await page.waitForTimeout(700);
@@ -31,40 +31,42 @@ async function go(page, id, title) {
   await expect(page.locator('#panel-title')).toHaveText(title, { timeout: 30_000 });
 }
 try {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  const page = await context.newPage();
-  await enter(page); await shot(page, 'after-laptop');
-  await camera(page, 'near'); await shot(page, 'after-player-close');
-  await camera(page, 'normal');
-  await go(page, 'nara', 'Halo, penjelajah muda!');
-  await page.locator('#close-panel').click(); await shot(page, 'after-nara');
-  await camera(page, 'near');
-  await page.mouse.move(980, 580); await page.mouse.down(); await page.mouse.move(1120, 580); await page.mouse.up();
-  await shot(page, 'after-nara-close');
-  await page.locator('#interact').click(); await shot(page, 'after-greeting');
-  await page.locator('#accept-mission').click();
-  await camera(page, 'normal'); await page.locator('#camera-reset').click();
-  await go(page, 'warga', 'Air keruh setelah hujan');
-  await page.locator('#close-panel').click(); await shot(page, 'after-wira');
-  await camera(page, 'near');
-  await page.mouse.move(980, 580); await page.mouse.down(); await page.mouse.move(1120, 580); await page.mouse.up();
-  await shot(page, 'after-wira-close');
-  await page.locator('#settings').click(); await page.locator('#home').click(); await page.waitForTimeout(700);
-  await page.locator('#journal').click(); await shot(page, 'after-reading');
-  await context.close();
-  for (const [name, width, height, mode] of [['hp-portrait', 390, 844, 'hp'], ['hp-landscape', 844, 390, 'hp'], ['ifp', 1280, 900, 'ifp']]) {
-    const c = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: mode === 'hp' });
-    const p = await c.newPage(); await enter(p, mode); await shot(p, `after-${name}`);
-    const rects = await p.evaluate(() => ['#joystick', '.dock', '#interact', '.mission-card'].map(selector => {
-      const r = document.querySelector(selector).getBoundingClientRect(); return { selector, x: r.x, y: r.y, width: r.width, height: r.height };
-    }));
-    for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
-      const a = rects[i], b = rects[j];
-      if (Math.min(a.x + a.width, b.x + b.width) > Math.max(a.x, b.x) && Math.min(a.y + a.height, b.y + b.height) > Math.max(a.y, b.y)) throw new Error(`Kontrol bertumpuk pada ${name}: ${a.selector} / ${b.selector}`);
+  if (process.env.MOTION_ONLY !== '1') {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await context.newPage();
+    await enter(page); await shot(page, 'after-laptop');
+    await camera(page, 'near'); await shot(page, 'after-player-close');
+    await camera(page, 'normal');
+    await go(page, 'nara', 'Halo, penjelajah muda!');
+    await page.locator('#close-panel').click(); await shot(page, 'after-nara');
+    await camera(page, 'near');
+    await page.mouse.move(980, 580); await page.mouse.down(); await page.mouse.move(1120, 580); await page.mouse.up();
+    await shot(page, 'after-nara-close');
+    await page.locator('#interact').click(); await shot(page, 'after-greeting');
+    await page.locator('#accept-mission').click();
+    await camera(page, 'normal'); await page.locator('#camera-reset').click();
+    await go(page, 'warga', 'Air keruh setelah hujan');
+    await page.locator('#close-panel').click(); await shot(page, 'after-wira');
+    await camera(page, 'near');
+    await page.mouse.move(980, 580); await page.mouse.down(); await page.mouse.move(1120, 580); await page.mouse.up();
+    await shot(page, 'after-wira-close');
+    await page.locator('#settings').click(); await page.locator('#home').click(); await page.waitForTimeout(700);
+    await page.locator('#journal').click(); await shot(page, 'after-reading');
+    await context.close();
+    for (const [name, width, height, mode] of [['hp-portrait', 390, 844, 'hp'], ['hp-landscape', 844, 390, 'hp'], ['ifp', 1280, 900, 'ifp']]) {
+      const c = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: mode === 'hp' });
+      const p = await c.newPage(); await enter(p, mode); await shot(p, `after-${name}`);
+      const rects = await p.evaluate(() => ['#joystick', '.dock', '#interact', '.mission-card'].map(selector => {
+        const r = document.querySelector(selector).getBoundingClientRect(); return { selector, x: r.x, y: r.y, width: r.width, height: r.height };
+      }));
+      for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+        const a = rects[i], b = rects[j];
+        if (Math.min(a.x + a.width, b.x + b.width) > Math.max(a.x, b.x) && Math.min(a.y + a.height, b.y + b.height) > Math.max(a.y, b.y)) throw new Error(`Kontrol bertumpuk pada ${name}: ${a.selector} / ${b.selector}`);
+      }
+      await c.close();
     }
-    await c.close();
+    await writeFile(path.join(output, 'capture-positions.json'), JSON.stringify(positions, null, 2));
   }
-  await writeFile(path.join(output, 'capture-positions.json'), JSON.stringify(positions, null, 2));
 
   // CDP screencast + system ffmpeg avoids downloading a second browser/video runtime.
   const c = await browser.newContext({ viewport: { width: 960, height: 675 } });

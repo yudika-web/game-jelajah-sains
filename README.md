@@ -4,6 +4,10 @@ Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Irisa
 
 Penyempurnaan karakter dan kamera: jaket berlapis, ransel, rambut geometris, tangan/sepatu bervolume, sendi siku/lutut, animasi berdasarkan perpindahan nyata, serta NPC dengan identitas dan gestur berbeda. Lihat [perbandingan visual dan rekaman gerak](docs/character-camera-review.md).
 
+Pembentukan ulang berdasarkan acuan tiga sisi: kepala lebih lebar dengan rahang membulat, mata oval dan alis yang terbaca, rambut menyapu berlapis, jaket teal di atas kaus krem, ransel keemasan, serta sepatu cokelat. Lihat [pemeriksaan model terbaru](docs/reference-model-review.md).
+
+Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan pemain/Bu Nara/Pak Wira. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
+
 ## Menjalankan
 
 Gunakan Node.js 24 LTS (minimum 22.12) dan npm. Tidak memerlukan API key, akun, database server, atau aset CDN.
@@ -67,6 +71,7 @@ src/
   data/content.ts       lokasi, kartu pengetahuan, pilihan kesimpulan
   engine/world.ts       Three.js, avatar, kota, kamera, interaksi raycast
   engine/character.ts   model bersendi, penampilan, titik label dan alat
+  engine/characterModel.ts geometri acuan, wajah, rambut, jaket, dan ransel
   engine/characterAnimator.ts napas, langkah, gestur dan interpolasi sendi
   engine/cameraController.ts kamera mengikuti, jarak, framing, jarak aman tembok
   engine/input.ts       keyboard, multi-pointer, analog, pemulihan input
@@ -76,11 +81,13 @@ src/
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
+  characterGallery.ts  galeri model diam dengan tiga kamera ortografis
 tests/                 unit dan pengujian browser
 docs/rancangan-game.md rancangan asli yang diberikan pengguna
 docs/development.md    lingkup prototipe dan pengembangan berikutnya
 docs/evidence/         gambar pembanding dan rekaman WebGL
 scripts/capture-character-evidence.mjs  pengambilan bukti visual yang dapat diulang
+scripts/capture-reference-model.mjs    gambar model terbaru dan tampilan perangkat
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.

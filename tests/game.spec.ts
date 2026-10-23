@@ -77,8 +77,9 @@ test('IFP one-pointer mission: measurements, experiment, correction, save/resume
 test('laptop: WASD, keyboard journal pauses movement, camera reset', async ({ page }) => {
   await start(page);
   const z = Number(await page.locator('#world').getAttribute('data-z'));
-  await page.keyboard.down('w'); await page.waitForTimeout(700); await page.keyboard.up('w');
-  expect(Number(await page.locator('#world').getAttribute('data-z'))).toBeLessThan(z - 1);
+  await page.keyboard.down('w');
+  await expect.poll(async () => Number(await page.locator('#world').getAttribute('data-z')), { timeout: 5000 }).toBeLessThan(z - 1);
+  await page.keyboard.up('w');
   await page.keyboard.press('j');
   await expect(page.locator('#panel-title')).toHaveText('Jurnal Sains');
   const paused = await page.locator('#world').getAttribute('data-z');

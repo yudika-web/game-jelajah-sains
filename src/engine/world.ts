@@ -44,6 +44,8 @@ export class World {
   private npcLabelPosition = new THREE.Vector3();
   private metricsTimer = 0;
   private movementPoint = { x: 0, z: 0 };
+  private npcLabels = new Map<PlaceId, THREE.Sprite>();
+  private projectedLabel = new THREE.Vector3();
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -175,7 +177,7 @@ export class World {
       if (npc) {
         npc.rig.root.updateMatrixWorld(true);
         npc.rig.labelSocket.getWorldPosition(this.npcLabelPosition);
-        this.label(place.short, place.x, this.npcLabelPosition.y, place.z, place.id);
+        this.npcLabels.set(place.id, this.label(place.short, place.x, this.npcLabelPosition.y, place.z, place.id));
       } else this.label(place.short, place.x, 2.4, place.z, place.id);
     }
     // Stylized distant hills, all local geometry.
@@ -284,6 +286,11 @@ export class World {
       this.canvas.dataset.reducedMotion = String(this.reducedMotion);
       this.canvas.dataset.drawCalls = String(this.renderer.info.render.calls);
       this.canvas.dataset.triangles = String(this.renderer.info.render.triangles);
+      for (const [id, label] of this.npcLabels) {
+        this.projectedLabel.copy(label.position).project(this.camera);
+        this.canvas.setAttribute(`data-${id}-label-x`, ((this.projectedLabel.x*.5+.5)*innerWidth).toFixed(1));
+        this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
+      }
     }
     this.renderer.render(this.scene, this.camera);
   }

@@ -1,0 +1,53 @@
+{
+  "renderer": "Chromium SwiftShader",
+  "browser": "154.0.8037.57",
+  "sourceFactory": "createCharacter",
+  "cameras": "orthographic, fixed front/side/back",
+  "captures": [
+    {
+      "character": "explorer",
+      "views": [
+        "front",
+        "side",
+        "back"
+      ],
+      "animated": false,
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "character": "nara",
+      "views": [
+        "front",
+        "side",
+        "back"
+      ],
+      "animated": false,
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "character": "wira",
+      "views": [
+        "front",
+        "side",
+        "back"
+      ],
+      "animated": false,
+      "viewport": [
+        1440,
+        1000
+      ]
+    }
+  ],
+  "renderStats": {
+    "drawCalls": 149,
+    "triangles": 45336
+  },
+  "errors": [],
+  "note": "Model review is static; animation and gameplay use the existing rig. These are not physical-device FPS measurements."
+}

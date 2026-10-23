@@ -47,7 +47,7 @@ export class FollowCamera {
   update(position: THREE.Vector3, dt: number, reducedMotion: boolean, immediate = false) {
     const wide = this.width >= 701;
     const shiftX = this.interactionFraming ? (wide ? this.width * .20 : 0) : (wide ? -Math.min(this.width * .065, 100) : 0);
-    const shiftY = this.interactionFraming && !wide ? this.height * .16 : 0;
+    const shiftY = wide ? 0 : this.height * (this.interactionFraming ? .16 : -.055);
     this.shiftX = reducedMotion || immediate ? shiftX : damp(this.shiftX, shiftX, 8, dt);
     this.shiftY = reducedMotion || immediate ? shiftY : damp(this.shiftY, shiftY, 8, dt);
     this.camera.setViewOffset(this.width, this.height, this.shiftX, this.shiftY, this.width, this.height);

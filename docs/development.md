@@ -1,5 +1,7 @@
 # Catatan pengembangan prototipe 0.1
 
+Pemeriksaan bentuk karakter terbaru tersedia di [Pembentukan ulang dari acuan tiga sisi](reference-model-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+
 ## Sumber dan keputusan implementasi
 
 `rancangan-game.md` adalah salinan lampiran pengguna. Cakupan implementasi mengikuti permintaan irisan pertama dan bagian **Cakupan irisan awal**, **M01**, **Kontrol**, **Penyimpanan**, serta **Pengujian penerimaan**. Rencana delapan wilayah dan sistem lain tetap menjadi rujukan tahap berikutnya, bukan klaim sudah selesai.
@@ -43,3 +45,13 @@ Pemain memiliki jaket biru, lapisan kaus, rambut tersisir geometris, ransel, ser
 Navigasi juga diperbaiki untuk pemain di tepi tembok: sel awal yang dibulatkan dapat berada di dalam bangunan meskipun posisi pemain sah. Pencarian kini memilih sel grid yang dapat disambungkan melalui segmen aman dari posisi aktual. Ini menjaga navigasi ketuk tetap tersedia setelah menabrak dinding.
 
 Lihat [laporan pemeriksaan visual](character-camera-review.md), gambar dan video pada `docs/evidence/`, serta regresi baru di `tests/character.test.ts` dan `tests/characters.spec.ts`. Fixture `tests/fixtures/m01-v1.json` mewakili simpanan versi 1 yang sudah memiliki sampel A/B sebelum pembaruan, kemudian dilanjutkan sampai M01 selesai pada browser.
+
+## Pembentukan ulang dari acuan tiga sisi
+
+`character.ts` mempertahankan kontrak rig yang sudah dipakai dunia dan animator. Pembangunan geometri kini berada di `characterModel.ts`. Kepala bertepi membulat memiliki rahang yang mengecil, mata oval berlapis dengan sorotan, telinga, hidung, alis, dan senyum dari geometri lokal. Rambut memakai cangkang yang membungkus sisi/belakang kepala serta volume poni berlapis yang terhubung pada pangkalnya. Jaket memiliki pinggang yang mengecil, bukaan kaus, kerah, manset, tali ransel melengkung, saku, serta sol sepatu yang terpisah. Posisi pinggul dan panjang ruas kaki disesuaikan agar kepala, badan, dan kaki seimbang pada kamera bermain.
+
+Pemain dibentuk dan diperiksa dahulu sebelum factory yang sama diterapkan ke NPC. Bu Nara mempertahankan cardigan ungu, kacamata, dan sanggul; Pak Wira mempertahankan rompi, topi, dan kumis. Titik tangan, alat, label, root navigasi, serta metadata interaksi tetap tersedia. Label mengikuti tinggi model baru dan uji raycast memakai posisi label yang diproyeksikan oleh kamera, sehingga tidak bergantung pada piksel dari model lama.
+
+Galeri `character.html` memakai tiga kamera ortografis pada satu model diam. Tidak ada animator atau update posisi pada galeri. Tombol detail dan pilihan karakter memicu render ulang; geometri unik dari pilihan lama dibersihkan ketika model diganti. Model dan material dasar dipakai ulang, dan tidak ada layanan model/tekstur eksternal. Build Vite memiliki dua entry: permainan dan galeri. Galeri tidak mengimpor atau mengubah data penyelidikan.
+
+Animator, validasi M01, hadiah, serta format IndexedDB versi 1 dipertahankan. Pengujian tambahan memeriksa proporsi, posisi kaki pada lantai, pose galeri yang tetap diam, serta pemulihan misi setelah keluar dari galeri. Bukti tiga sisi, detail wajah, dan tampilan bermain berada pada `docs/evidence/reference-model/`.

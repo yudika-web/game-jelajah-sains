@@ -31,8 +31,11 @@ async function go(page: Page, id: string, title: string) {
 
 test('NPC label raycast starts a real approach, greeting and relaxed recovery', async ({ page }) => {
   await enter(page);
-  // Label projection at the fixed spawn/camera/viewport, outside all HUD panels.
-  await page.locator('#world').click({ position: { x: 550, y: 215 } });
+  // Click the actual projected label: model height may change without changing the mission ID.
+  await expect(page.locator('#world')).toHaveAttribute('data-nara-label-x', /\d/);
+  const x = Number(await page.locator('#world').getAttribute('data-nara-label-x'));
+  const y = Number(await page.locator('#world').getAttribute('data-nara-label-y'));
+  await page.locator('#world').click({ position: { x, y } });
   await expect(page.locator('#accept-mission')).toBeVisible({ timeout: 20_000 });
   await expect(page.locator('#world')).toHaveAttribute('data-pose', 'greet');
   const z = await page.locator('#world').getAttribute('data-z');

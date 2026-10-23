@@ -6,6 +6,21 @@ import { FollowCamera } from '../src/engine/cameraController';
 import { findPath, walkable } from '../src/engine/navigation';
 
 describe('articulated characters and movement-derived animation', () => {
+  it('retains a broad readable head, grounded feet and a relaxed balanced stance', () => {
+    for (const kind of ['explorer', 'nara', 'wira'] as const) {
+      const rig = createCharacter(kind);
+      rig.root.updateMatrixWorld(true);
+      const whole = new Box3().setFromObject(rig.root);
+      const head = new Box3().setFromObject(rig.head).getSize(new Vector3());
+      const body = whole.getSize(new Vector3());
+      expect(head.x / body.x).toBeGreaterThan(.65);
+      expect(head.y / body.y).toBeGreaterThan(.30);
+      expect(head.y / body.y).toBeLessThan(.45);
+      expect(whole.min.y).toBeGreaterThan(.07); expect(whole.min.y).toBeLessThan(.13);
+      expect(rig.leftLeg.hip.position.x).toBeLessThan(-.20);
+      expect(rig.rightLeg.hip.position.x).toBeGreaterThan(.20);
+    }
+  });
   it('keeps navigation roots and label/tool attachment identities stable', () => {
     for (const kind of ['explorer', 'nara', 'wira'] as const) {
       const rig = createCharacter(kind, kind === 'nara' ? 'nara' : kind === 'wira' ? 'warga' : undefined);
