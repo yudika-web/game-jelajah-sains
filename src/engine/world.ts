@@ -1,28 +1,37 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { places, type PlaceId } from '../data/content';
-import { findPath, obstacles, walkable, type Point } from './navigation';
+import { findPath, walkable, type Point } from './navigation';
+import { createCharacter, type CharacterRig } from './character';
+import { CharacterAnimator, turnToward, type InteractionPose } from './characterAnimator';
+import { FollowCamera, type CameraDistance } from './cameraController';
 
 export type InputMode = 'laptop' | 'hp' | 'ifp';
 export class World {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(48, 1, 0.1, 110);
   readonly renderer: THREE.WebGLRenderer;
-  readonly player = new THREE.Group();
+  readonly playerRig = createCharacter('explorer');
+  readonly player = this.playerRig.root;
+  readonly playerAnimator = new CharacterAnimator(this.playerRig);
   readonly position = new THREE.Vector3(-1, 0, 6);
   readonly canvas: HTMLCanvasElement;
   mode: InputMode = 'laptop';
   paused = true;
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   move = { x: 0, z: 0 };
-  yaw = 0.25;
-  pitch = 0.64;
+  readonly followCamera: FollowCamera;
+  get yaw() { return this.followCamera.yaw; }
+  set yaw(value: number) { this.followCamera.yaw = value; }
+  get pitch() { return this.followCamera.pitch; }
+  set pitch(value: number) { this.followCamera.pitch = value; }
+  get cameraDistance(): CameraDistance { return this.followCamera.distance; }
+  set cameraDistance(value: CameraDistance) { this.followCamera.distance = value; }
   path: Point[] = [];
   onArrive: (() => void) | null = null;
   onUpdate: (near: PlaceId | null) => void = () => {};
-  private limbs: THREE.Group[] = [];
+  private npcs: { id: PlaceId; rig: CharacterRig; animator: CharacterAnimator; timer: number }[] = [];
   private ray = new THREE.Raycaster();
-  private target = new THREE.Vector3();
   private marker: THREE.Mesh;
   private barrier: THREE.Group;
   private staticGeometry = new Map<number, THREE.BufferGeometry[]>();
@@ -30,6 +39,11 @@ export class World {
   private clock = new THREE.Clock();
   private lastNear: PlaceId | null | undefined;
   private elapsed = 0;
+  private facing = 0;
+  private interacting: PlaceId | null = null;
+  private npcLabelPosition = new THREE.Vector3();
+  private metricsTimer = 0;
+  private movementPoint = { x: 0, z: 0 };
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -44,7 +58,8 @@ export class World {
     const sun = new THREE.DirectionalLight('#fff0cf', 2.2);
     sun.position.set(-15, 25, 10); this.scene.add(sun);
     this.buildTown();
-    this.player.add(this.avatar('#28786e', '#e6af83', true));
+    this.followCamera = new FollowCamera(this.camera, this.collisionBoxes);
+    this.player.position.copy(this.position);
     this.scene.add(this.player);
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.5, 24), new THREE.MeshBasicMaterial({ color: '#f9c76b', side: THREE.DoubleSide }));
     this.marker.rotation.x = -Math.PI / 2; this.marker.visible = false; this.scene.add(this.marker);
@@ -52,8 +67,8 @@ export class World {
     for (let i = 0; i < 6; i++) this.box(this.barrier, 0.9, 0.65, 0.55, '#92724b', 6 + (i % 3) * 0.75, 0.35 + Math.floor(i / 3) * 0.55, -10.7);
     this.barrier.visible = false; this.scene.add(this.barrier);
     this.flushStatic();
-    this.positionCamera(true);
     this.resize();
+    this.followCamera.update(this.position, .016, this.reducedMotion, true);
     addEventListener('resize', () => this.resize());
     this.renderer.setAnimationLoop(() => this.frame());
     canvas.dataset.ready = 'true';
@@ -89,34 +104,7 @@ export class World {
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
     sprite.position.set(x, y, z); sprite.scale.set(3.5, 0.66, 1);
-    sprite.userData.place = id; this.scene.add(sprite);
-  }
-  private avatar(shirt: string, skin: string, animate = false) {
-    const group = new THREE.Group();
-    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.65, 20), new THREE.MeshBasicMaterial({ color: '#344b36', transparent: true, opacity: 0.17, depthWrite: false }));
-    shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.115; shadow.scale.y = 0.7; group.add(shadow);
-    this.box(group, 0.64, 0.8, 0.38, shirt, 0, 1.15, 0);
-    this.box(group, 0.55, 0.55, 0.52, skin, 0, 1.85, 0);
-    this.box(group, 0.59, 0.17, 0.56, '#3b3433', 0, 2.12, 0);
-    // Face points toward +z, matching the movement heading.
-    this.box(group, 0.07, 0.07, 0.025, '#293932', -0.13, 1.89, 0.27);
-    this.box(group, 0.07, 0.07, 0.025, '#293932', 0.13, 1.89, 0.27);
-    for (const side of [-1, 1]) {
-      const arm = new THREE.Group(); arm.position.set(side * 0.47, 1.49, 0);
-      this.box(arm, 0.23, 0.65, 0.3, shirt, 0, -0.25, 0);
-      this.box(arm, 0.23, 0.23, 0.3, skin, 0, -0.65, 0);
-      group.add(arm);
-      const leg = new THREE.Group(); leg.position.set(side * 0.18, 0.78, 0);
-      this.box(leg, 0.26, 0.65, 0.33, '#344b56', 0, -0.28, 0);
-      this.box(leg, 0.29, 0.17, 0.45, '#eee9d9', 0, -0.62, 0.05);
-      group.add(leg);
-      if (animate) this.limbs.push(arm, leg);
-    }
-    if (animate) {
-      this.box(group, 0.48, 0.6, 0.2, '#e7b65c', 0, 1.15, -0.29);
-      this.box(group, 0.3, 0.18, 0.1, '#cc9847', 0, 1.05, -0.43);
-    }
-    return group;
+    sprite.userData.place = id; this.scene.add(sprite); return sprite;
   }
   private buildTown() {
     const s = this.scene;
@@ -152,7 +140,7 @@ export class World {
         b(0.07, 1, 0.2, '#e9e4d3', house.x + dx, 2.1, house.z + house.d / 2 + 0.15);
       }
       this.label(house.label, house.x, house.h + 1, house.z, undefined, true);
-      this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x - house.w / 2 - 0.3, 0, house.z - house.d / 2 - 0.3), new THREE.Vector3(house.x + house.w / 2 + 0.3, house.h + 0.5, house.z + house.d / 2 + 0.3)));
+      this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x - house.w / 2, 0, house.z - house.d / 2), new THREE.Vector3(house.x + house.w / 2, house.h + 0.5, house.z + house.d / 2)));
     }
     // Repeated trees are merged per material to keep the scene inexpensive.
     for (const [x, z] of [[-16, -14], [-16, -2], [-16, 13], [-9, 14], [5, 13], [7, 7], [5, -8], [-5, -16], [-17, 4], [19, -10], [19, 2], [19, 12], [-7, -1]]) {
@@ -168,10 +156,10 @@ export class World {
     }
     for (const place of places) {
       if (place.id === 'nara' || place.id === 'warga') {
-        const npc = this.avatar(place.color, place.id === 'nara' ? '#be885f' : '#d9a276');
-        npc.position.set(place.x, 0, place.z); npc.userData.place = place.id;
-        npc.traverse(child => { child.userData.place = place.id; });
-        s.add(npc);
+        const rig = createCharacter(place.id === 'nara' ? 'nara' : 'wira', place.id);
+        rig.root.position.set(place.x, 0, place.z);
+        this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
+        s.add(rig.root);
       } else if (place.id === 'sampleA' || place.id === 'sampleB') {
         b(1.1, 0.15, 1.4, '#d2ba8b', place.x, 0.14, place.z);
         b(0.4, 0.6, 0.4, place.color, place.x, 0.55, place.z);
@@ -183,7 +171,12 @@ export class World {
       }
       const disc = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.77, 28), new THREE.MeshBasicMaterial({ color: place.color, side: THREE.DoubleSide }));
       disc.rotation.x = -Math.PI / 2; disc.position.set(place.x, 0.13, place.z); s.add(disc);
-      this.label(place.short, place.x, place.id === 'nara' || place.id === 'warga' ? 2.8 : 2.4, place.z, place.id);
+      const npc = this.npcs.find(n => n.id === place.id);
+      if (npc) {
+        npc.rig.root.updateMatrixWorld(true);
+        npc.rig.labelSocket.getWorldPosition(this.npcLabelPosition);
+        this.label(place.short, place.x, this.npcLabelPosition.y, place.z, place.id);
+      } else this.label(place.short, place.x, 2.4, place.z, place.id);
     }
     // Stylized distant hills, all local geometry.
     for (let i = 0; i < 7; i++) {
@@ -194,13 +187,22 @@ export class World {
   goTo(p: Point, onArrive?: () => void) {
     const path = findPath(this.position, p);
     if (!path.length) return false;
-    this.path = path; this.onArrive = onArrive ?? null;
+    this.endInteraction(); this.path = path; this.onArrive = onArrive ?? null;
     this.marker.position.set(p.x, 0.15, p.z); this.marker.visible = true;
     return true;
   }
   stop() { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; }
-  resetPosition() { this.stop(); this.position.set(-1, 0, 6); this.yaw = 0.25; this.pitch = 0.64; this.positionCamera(true); }
-  resetCamera() { this.yaw = 0.25; this.pitch = 0.64; }
+  resetPosition() { this.stop(); this.endInteraction(); this.position.set(-1, 0, 6); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  resetCamera() { this.followCamera.reset(); }
+  facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
+  beginInteraction(id: PlaceId, pose: InteractionPose) {
+    this.stop(); this.interacting = id; this.playerAnimator.setPose(pose);
+    this.followCamera.interactionFraming = true;
+    const place = places.find(p => p.id === id)!; this.facePoint(place);
+    const npc = this.npcs.find(n => n.id === id); npc?.animator.greet();
+  }
+  setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
+  endInteraction() { this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; }
   setTrial(done: boolean) { this.barrier.visible = done; }
   pick(clientX: number, clientY: number): { place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
@@ -212,30 +214,20 @@ export class World {
     return point && walkable(point) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
-    const place = [...places].sort((a, b) => Math.hypot(a.x - this.position.x, a.z - this.position.z) - Math.hypot(b.x - this.position.x, b.z - this.position.z))[0];
-    return Math.hypot(place.x - this.position.x, place.z - this.position.z) < 2.6 ? place.id : null;
+    let nearest: PlaceId | null = null, distance = 2.6;
+    for (const p of places) {
+      const d = Math.hypot(p.x - this.position.x, p.z - this.position.z);
+      if (d < distance) { nearest = p.id; distance = d; }
+    }
+    return nearest;
   }
   private resize() {
-    this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix();
+    this.followCamera.resize(innerWidth, innerHeight);
     this.renderer.setSize(innerWidth, innerHeight);
-  }
-  private positionCamera(immediate = false, dt = 0.016) {
-    this.target.copy(this.position).add(new THREE.Vector3(0, 1.15, 0));
-    const distance = innerWidth < 700 ? 17 : 18;
-    const offset = new THREE.Vector3(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(this.yaw) * Math.cos(this.pitch));
-    // Clip the camera ray before opaque buildings; never put the camera through a wall.
-    const ray = new THREE.Ray(this.target, offset);
-    let safeDistance = distance;
-    for (const box of this.collisionBoxes) {
-      const point = ray.intersectBox(box, new THREE.Vector3());
-      if (point) safeDistance = Math.min(safeDistance, Math.max(0.6, point.distanceTo(this.target) - 0.35));
-    }
-    const desired = this.target.clone().addScaledVector(offset, safeDistance);
-    this.camera.position.lerp(desired, immediate || this.reducedMotion || safeDistance < distance ? 1 : 1 - Math.exp(-9 * dt));
-    this.camera.lookAt(this.target);
   }
   private frame() {
     const dt = Math.min(this.clock.getDelta(), 0.05); this.elapsed += dt;
+    const oldX = this.position.x, oldZ = this.position.z;
     let dx = 0, dz = 0;
     if (!this.paused) {
       if (Math.hypot(this.move.x, this.move.z) > 0.05) {
@@ -251,17 +243,48 @@ export class World {
       const magnitude = Math.hypot(dx, dz);
       if (magnitude > 1) { dx /= magnitude; dz /= magnitude; }
       const speed = 4.6 * dt;
-      if (walkable({ x: this.position.x + dx * speed, z: this.position.z })) this.position.x += dx * speed;
-      if (walkable({ x: this.position.x, z: this.position.z + dz * speed })) this.position.z += dz * speed;
-      if (magnitude > 0.05) this.player.rotation.y = Math.atan2(dx, dz);
+      this.movementPoint.x = this.position.x + dx * speed; this.movementPoint.z = this.position.z;
+      if (walkable(this.movementPoint)) this.position.x += dx * speed;
+      this.movementPoint.x = this.position.x; this.movementPoint.z = this.position.z + dz * speed;
+      if (walkable(this.movementPoint)) this.position.z += dz * speed;
     }
+    const travelled = Math.hypot(this.position.x - oldX, this.position.z - oldZ);
+    if (travelled > .00001) this.facing = Math.atan2(this.position.x - oldX, this.position.z - oldZ);
+    this.player.rotation.y = turnToward(this.player.rotation.y, this.facing, dt);
     this.player.position.copy(this.position);
-    this.limbs.forEach((limb, index) => { limb.rotation.x = this.paused || this.reducedMotion ? 0 : Math.sin(this.elapsed * 10) * Math.min(1, Math.hypot(dx, dz)) * (index === 0 || index === 3 ? 0.55 : -0.55); });
-    this.positionCamera(false, dt);
+    this.playerAnimator.update(dt, travelled, this.reducedMotion);
+    for (const npc of this.npcs) {
+      const x = this.position.x - npc.rig.root.position.x, z = this.position.z - npc.rig.root.position.z;
+      const nearby = this.interacting === npc.id || Math.hypot(x, z) < 7;
+      npc.timer += dt;
+      if (!nearby && npc.timer < .12) continue;
+      const npcDt = npc.timer; npc.timer = 0;
+      const targetYaw = nearby ? Math.atan2(x, z) : 0;
+      // Torso only turns within a comfortable arc; head supplies the remaining glance.
+      const bodyYaw = Math.max(-.85, Math.min(.85, targetYaw));
+      npc.rig.root.rotation.y = turnToward(npc.rig.root.rotation.y, bodyYaw, npcDt, 3);
+      npc.animator.lookAt(nearby ? Math.atan2(Math.sin(targetYaw - npc.rig.root.rotation.y), Math.cos(targetYaw - npc.rig.root.rotation.y)) : 0);
+      npc.animator.update(npcDt, 0, this.reducedMotion);
+    }
+    this.followCamera.update(this.position, dt, this.reducedMotion);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
     this.canvas.dataset.x = this.position.x.toFixed(2); this.canvas.dataset.z = this.position.z.toFixed(2);
     this.canvas.dataset.near = nearest ?? ''; this.canvas.dataset.moving = String(this.path.length > 0);
+    // Throttled diagnostics make motion/collision assertions possible without a production debug API.
+    this.metricsTimer += dt;
+    if (this.metricsTimer > .10) {
+      this.metricsTimer = 0;
+      this.canvas.dataset.speed = this.playerAnimator.speed.toFixed(3);
+      this.canvas.dataset.stride = this.playerAnimator.stride.toFixed(3);
+      this.canvas.dataset.facing = this.player.rotation.y.toFixed(3);
+      this.canvas.dataset.pose = this.playerAnimator.pose;
+      this.canvas.dataset.cameraDistance = this.cameraDistance;
+      this.canvas.dataset.cameraYaw = this.yaw.toFixed(3);
+      this.canvas.dataset.reducedMotion = String(this.reducedMotion);
+      this.canvas.dataset.drawCalls = String(this.renderer.info.render.calls);
+      this.canvas.dataset.triangles = String(this.renderer.info.render.triangles);
+    }
     this.renderer.render(this.scene, this.camera);
   }
 }

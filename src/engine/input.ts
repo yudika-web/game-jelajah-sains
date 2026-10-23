@@ -58,7 +58,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
     if (Math.hypot(e.clientX - origin.x, e.clientY - origin.y) > 8) dragged = true;
     if (dragged && world.mode !== 'ifp') {
       world.yaw -= (e.clientX - last.x) * 0.006;
-      world.pitch = Math.max(0.3, Math.min(1.1, world.pitch + (e.clientY - last.y) * 0.004));
+      world.pitch = Math.max(0.2, Math.min(1.1, world.pitch + (e.clientY - last.y) * 0.004));
     }
     last = { x: e.clientX, y: e.clientY };
   });

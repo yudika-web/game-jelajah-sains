@@ -1,0 +1,112 @@
+{
+  "after-laptop": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-player-close": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "near",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-nara": {
+    "x": "-4.00",
+    "z": "4.24",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-nara-close": {
+    "x": "-4.00",
+    "z": "4.24",
+    "camera": "near",
+    "yaw": "-0.590",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-greeting": {
+    "x": "-4.00",
+    "z": "4.24",
+    "camera": "near",
+    "yaw": "-0.590",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-wira": {
+    "x": "3.00",
+    "z": "7.45",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-wira-close": {
+    "x": "3.00",
+    "z": "7.45",
+    "camera": "near",
+    "yaw": "-0.590",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-reading": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "near",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  },
+  "after-hp-portrait": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  "after-hp-landscape": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  "after-ifp": {
+    "x": "-1.00",
+    "z": "6.00",
+    "camera": "normal",
+    "yaw": "0.250",
+    "viewport": [
+      1280,
+      900
+    ]
+  }
+}

@@ -13,9 +13,26 @@ export function walkable(p: Point) {
     !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + 0.45 && Math.abs(p.z - o.z) < o.depth / 2 + 0.45);
 }
 export function findPath(start: Point, end: Point): Point[] {
-  const a = { x: Math.round(start.x), z: Math.round(start.z) };
-  const b = { x: Math.round(end.x), z: Math.round(end.z) };
-  if (!walkable(a) || !walkable(b)) return [];
+  if (!walkable(start) || !walkable(end)) return [];
+  const segmentClear = (from: Point, to: Point) => {
+    const steps = Math.ceil(Math.hypot(to.x - from.x, to.z - from.z) / .1);
+    for (let i = 0; i <= steps; i++) {
+      const t = steps ? i / steps : 0;
+      if (!walkable({ x: from.x + (to.x - from.x) * t, z: from.z + (to.z - from.z) * t })) return false;
+    }
+    return true;
+  };
+  // A player against a wall can be on walkable ground whose rounded cell is blocked.
+  const cell = (p: Point) => {
+    const candidates: Point[] = [];
+    for (let x = Math.floor(p.x) - 1; x <= Math.ceil(p.x) + 1; x++)
+      for (let z = Math.floor(p.z) - 1; z <= Math.ceil(p.z) + 1; z++) {
+        const c = { x, z }; if (walkable(c) && segmentClear(p, c)) candidates.push(c);
+      }
+    return candidates.sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z))[0];
+  };
+  const a = cell(start), b = cell(end);
+  if (!a || !b) return [];
   const key = (p: Point) => `${p.x},${p.z}`;
   const queue: Point[] = [a];
   const visited = new Map<string, Point | null>([[key(a), null]]);
@@ -26,6 +43,7 @@ export function findPath(start: Point, end: Point): Point[] {
       const path: Point[] = [];
       let p: Point | null = current;
       while (p && key(p) !== key(a)) { path.unshift(p); p = visited.get(key(p)) ?? null; }
+      if (Math.hypot(start.x - a.x, start.z - a.z) > .01) path.unshift(a);
       path.push({ ...end });
       return path;
     }

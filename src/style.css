@@ -278,3 +278,43 @@ body[data-mode='ifp'] kbd { display: none; }
   body[data-mode='ifp'] .mission-card { max-height: calc(100dvh - 280px); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* Compact mission keeps the current objective visible without covering exploration. */
+dialog.character-interaction::backdrop { background: #19392c28; backdrop-filter: none; }
+body:has(dialog.character-interaction[open]) .mission-card { visibility: hidden; }
+dialog.character-interaction { width: min(540px, 43vw); margin-right: 22px; margin-left: auto; }
+.mission-card.compact .mission-intro, .mission-card.compact .mission-note { display: none; }
+.minimap { top: 108px; width: 142px; }
+.world-note { right: 205px; top: 117px; }
+.mission-card.compact #mission-steps li { display: none; }
+.mission-card.compact #mission-steps li.active,
+.mission-card.compact #mission-steps:not(:has(.active)) li:last-child { display: flex; }
+.mission-card.compact #mission-steps { margin: 13px 0 2px; }
+.mission-details { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 48px; border-top: 1px solid var(--line); font-size: 11px; margin-top: 10px; padding: 10px 3px; }
+.mission-details svg { width: 16px; height: 16px; }
+.mission-card:not(.compact) #mission-steps li { display: flex; }
+body[data-mode='hp'] kbd { display: none; }
+body[data-mode='ifp'] #mission-steps button { min-height: 64px; }
+body[data-mode='ifp'] .icon-button { width: 64px; height: 64px; }
+@media (max-width: 700px) {
+  dialog.character-interaction { width: calc(100vw - 16px); max-height: 44dvh; margin: auto 8px 8px; }
+  .mission-card { max-height: 35dvh; }
+  .mission-card.compact { max-height: 30dvh; }
+  .mission-details { margin-top: 3px; min-height: 36px; padding: 7px 3px; font-size: 10px; }
+  .mission-card.compact #mission-steps { margin-top: 7px; }
+  .mission-card.compact #mission-steps button { min-height: 36px; }
+  .mission-card:not(.compact) { max-height: calc(100dvh - 360px); }
+  .mission-card h1 { font-size: 20px; }
+  body[data-mode='ifp'] .mission-card { max-height: 38dvh; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  dialog.character-interaction { width: 48vw; max-height: calc(100dvh - 24px); margin-right: 12px; }
+  .mission-card, body[data-mode='hp'] .mission-card, body[data-mode='ifp'] .mission-card { max-height: calc(100dvh - 230px); }
+  .mission-card.compact { padding: 10px 14px; }
+  .mission-card.compact #mission-steps { margin: 4px 0; }
+  .mission-card.compact h1 { font-size: 19px; margin: 5px 0; }
+  .mission-card.compact .eyebrow { font-size: 8px; }
+  .mission-details { min-height: 36px; padding: 6px 0; margin-top: 3px; }
+  .ifp-camera { bottom: 122px; right: 16px; }
+  body[data-mode='ifp'] .joystick { width: 116px; height: 116px; bottom: 35px; left: 20px; }
+}

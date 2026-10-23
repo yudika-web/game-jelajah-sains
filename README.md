@@ -2,6 +2,8 @@
 
 Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Irisan pertama: satu blok Kota Sains, avatar manusia balok, Bu Nara, Pak Wira, buku, catatan hujan, dua titik sampel, dan misi **M01 Detektif Air Kota**.
 
+Penyempurnaan karakter dan kamera: jaket berlapis, ransel, rambut geometris, tangan/sepatu bervolume, sendi siku/lutut, animasi berdasarkan perpindahan nyata, serta NPC dengan identitas dan gestur berbeda. Lihat [perbandingan visual dan rekaman gerak](docs/character-camera-review.md).
+
 ## Menjalankan
 
 Gunakan Node.js 24 LTS (minimum 22.12) dan npm. Tidak memerlukan API key, akun, database server, atau aset CDN.
@@ -37,6 +39,10 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Setiap langk
 
 Membuka dialog atau jurnal menghentikan gerakan. Pergantian tab, kehilangan fokus, pointer cancel, dan pelepasan analog menghentikan input. **Kembali ke Pos** tersedia di Pengaturan tanpa menghapus bukti. Layar penuh opsional; bila ditolak browser, permainan tetap berjalan.
 
+**Pengaturan → Jarak kamera** menyediakan Dekat (8,5 unit), Normal (10,8), dan Jauh (14). Pilihan jarak, pengurangan gerakan, serta resolusi rendah disimpan terpisah dari penyelidikan, melalui preferensi lokal browser. R mengembalikan sudut pandang yang nyaman tanpa mengganti pilihan jarak. Kamera manual tetap dipertahankan ketika karakter berbelok. Panel misi awalnya menampilkan langkah aktif; tombol **+** atau **Lihat semua langkah** membuka seluruh daftar.
+
+Saat berbicara/membaca/mengukur, panel ditempatkan di sisi layar lebar atau bagian bawah layar potret. Karakter tetap terlihat, dengan pose dan alat yang sesuai. Berjalan berhenti selama panel terbuka, tetapi animasi interaksi tetap berjalan; pengurangan gerakan menghentikan ayunan idle, kedipan, dan langkah dekoratif.
+
 ## Menuntaskan M01
 
 1. Temui **Bu Nara** dan terima misi serta alat pinjaman.
@@ -60,15 +66,21 @@ Progres M01, sumber jurnal, rencana, data, upaya kesimpulan, dan hadiah disimpan
 src/
   data/content.ts       lokasi, kartu pengetahuan, pilihan kesimpulan
   engine/world.ts       Three.js, avatar, kota, kamera, interaksi raycast
+  engine/character.ts   model bersendi, penampilan, titik label dan alat
+  engine/characterAnimator.ts napas, langkah, gestur dan interpolasi sendi
+  engine/cameraController.ts kamera mengikuti, jarak, framing, jarak aman tembok
   engine/input.ts       keyboard, multi-pointer, analog, pemulihan input
   engine/navigation.ts grid rute aman, batas kota, tabrakan bangunan/air
   game/mission.ts       transisi M01 dan validasi progres, bebas dari renderer
   game/storage.ts       transaksi IndexedDB
+  game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
 tests/                 unit dan pengujian browser
 docs/rancangan-game.md rancangan asli yang diberikan pengguna
 docs/development.md    lingkup prototipe dan pengembangan berikutnya
+docs/evidence/         gambar pembanding dan rekaman WebGL
+scripts/capture-character-evidence.mjs  pengambilan bukti visual yang dapat diulang
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.

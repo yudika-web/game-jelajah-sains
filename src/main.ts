@@ -4,6 +4,9 @@ import { initialProgress, transition, steps, parseProgress, type MissionEvent } 
 import { loadProgress, saveProgress } from './game/storage';
 import { World, type InputMode } from './engine/world';
 import { bindInput } from './engine/input';
+import { loadPreferences, savePreferences } from './game/preferences';
+import type { InteractionPose } from './engine/characterAnimator';
+import type { CameraDistance } from './engine/cameraController';
 
 const icons: Record<string, string> = {
   flask: '<path d="M9 3h6m-5 0v7L4 19q-1 2 2 2h12q3 0 2-2l-6-9V3M7 15h10"/>',
@@ -28,12 +31,13 @@ app.innerHTML = `
     <div class="top-right"><span class="prototype">PROTOTIPE 0.1</span><button class="icon-button" id="settings" aria-label="Pengaturan">${icon('gear')}</button></div>
   </header>
   <main class="hud" hidden>
-    <aside class="mission-card">
-      <div class="eyebrow"><span class="mission-tag">M01</span> MISI PENYELIDIKAN <button id="toggle-mission" aria-label="Ringkas daftar misi" aria-expanded="true">−</button></div>
+    <aside class="mission-card compact">
+      <div class="eyebrow"><span class="mission-tag">M01</span> MISI PENYELIDIKAN <button id="toggle-mission" aria-label="Buka rincian misi" aria-expanded="false">+</button></div>
       <h1>Detektif Air Kota</h1><p class="mission-intro">Ada cerita di balik air yang keruh.<br>Temukan jawabannya lewat bukti.</p>
       <div class="progress-track"><span id="progress-fill"></span></div>
       <div class="progress-caption"><span id="progress-text">0 dari 6 langkah</span><span>+100 XP</span></div>
       <ol id="mission-steps"></ol>
+      <button class="mission-details" id="mission-details">Lihat semua langkah ${icon('arrow')}</button>
       <div class="mission-note">${icon('leaf')} Amati. Bandingkan. Temukan.</div>
     </aside>
     <div class="world-note"><span class="north">N</span>${icon('compass')}<span>ALUN-ALUN KOTA</span></div>
@@ -75,6 +79,7 @@ let toastTimer = 0;
 let saveChain = Promise.resolve();
 let saveGeneration = 0;
 let storageBlocked = false;
+const preferences = loadPreferences(matchMedia('(prefers-reduced-motion: reduce)').matches);
 const panel = $<HTMLDialogElement>('panel');
 const modeSelect = $<HTMLSelectElement>('input-mode');
 modeSelect.value = matchMedia('(pointer: coarse)').matches ? 'hp' : 'laptop';
@@ -120,9 +125,10 @@ function updateMission() {
   $('mission-steps').innerHTML = list.map((s, i) => `<li class="${s.done ? 'done' : list.findIndex(t => !t.done) === i ? 'active' : ''}"><span class="step-number">${s.done ? '✓' : String(i + 1).padStart(2, '0')}</span><button data-guide="${s.place}"><strong>${s.title}</strong><small>${s.detail}</small></button></li>`).join('');
   $('mission-steps').querySelectorAll<HTMLButtonElement>('[data-guide]').forEach(b => { b.onclick = () => navigate(b.dataset.guide as PlaceId); });
 }
-function closePanel() { panel.close(); if (world) world.paused = !started; }
+function closePanel() { panel.close(); if (world) { world.paused = !started; world.endInteraction(); } }
 function openPanel(title: string, html: string, kicker = 'CATATAN PENJELAJAH') {
   clearInput(); if (world) world.paused = true;
+  panel.classList.toggle('character-interaction', started && world?.playerAnimator.pose !== 'none');
   $('panel-title').textContent = title; $('panel-kicker').textContent = kicker;
   $('panel-content').innerHTML = html;
   if (!panel.open) panel.showModal();
@@ -134,12 +140,13 @@ function navigate(id: PlaceId) {
   // Stop in front of the object instead of overlapping the NPC or sample bottle.
   const approach = { x: place.x, z: place.z + 1.4 };
   const ok = world.goTo(approach, () => {
-    world!.player.rotation.y = Math.atan2(place.x - world!.position.x, place.z - world!.position.z);
+    world!.facePoint(place);
     interactAt(id);
   });
   toast(ok ? `Menuju ${place.short}. Gerakkan analog/WASD atau pilih Berhenti untuk membatalkan.` : 'Tujuan tidak dapat dicapai. Pilih jalur lain di peta.');
 }
 function openPlan(id: 'sampleA' | 'sampleB') {
+  world?.setInteractionPose('read');
   openPanel('Rancang pengamatanmu', `
     <p>Sebelum mengambil sampel, pilih alat dan variabel yang sesuai untuk membandingkan kekeruhan.</p>
     <form id="plan-form" class="form-grid">
@@ -157,6 +164,10 @@ function openPlan(id: 'sampleA' | 'sampleB') {
 }
 function interactAt(id: PlaceId) {
   if (!world || !started || Math.hypot(world.position.x - places.find(p => p.id === id)!.x, world.position.z - places.find(p => p.id === id)!.z) > 2.65) return;
+  if (id === 'nara' || progress.accepted) {
+    const pose: InteractionPose = id === 'nara' || id === 'warga' ? 'greet' : id === 'book' || id === 'rain' ? 'read' : id === 'sampleA' || id === 'sampleB' ? 'sample' : 'measure';
+    world.beginInteraction(id, pose);
+  }
   if (id === 'nara') {
     if (!progress.accepted) {
       openPanel('Halo, penjelajah muda!', `<div class="speaker"><span class="avatar-badge">N</span><div><strong>Bu Nara</strong><small>Guru & mentor sains</small></div></div><p>Warga melihat air sungai lebih keruh setelah hujan. Kita perlu mencari penjelasan sebelum memilih tindakan.</p><blockquote>“Pendapat adalah awal pertanyaan. Pengamatan dan percobaan membantu kita memeriksanya.”</blockquote><p>Temui Pak Wira, baca buku serta catatan hujan, lalu bandingkan sampel A dan B. Dua botol berlabel dan alat kekeruhan akan kupinjamkan.</p><button class="primary" id="accept-mission">Terima misi M01 ${icon('arrow')}</button>`, 'M01 · DETEKTIF AIR KOTA');
@@ -181,7 +192,7 @@ function interactAt(id: PlaceId) {
     if (!progress.plan) { openPlan(id); return; }
     const key = id === 'sampleA' ? 'A' : 'B'; const reading = progress.samples[key];
     openPanel(`Sampel ${key} · ${key === 'A' ? 'lahan terbuka' : 'titik pembanding'}`, `<p>${key === 'A' ? 'Air sungai dekat jalur limpasan dari lahan terbuka.' : 'Air dari titik pembanding dengan tepian bervegetasi.'} Gunakan botol berlabel ${key} yang terpisah.</p><div class="instrument"><span>INDEKS KEKERUHAN MODEL</span><strong>${reading ? reading.value : '—'}<small>/100</small></strong><div class="meter"><i style="width:${reading?.value ?? 0}%"></i></div><small>${reading ? 'Tercatat · hujan simulasi 09.00' : 'Belum diukur'}</small></div><p class="model-note">Skala simulasi, bukan satuan laboratorium (NTU). Angka tidak menentukan kelayakan minum.</p><button class="primary" id="measure">${reading ? 'Lihat pengukuran tersimpan' : `Ambil & ukur sampel ${key}`} ${icon('flask')}</button>`, 'M01 · PENGUKURAN');
-    $('measure').onclick = () => { dispatch({ type: 'measure', sample: key }); interactAt(id); };
+    $('measure').onclick = () => { dispatch({ type: 'measure', sample: key }); interactAt(id); world?.setInteractionPose('measure'); };
   } else if (id === 'barrier') {
     openPanel('Uji jalur limpasan', `<p>Pasang <strong>model penahan sedimen</strong> pada aliran dari lahan terbuka. Ulangi pengamatan dengan kondisi hujan yang sama. Hanya penahan sedimen yang diubah.</p><div class="comparison"><div><small>A · SEBELUM</small><strong>${progress.samples.A?.value ?? '—'}</strong></div><span>→</span><div><small>A · SESUDAH</small><strong>${progress.trial ?? '—'}</strong></div></div><p class="model-note">Indeks model /100 · B awal ${progress.samples.B?.value ?? '—'} · Bukan uji keamanan minum.</p><p id="trial-feedback" role="status"></p><button class="primary" id="run-trial">${progress.trial ? 'Lihat kembali hasil uji' : 'Pasang penahan & uji ulang'}</button>${progress.trial ? '<button class="secondary" id="return-nara">Diskusikan dengan Bu Nara</button>' : ''}`, 'M01 · SATU VARIABEL DIUBAH');
     $('run-trial').onclick = () => {
@@ -202,12 +213,15 @@ function openConclusion() {
   });
 }
 function journal() {
+  world?.setInteractionPose('read');
   openPanel('Jurnal Sains', `<div class="journal-summary"><span class="mission-tag">M01</span><span>${progress.completed ? 'Penyelidikan selesai' : 'Penyelidikan berlangsung'}</span></div><h3>Dugaan awal</h3><p>${progress.hypothesis ? '“Semua air keruh pasti berasal dari limbah.” — Pak Wira. Status: dugaan, bukan fakta.' : 'Belum dicatat. Temui Pak Wira.'}</p><h3>Sumber pengetahuan</h3>${(['book', 'rain'] as const).map(id => `<div class="journal-entry"><strong>${progress.sources[id] ? '✓' : '○'} ${cards[id].title}</strong>${progress.sources[id] ? `<p>${cards[id].text}</p>` : '<p>Belum dibaca dan dicatat.</p>'}</div>`).join('')}<h3>Data pengamatan</h3><p class="model-note">Indeks model /100, bukan NTU. Semua menggunakan hujan simulasi yang sama.</p><table><thead><tr><th>Sampel</th><th>Awal</th><th>Sesudah uji</th></tr></thead><tbody><tr><td>A · lahan terbuka</td><td>${progress.samples.A?.value ?? 'Belum diukur'}</td><td>${progress.trial ?? 'Belum diuji'}</td></tr><tr><td>B · pembanding</td><td>${progress.samples.B?.value ?? 'Belum diukur'}</td><td>Tidak diuji ulang</td></tr></tbody></table><h3>Rencana & kesimpulan</h3><p>${progress.plan ? 'Alat kekeruhan virtual; lokasi berbeda; kondisi hujan dan waktu pengambilan sama.' : 'Rencana pengamatan belum dibuat.'}</p><p>${progress.completed ? conclusions[0].text : 'Kumpulkan bukti dan lakukan uji sebelum menyimpulkan.'}</p><small class="source">Percobaan kesimpulan: ${progress.attempts.length} · Hadiah: ${progress.reward} XP · Data lokal pada browser ini.</small>`, 'PENEMUAN · DATA · DUGAAN · PERCOBAAN');
 }
 function inventory() {
+  world?.endInteraction();
   openPanel('Tas penjelajah', `<p>Alat esensial dipinjamkan Bu Nara saat misi diterima. Tidak perlu membeli alat.</p><div class="inventory-grid">${[{ name: 'Botol berlabel A', info: progress.samples.A ? 'Terisi · sampel A · indeks 70' : 'Kosong · khusus titik A' }, { name: 'Botol berlabel B', info: progress.samples.B ? 'Terisi · sampel B · indeks 20' : 'Kosong · khusus titik B' }, { name: 'Alat kekeruhan virtual', info: 'Skala model 0–100 · bukan NTU' }, { name: 'Jurnal & peta', info: 'Catatan otomatis setelah pengamatan' }].map(item => `<div class="inventory-item">${icon('flask')}<strong>${item.name}</strong><small>${progress.accepted ? item.info : 'Terima misi untuk meminjam'}</small></div>`).join('')}</div><div class="callout">Botol A dan B terpisah; membaca hasil tersimpan tidak mengambil sampel baru atau menggandakan hadiah.</div>`, 'PERALATAN MISI M01');
 }
 function map() {
+  world?.endInteraction();
   openPanel('Peta Kota Sains', `<p>Pilih lokasi untuk berjalan ke sana dan berinteraksi saat tiba. Jalur menghindari bangunan serta sungai. Semua lokasi misi dapat dicapai tanpa melompat.</p><div class="map-layout"><svg id="town-map" viewBox="-20 -19 40 38" role="img" aria-label="Peta wilayah. Sekolah di barat laut, sungai di timur."><rect x="-20" y="-19" width="40" height="38" rx="1" fill="#dce4cb"/><path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/><path d="M0-18v36M-18 2h28" stroke="#f9f0d7" stroke-width="3"/>${obstaclesMap()}${places.map(p => `<circle cx="${p.x}" cy="${p.z}" r="0.8" fill="${p.color}" stroke="#fff" stroke-width=".3"/><text x="${p.x - 0.5}" y="${p.z - 1.3}" font-size="1.3" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x ?? -1}" cy="${world?.position.z ?? 6}" r="0.7" fill="#163d34" stroke="#fff" stroke-width=".35"/></svg><div class="destination-list">${places.map(p => `<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${icon('arrow')}</button>`).join('')}</div></div><p class="model-note">Ketuk tanah kosong di dunia 3D untuk berjalan, atau gunakan daftar lokasi untuk navigasi yang lebih mudah.</p>`, 'W01 · SATU BLOK, BANYAK PERTANYAAN');
   document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b => { b.onclick = () => navigate(b.dataset.destination as PlaceId); });
 }
@@ -215,11 +229,26 @@ function obstaclesMap() {
   return '<path d="M-13-12h8v6h-8ZM-14.5 3.5h5v5h-5ZM-7.5 11h5v4h-5ZM0-15h4v4H0Z" fill="#a7b99e"/>';
 }
 function settings() {
-  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox"> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD / panah: berjalan · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: analog kiri dan seret dunia di kanan dapat dipakai bersamaan. IFP: ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
+  world?.endInteraction();
+  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD / panah: berjalan · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: analog kiri dan seret dunia di kanan dapat dipakai bersamaan. IFP: ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
   $<HTMLSelectElement>('settings-mode').value = world?.mode ?? modeSelect.value;
   $('settings-mode').onchange = e => setMode((e.target as HTMLSelectElement).value as InputMode);
-  $('reduced-motion').onchange = e => { if (world) world.reducedMotion = (e.target as HTMLInputElement).checked; };
-  $('low-quality').onchange = e => world?.renderer.setPixelRatio((e.target as HTMLInputElement).checked ? 1 : Math.min(devicePixelRatio, 1.5));
+  $<HTMLSelectElement>('camera-distance').value = world?.cameraDistance ?? preferences.cameraDistance;
+  const storePreferences = () => {
+    if (!savePreferences(preferences)) $('settings-feedback').textContent = 'Preferensi hanya berlaku pada tab ini karena penyimpanan pengaturan tidak tersedia. Progres misi tetap terpisah.';
+  };
+  $('camera-distance').onchange = e => {
+    preferences.cameraDistance = (e.target as HTMLSelectElement).value as CameraDistance;
+    if (world) world.cameraDistance = preferences.cameraDistance; storePreferences();
+  };
+  $('reduced-motion').onchange = e => {
+    preferences.reducedMotion = (e.target as HTMLInputElement).checked;
+    if (world) world.reducedMotion = preferences.reducedMotion; storePreferences();
+  };
+  $('low-quality').onchange = e => {
+    preferences.lowQuality = (e.target as HTMLInputElement).checked;
+    world?.renderer.setPixelRatio(preferences.lowQuality ? 1 : Math.min(devicePixelRatio, 1.5)); storePreferences();
+  };
   $('home').onclick = () => { world?.resetPosition(); closePanel(); toast('Kembali ke Pos. Seluruh bukti misi tetap tersimpan.'); };
   $('fullscreen-button').onclick = fullscreen;
   $('export').onclick = () => {
@@ -267,7 +296,7 @@ $('start').onclick = () => {
   toast(progress.accepted ? 'Selamat kembali! Buka Jurnal untuk melihat bukti yang tersimpan.' : 'Selamat datang! Temui Bu Nara atau pilih langkah pertama pada kartu misi.');
 };
 $('close-panel').onclick = closePanel;
-panel.addEventListener('close', () => { if (world) world.paused = !started || panel.open; });
+panel.addEventListener('close', () => { if (world) { world.paused = !started || panel.open; if (!panel.open) world.endInteraction(); } });
 panel.addEventListener('click', e => {
   const r = panel.getBoundingClientRect();
   if (e.target === panel && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) closePanel();
@@ -280,11 +309,15 @@ $('rotate-left').onclick = () => { if (world) world.yaw += Math.PI / 4; };
 $('rotate-right').onclick = () => { if (world) world.yaw -= Math.PI / 4; };
 $('stop-walk').onclick = () => { clearInput(); toast('Perjalanan dihentikan.'); };
 $('interact').onclick = interaction;
-$('toggle-mission').onclick = () => {
-  const collapsed = document.querySelector('.mission-card')!.classList.toggle('collapsed');
-  $('toggle-mission').textContent = collapsed ? '+' : '−';
-  $('toggle-mission').setAttribute('aria-expanded', String(!collapsed));
-};
+function toggleMissionDetails() {
+  const compact = document.querySelector('.mission-card')!.classList.toggle('compact');
+  $('toggle-mission').textContent = compact ? '+' : '−';
+  $('toggle-mission').setAttribute('aria-expanded', String(!compact));
+  $('toggle-mission').setAttribute('aria-label', compact ? 'Buka rincian misi' : 'Ringkas daftar misi');
+  $('mission-details').innerHTML = `${compact ? 'Lihat semua langkah' : 'Ringkas misi'} ${icon('arrow')}`;
+}
+$('toggle-mission').onclick = toggleMissionDetails;
+$('mission-details').onclick = toggleMissionDetails;
 document.querySelector('.brand')!.addEventListener('click', e => { e.preventDefault(); settings(); });
 
 async function initialize() {
@@ -299,6 +332,8 @@ async function initialize() {
   updateMission();
   try {
     world = new World($<HTMLCanvasElement>('world')); world.setTrial(progress.trial === 35);
+    world.cameraDistance = preferences.cameraDistance; world.reducedMotion = preferences.reducedMotion;
+    world.renderer.setPixelRatio(preferences.lowQuality ? 1 : Math.min(devicePixelRatio, 1.5));
     world.onUpdate = near => {
       const place = places.find(p => p.id === near);
       $('near-name').textContent = place?.name ?? 'Dekati warga atau penanda';

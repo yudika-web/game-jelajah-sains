@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "accepted": true,
+  "hypothesis": true,
+  "sources": { "book": true, "rain": true },
+  "plan": true,
+  "samples": { "A": { "value": 70, "session": "hujan-0900" }, "B": { "value": 20, "session": "hujan-0900" } },
+  "trial": null,
+  "attempts": [],
+  "completed": false,
+  "reward": 0,
+  "savedAt": "2026-10-23T15:00:00.000Z"
+}
