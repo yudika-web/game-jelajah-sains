@@ -1,12 +1,14 @@
 # Jelajah Sains
 
+**W04 Sungai dan Danau — S13 Catatan Ikan Dua Titik** sudah dapat dimainkan: pancing 3D, enam pengamatan terkontrol, pencatatan dan pelepasan atomik, tabel/diagram, serta kesimpulan berbukti. [Panduan, pengujian, gambar, dan cuplikan memancing](docs/river-fishing-review.md).
+
 **W03 Rimba dan Gambut — Bantu Pos Rimba (W03-LOG01)** sudah dapat dimainkan: pengangkutan air dengan ember/gerobak, perbaikan roda, jurnal perjalanan, dan pemulihan habitat. [Cara bermain, aturan, dan bukti hasil](docs/rimba-logistics-review.md).
 
 Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, atau pilih Jalan/Lari pada HP dan IFP. Lihat [laporan gerak, konfigurasi, dan cuplikan browser](docs/running-review.md).
 
 Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Tiga wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, dan **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Empat wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**, serta **W04 Sungai dan Danau / S13 Catatan Ikan Dua Titik**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
@@ -14,7 +16,7 @@ Model acuan tiga sisi terdahulu dan perbandingannya tersedia pada [arsip pemerik
 
 Varian siswi dapat dimainkan dengan menambahkan `?avatar=siswi` pada alamat server (misalnya path `/?avatar=siswi`). Pilihan ini tidak mengubah progres; hilangkan parameter untuk memakai siswa. Tautan galeri mempertahankan varian ketika kembali ke permainan. Tidak ada onboarding avatar tambahan.
 
-Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari/Pak Damar. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
+Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari/Pak Damar/Kak Lestari. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
 
 ## Menjalankan
 
@@ -30,7 +32,7 @@ Pada lingkungan cloud ini, repositori berada di `/workspace/game-jelajah-sains`;
 Dev server memakai port **5173**, bind `0.0.0.0`, dan tidak berpindah port otomatis. Buka alamat server melalui browser yang mendukung WebGL 2. Untuk HP di LAN, gunakan alamat IP laptop/server pada port 5173; perangkat harus berada di jaringan yang sama dan firewall harus mengizinkannya. Perubahan alamat/origin membuat penyimpanan browser terpisah: ekspor cadangan sebelum berpindah alamat. Akses LAN antarperangkat belum diuji pada mesin cloud ini.
 
 ```sh
-npm test          # M01/M14/Rimba, air, perjalanan, cadangan, navigasi, karakter
+npm test          # M01/M14/Rimba/S13, air, sampling, cadangan, navigasi, karakter
 npm run build     # TypeScript + bundle produksi di dist/
 npm run preview   # periksa bundle produksi di port 4173
 npm run test:e2e  # Chromium: misi lengkap, input, simpan, fallback
@@ -40,7 +42,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01. Ketiganya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Kedua wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13. Keempatnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Ketiga wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -50,6 +52,7 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Mi
 | Interaksi | E / tombol aksi | Tombol aksi / ketuk label | Ketuk label atau Peta lalu Aksi; panel terbuka saat tiba |
 | Jurnal / Tas / Peta | J / I / M | Tombol bawah | Tombol besar bawah |
 | Gerobak Rimba | Bengkel → Dorong; WASD/Shift; kembali ke Bengkel → Parkir | Tombol Bengkel/Tas → Parkir; analog + toggle | Tujuan Peta/kartu; tombol Dorong/Parkir |
+| Memancing W04 | E di titik; Tab/Enter pada Mulai, Tarik, Catat dan lepaskan | Tombol besar tanpa drag atau reaksi cepat | Pilih A/B di Peta, lalu tombol memancing |
 | Jeda | Esc / Pengaturan | Pengaturan | Pengaturan |
 
 Jalan **5,2 unit/detik**, lari **8,0 unit/detik**, tanpa stamina. Saat mendorong gerobak, kecepatannya **3,4 / 4,2 unit/detik** dengan ruang tabrakan lebih lebar. Parkir mengembalikan gerak biasa. Dorongan analog kecil memberi kecepatan proporsional. Shift/toggle sendiri tidak menggerakkan pemain. **Berhenti** atau input manual membatalkan perjalanan otomatis. Saat memilih tujuan dari Peta, mode sebelum membuka peta dipakai untuk rute itu.
@@ -94,13 +97,24 @@ Isi wadah di tandon, bawa melalui dunia 3D, lalu tuangkan jumlah terpilih ke A *
 
 Jurnal mencatat transfer serta perjalanan nyata. Setelah pengiriman, pilih kesimpulan berbukti, baca papan habitat, terima laporan petugas, dan pilih restorasi tumbuhan lokal. Hadiah pertama **100 XP** tidak berulang setelah reset atau impor. Air latihan bukan kebutuhan pemadaman nyata; petugas menangani kebakaran, dan area terdampak tidak menjadi jalur pemain. Tidak ada batas waktu. Lihat [panduan lengkap dan bukti](docs/rimba-logistics-review.md).
 
+## Menuntaskan S13 — Catatan Ikan Dua Titik
+
+1. Dari Kota, pilih **Ke Sungai dan Danau** pada Peta, lalu masuk gerbang dermaga. Temui **Kak Lestari** dan terima S13.
+2. Baca dan catat **Buku pengamatan** serta **Prosedur sampling**, lalu pinjam pancing dan umpan pada rak alat.
+3. Bersama Kak Lestari, pilih rencana: alat sama, umpan standar sama, tiga percobaan per titik, durasi model sama, satu sesi virtual, faktor lokasi.
+4. Kunjungi **A · tepian** dan **B · dermaga**, boleh bergantian. Mulai memancing; karakter mendekati tanda aman, melempar, dan menunggu pelampung. **Tarik** tetap aktif sampai dipilih. Amati model, pilih ciri, lalu **Catat dan lepaskan**. Ulangi hingga tiga catatan per titik.
+5. Baca **Papan hasil**. Tabel dan diagram hanya memakai catatan sah; titik yang belum diamati ditandai “Belum diamati”.
+6. Sampaikan kesimpulan kepada Kak Lestari: pipih lebih sering di sampel A, berkumis di B, memanjang di keduanya; sampel kecil belum menentukan populasi atau penyebab perbedaan. Hadiah pertama **50 XP**, hanya sekali.
+
+Dataset latihan tetap, bukan sampling alam. Tidak ada ikan yang dijual atau menjadi isi tas. Tidak ada batas waktu reaksi. Jeda menunggu berhenti saat tab tersembunyi atau fokus hilang. **Batalkan**, Esc, menu, perubahan kontrol/wilayah, atau Kembali ke Pos membatalkan proses yang belum disahkan. Reload kembali ke pos aman, mempertahankan catatan sah. **Ulangi pengamatan S13** meminta konfirmasi dan mempertahankan riwayat hadiah serta tiga misi lain. Air hanya dapat diamati dari darat dan dermaga; berenang dan perahu belum tersedia.
+
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Ketiga misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Keempat misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 3** berisi ketiga misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 4** berisi keempat misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
-Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba** adalah tindakan terpisah dengan konfirmasi masing-masing.
+Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
 ## Struktur
 
@@ -125,8 +139,14 @@ src/
   game/rimbaMission.ts  aturan logistik, transfer atomik, perjalanan dan validasi
   game/rimbaSession.ts  pengukuran gerak nyata dan batas perjalanan sumber
   game/rimbaUI.ts       materi, transaksi, jurnal dan kesimpulan Pos Rimba
-  game/gameState.ts     keadaan wilayah, cadangan v3 dan kompatibilitas v1/v2
-  game/storage.ts       transaksi IndexedDB atomik ketiga misi
+  data/riverRegion.ts   posisi dan batas tepian/dermaga W04
+  data/riverContent.ts  dataset tetap, ciri, kartu pengetahuan S13
+  engine/riverWorld.ts  air ringan, model ikan, tali/pelampung dan pelepasan
+  game/riverMission.ts  aturan sampling, catatan atomik dan validasi S13
+  game/fishingSession.ts state memancing sementara, tanpa timer tambahan
+  game/riverUI.ts       kegiatan memancing, kartu, jurnal, tabel dan diagram
+  game/gameState.ts     keadaan wilayah, cadangan v4 dan kompatibilitas v1/v2/v3
+  game/storage.ts       transaksi IndexedDB atomik keempat misi
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -145,4 +165,4 @@ Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustak
 
 ## Batas prototipe
 
-Belum mencakup wilayah di luar tiga wilayah ini, lompat/berenang, kendaraan selain gerobak, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.
+Belum mencakup wilayah di luar empat wilayah ini, lompat/berenang, kendaraan selain gerobak, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.

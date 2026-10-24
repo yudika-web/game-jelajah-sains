@@ -1,6 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [W04 / S13 Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v4**, dengan empat misi; rincian migrasi ada pada bagian W04/S13.
 
 ## Sumber dan keputusan implementasi
 
@@ -105,3 +107,22 @@ Episode mengikuti bagian dukungan pos kebakaran dan prototipe pembuktian pada ra
 Jurnal membandingkan hanya alat yang benar-benar mengirim. Enam muatan ember / dua gerobak merupakan perhitungan kapasitas yang dilabeli, bukan data uji alat yang belum dipakai. Upaya kesimpulan yang salah dan benar tetap tercatat; refleksi bebas tidak dinilai otomatis. Petugas melaporkan penanganan setelah kesimpulan, lalu pemulihan habitat menyelesaikan episode. Langit berubah lebih tenang, tetapi batas area terdampak tetap berlaku.
 
 Bukti dapat direproduksi melalui `CAPTURE_RIMBA_EVIDENCE=1 npm run test:e2e -- tests/rimba.spec.ts`. Pengujian browser memakai input nyata pada dunia WebGL; alur IFP mencakup persiapan penuh dan perbaikan gerobak. Pengujian ember enam muatan memakai fixture persiapan, lalu melakukan setiap pengisian, perjalanan, dan penuangan di browser tanpa perbaikan gerobak. HP memeriksa dua jari, penuangan sebagian, dan pembukaan C. Laptop memeriksa Shift/kecepatan khusus, roda, batas penghalang, parkir, dan pemulihan lari normal. Ukuran viewport bukan perangkat fisik.
+
+
+## W04 Sungai dan Danau — S13
+
+Implementasi mengikuti W04, S13, dan “Memancing sebagai pengamatan ekosistem”, dengan cakupan tahap pengguna: satu umpan, tiga kategori ciri tanpa spesies, enam hasil deterministik, seluruh ikan dilepaskan. Habitat/makanan dari rancangan yang belum diverifikasi tidak disajikan sebagai hasil pemain. Berenang, menyelam, perahu, umpan peluang, dan pemindahan ikan ke kolam ditunda.
+
+`riverRegion.ts` mendefinisikan tepian, pos, dan dermaga 4 unit lebar. Air di x≥3 diblokir kecuali dek z=-9 sampai -5; radius pemain 0,45 memberi jarak aman. Setiap pendekatan serta posisi memancing diuji dengan pathfinder bersama. Area air tidak menjadi target raycast tanah. Model rumah memakai pintu 2,1 unit dan Kak Lestari 1,68 unit dari factory enam balok; model baru tersedia pada galeri yang sama. Rod socket tidak ikut pengukuran tinggi tubuh.
+
+`riverContent.ts` menyimpan urutan A pipih/pipih/memanjang dan B berkumis/memanjang/berkumis, kartu 35–70 kata, serta ilustrasi ciri. `riverMission.ts` bebas renderer: penerimaan, sumber, rencana, upaya salah/benar, catatan dan pelepasan atomik, kesimpulan serta hadiah 50 XP pertama. ID rekaman A-1 sampai B-3 stabil. Revision dan indeks berikutnya menolak event ganda. Parser memeriksa dataset, urutan per lokasi, pelepasan, bukti jawaban ciri, prasyarat, kesimpulan, dan hadiah. Refleksi tidak dinilai berdasarkan kata kunci.
+
+`FishingSession` sementara mengatur idle → casting (0,8 detik aktif) → waiting (1,6 detik aktif) → ready (tanpa batas reaksi) → observing → released (0,75 detik aktif) → idle. Angka pendek ini durasi presentasi model, bukan durasi sampling sungai atau jam perangkat. `World.onRiverFrame` memanggil tick dari render loop lama; tidak ada timer, RAF, renderer, atau input baru. Fokus hilang/tab tersembunyi menghentikan tick. Menu/cancel/perubahan mode/wilayah membatalkan keadaan belum disahkan. Reload tidak menyimpan animasi dan kembali ke pos, tanpa mengganti ikan berikutnya.
+
+`riverWorld.ts` membangun aset lokal. Tiga siluet ikan, 14 garis air, tiga ikan dekoratif, satu pelampung/tali dan tiga model hasil dipakai ulang. Atribut posisi tali diubah di tempat. Dekorasi tidak menentukan hasil. Pengurangan gerakan menekan dekorasi dan goyangan; status/alat tetap tampil. Animasi lempar, tarik, dan lepas sederhana tidak membutuhkan drag presisi. Grup daerah dimusnahkan saat pergantian termasuk geometri/material `Line`; cache tubuh/alat karakter bersama tetap dimiliki factory. Tidak ada backend/CDN.
+
+`riverUI.ts` memisahkan panel pancing kecil dari dialog biasa agar dunia tetap terlihat. UI ini menghentikan gerak darat melalui jeda World, tetapi state pancing tetap ditick jika aktif. Tab/Enter memakai tombol HTML, shortcut game diabaikan ketika mengedit catatan. Tabel dan diagram membaca `riverCounts` yang sama dari rekaman sah. Sebelum ada catatan di suatu titik, semua selnya null/“Belum diamati”; sesudahnya angka berlabel jumlah sampel yang sudah dicatat, termasuk nol kategori yang belum tercatat. Urutan masa depan tidak ditampilkan.
+
+Cadangan **v4**, skema IndexedDB tetap **1**. Key S13 ditambah dalam store saves dan transaksi bersama empat misi; key lama tidak dihapus. V1 hanya M01, v2 M01/M14/world, v3 tiga misi/world; progres S13 yang tidak dicakup dipertahankan. V4 memvalidasi seluruh misi sebelum mengubah state. Riwayat hadiah pertama S13 digabung monoton agar impor/reset tidak menggandakan XP. Fixture `tests/fixtures/m01-m14-rimba-v3.json` berasal dari hasil W03 sebelum S13: gerobak diperbaiki, 24 L dikirim, sumber 16 L, hadiah 100 XP, M14 hari 4, dan sampel M01 tetap ada.
+
+Bukti browser: `CAPTURE_RIVER_EVIDENCE=1 npm run test:e2e -- tests/river.spec.ts`. Cuplikan: `node scripts/capture-river-evidence.mjs`, sesudah alur penuh menghasilkan final-state.json dan server 5173 hidup; EVIDENCE_ORIGIN dapat mengganti server. Lihat [laporan S13](river-fishing-review.md) untuk hasil dan batas pengujian.

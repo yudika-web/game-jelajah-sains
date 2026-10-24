@@ -2,6 +2,8 @@ import { characterConfig } from './characterConfig';
 export interface Point { x: number; z: number; }
 export interface Obstacle { x: number; z: number; width: number; depth: number; }
 export const obstacles: Obstacle[] = [
+  {x:-2.8,z:-6,width:.3,depth:.3},{x:.8,z:-6,width:.3,depth:.3}, // W04 gate
+
   {x:6.2,z:15,width:.3,depth:.3}, {x:9.8,z:15,width:.3,depth:.3}, // W03 gate pillars
   { x: -9, z: -9, width: 8, depth: 6 },
   { x: -12, z: 6, width: 5, depth: 5 },

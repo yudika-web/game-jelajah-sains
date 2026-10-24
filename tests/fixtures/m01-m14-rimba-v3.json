@@ -1,0 +1,265 @@
+{
+  "version": 3,
+  "missions": {
+    "M01": {
+      "version": 1,
+      "accepted": true,
+      "hypothesis": true,
+      "sources": {
+        "book": true,
+        "rain": true
+      },
+      "plan": true,
+      "samples": {
+        "A": {
+          "value": 70,
+          "session": "hujan-0900"
+        },
+        "B": {
+          "value": 20,
+          "session": "hujan-0900"
+        }
+      },
+      "trial": null,
+      "attempts": [],
+      "completed": false,
+      "reward": 0,
+      "savedAt": "2026-10-24T07:55:23.432Z"
+    },
+    "M14": {
+      "version": 1,
+      "accepted": true,
+      "sources": {
+        "needs": true,
+        "fair": true
+      },
+      "plan": true,
+      "supplies": true,
+      "planted": {
+        "A": true,
+        "B": true
+      },
+      "day": 4,
+      "can": 100,
+      "tank": 3100,
+      "watered": [
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": false,
+          "B": false
+        },
+        {
+          "A": false,
+          "B": false
+        }
+      ],
+      "measurements": [
+        {
+          "day": 0,
+          "group": "A",
+          "heights": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "day": 0,
+          "group": "B",
+          "heights": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "day": 2,
+          "group": "A",
+          "heights": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "day": 2,
+          "group": "B",
+          "heights": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "day": 4,
+          "group": "A",
+          "heights": [
+            5,
+            4,
+            6
+          ]
+        },
+        {
+          "day": 4,
+          "group": "B",
+          "heights": [
+            3,
+            2,
+            4
+          ]
+        }
+      ],
+      "attempts": [],
+      "reflection": "",
+      "completed": false,
+      "reward": 0,
+      "firstCompletedAt": null
+    },
+    "W03-LOG01": {
+      "version": 1,
+      "episode": "W03-LOG01",
+      "revision": 29,
+      "accepted": true,
+      "sources": {
+        "map": true,
+        "capacity": true,
+        "supply": true,
+        "habitat": true
+      },
+      "inspected": {
+        "A": true,
+        "B": true,
+        "C": true
+      },
+      "total": 24000,
+      "bucketTaken": false,
+      "parts": true,
+      "repaired": true,
+      "cOpen": true,
+      "activeTool": "cart",
+      "armed": null,
+      "source": 16000,
+      "bucket": 0,
+      "cart": 0,
+      "targets": {
+        "A": 8000,
+        "B": 6000,
+        "C": 10000
+      },
+      "transfers": [
+        {
+          "id": 1,
+          "kind": "fill",
+          "tool": "cart",
+          "amount": 12000,
+          "target": null,
+          "trip": null
+        },
+        {
+          "id": 2,
+          "kind": "pour",
+          "tool": "cart",
+          "amount": 8000,
+          "target": "A",
+          "trip": 1
+        },
+        {
+          "id": 3,
+          "kind": "pour",
+          "tool": "cart",
+          "amount": 4000,
+          "target": "B",
+          "trip": 1
+        },
+        {
+          "id": 4,
+          "kind": "fill",
+          "tool": "cart",
+          "amount": 12000,
+          "target": null,
+          "trip": null
+        },
+        {
+          "id": 5,
+          "kind": "pour",
+          "tool": "cart",
+          "amount": 2000,
+          "target": "B",
+          "trip": 2
+        },
+        {
+          "id": 6,
+          "kind": "pour",
+          "tool": "cart",
+          "amount": 10000,
+          "target": "C",
+          "trip": 2
+        }
+      ],
+      "trips": [
+        {
+          "id": 1,
+          "tool": "cart",
+          "load": 12000,
+          "startTransfer": 1,
+          "endTransfer": 3,
+          "delivered": 12000,
+          "distanceMm": 38774,
+          "movingMs": 9498,
+          "end": "return"
+        },
+        {
+          "id": 2,
+          "tool": "cart",
+          "load": 12000,
+          "startTransfer": 4,
+          "endTransfer": 6,
+          "delivered": 12000,
+          "distanceMm": 72402,
+          "movingMs": 17618,
+          "end": "complete"
+        }
+      ],
+      "attempts": [
+        {
+          "claim": "always-full",
+          "evidence": 2,
+          "efficiency": "cart-always",
+          "correct": false
+        },
+        {
+          "claim": "capacity-not-content",
+          "evidence": 2,
+          "efficiency": "one-tool",
+          "correct": true
+        }
+      ],
+      "concluded": true,
+      "report": true,
+      "restoration": "native-restore",
+      "completed": true,
+      "reflection": "",
+      "reward": 100,
+      "firstCompletedAt": "2026-10-24T07:55:23.431Z"
+    }
+  },
+  "world": {
+    "region": "rimba",
+    "activeMission": "W03-LOG01"
+  }
+}

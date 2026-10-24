@@ -23,6 +23,7 @@ const palettes = {
   nara: { skin:'#d2a17c', hair:'#403028', coat:'#89639d', shirt:'#f4e4c5', pants:'#424f6b', boots:'#604630', bag:'#b49858' },
   wira: { skin:'#d49e71', hair:'#433126', coat:'#b6a17b', shirt:'#efe1bf', pants:'#4f5c3f', boots:'#7c5634', bag:'#b49858' },
   damar: {skin:'#d49e71',hair:'#433126',coat:'#a87835',shirt:'#e8dfb9',pants:'#485942',boots:'#695039',bag:'#b89850'},
+  lestari: { skin:'#dfab7a',hair:'#433126',coat:'#4b9194',shirt:'#f2e2bd',pants:'#53667a',boots:'#765330',bag:'#c2a465' },
   sari: { skin:'#d9a374', hair:'#433126', coat:'#698757', shirt:'#ecddbb', pants:'#60543d', boots:'#765330', bag:'#c2a465' },
 };
 /** All drawings are local, cached textures. Unit/measurement tools can run without a DOM. */
@@ -40,7 +41,7 @@ function drawing(key: string, paint: (c: CanvasRenderingContext2D) => void, fall
   return materials.get(key)!;
 }
 export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): CharacterRig {
-  const p = palettes[kind], girl = kind === 'explorerGirl', student = kind === 'explorer' || girl;
+  const p = palettes[kind], girl = (kind === 'explorerGirl'||kind==='lestari'), student = kind === 'explorer' || kind==='explorerGirl';
   const root = new THREE.Group(); root.name = `character-${kind}`;
   const group = (name: string, parent: THREE.Object3D, x=0,y=0,z=0) => { const g=new THREE.Group();g.name=name;g.position.set(x,y,z);parent.add(g);return g; };
   const visual = group('visual',root), bodyMeshes: THREE.Mesh[] = [], core: THREE.Mesh[] = [];
@@ -136,7 +137,10 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   const bucketHandle=mesh(bucket,geometry('bucket-handle',()=>new THREE.TorusGeometry(.24,.025,5,10,Math.PI)),color('#4f6063'),0,-.08,.15,false);
   const indicator=box(bucket,[.25,.26,.012],'#73c1d0',0,-.29,.397,false);indicator.name='bucket-fill-indicator';
   bucketHandle.rotation.z=0;
-  const tools={notebook,meter,sample,wateringCan,ruler,bucket};Object.values(tools).forEach(t=>t.visible=false);
+  const rod=group('fishing-rod',rightArm.toolSocket);rod.rotation.x=1.6;
+  const shaft=box(rod,[.045,2.6,.045],'#635d3c',0,1.05,.1,false);shaft.rotation.x=.15;
+  box(rod,[.10,.38,.10],'#b08b4c',0,-.12,.07,false);box(rod,[.16,.16,.10],'#c4c8b3',.09,.10,.1,false);group('rod-tip',rod,0,2.35,.30);
+  const tools={notebook,meter,sample,wateringCan,ruler,bucket,rod};Object.values(tools).forEach(t=>t.visible=false);
   // Measure only neutral body geometry; neither attachments nor a label can alter height.
   root.updateMatrixWorld(true);
   const bounds=new THREE.Box3();for(const body of bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));

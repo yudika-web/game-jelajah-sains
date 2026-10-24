@@ -1,0 +1,21 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL 2, SwiftShader",
+  "frames": 97,
+  "seconds": 9.205146074295044,
+  "captureRateNote": "Recording cadence is not a physical-device FPS benchmark",
+  "fixture": "S13 plan prepared; the recorded fishing action is performed through browser controls",
+  "sequence": [
+    "cast",
+    "wait with float and line",
+    "persistent ready indicator",
+    "pull",
+    "observe flat body",
+    "record and release",
+    "return to land controls"
+  ]
+}

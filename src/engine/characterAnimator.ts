@@ -1,7 +1,7 @@
 import { movementConfig } from './movement';
 import type { CharacterRig } from './character';
 
-export type InteractionPose = 'none' | 'greet' | 'read' | 'measure' | 'sample' | 'water' | 'ruler' | 'plant';
+export type InteractionPose = 'none' | 'greet' | 'read' | 'measure' | 'sample' | 'water' | 'ruler' | 'plant' | 'fishCast' | 'fishWait' | 'fishPull';
 export function damp(current: number, target: number, response: number, dt: number) {
   return target + (current - target) * Math.exp(-response * dt);
 }
@@ -12,6 +12,7 @@ export function turnToward(current: number, target: number, dt: number, response
 export class CharacterAnimator {
   pose: InteractionPose = 'none';
   pushing = false;
+  fishingCast = 0;
   speed = 0;
   state: 'idle' | 'walk' | 'run' | 'interact' = 'idle';
   private runBlend = 0;
@@ -98,6 +99,9 @@ export class CharacterAnimator {
       r.head.rotation.x += .14 * interaction;
       if(pose==='water') r.rightArm.hand.rotation.z = -.35 * interaction;
       if(pose==='plant') r.torso.rotation.x += .18 * interaction;
+    } else if (pose === 'fishCast' || pose === 'fishWait' || pose === 'fishPull') {
+      r.rightArm.shoulder.rotation.x=-(pose==='fishCast'?1.8-this.fishingCast*.95:pose==='fishPull'?1.35:.85)*interaction;
+      r.leftArm.shoulder.rotation.x=-.65*interaction;r.torso.rotation.x=(pose==='fishPull'?-.04:.02)*interaction;
     } else if (pose === 'greet' || this.greeting > 0) {
       const strength = this.pose === 'greet' ? interaction : this.greeting;
       const conversational = r.kind === 'wira';

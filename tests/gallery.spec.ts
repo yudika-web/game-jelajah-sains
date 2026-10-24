@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-test('model gallery renders all six characters and remains static for shape inspection', async ({ page }) => {
+test('model gallery renders all seven characters and remains static for shape inspection', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/character.html');
   const canvas = page.locator('#model-canvas');
   await expect(canvas).toHaveAttribute('data-ready', 'true');
-  for (const kind of ['explorer', 'explorerGirl', 'nara', 'wira', 'sari', 'damar']) {
+  for (const kind of ['explorer', 'explorerGirl', 'nara', 'wira', 'sari', 'damar', 'lestari']) {
     await page.locator('#gallery-character').selectOption(kind);
     await expect(canvas).toHaveAttribute('data-character', kind);
     await page.locator('#gallery-detail').click();

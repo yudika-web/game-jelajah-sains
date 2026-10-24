@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-24",
+  "timezoneForReport": "Asia/Bangkok",
+  "baseCommit": "c4d9352352a0decb7ed7346e54f9967e436c11d3",
+  "unit": {
+    "command": "npm test",
+    "passed": 128,
+    "failed": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "status": "passed",
+    "warning": "Shared Three.js chunk exceeds 500 kB; pre-existing size warning."
+  },
+  "browserFull": {
+    "command": "CAPTURE_RIVER_EVIDENCE=1 npm run test:e2e -- --reporter=line",
+    "passed": 27,
+    "failed": 0,
+    "minutes": 12.2
+  },
+  "browserFinalRiver": {
+    "command": "CAPTURE_RIVER_EVIDENCE=1 npm run test:e2e -- tests/river.spec.ts --reporter=line",
+    "passed": 4,
+    "failed": 0,
+    "minutes": 2.6,
+    "reason": "Final phone feedback visibility and landscape settings access refinements"
+  },
+  "browser": "Chromium 154.0.8037.57",
+  "renderer": "WebGL 2 via SwiftShader",
+  "physicalDeviceTested": false,
+  "viewports": {
+    "IFP": [
+      1440,
+      960
+    ],
+    "laptop": [
+      1440,
+      960
+    ],
+    "phonePortrait": [
+      390,
+      844
+    ],
+    "phoneLandscape": [
+      844,
+      390
+    ]
+  },
+  "video": {
+    "path": "motion/fishing-process.webm",
+    "durationSeconds": 9.3,
+    "size": [
+      960,
+      600
+    ],
+    "codec": "VP9",
+    "note": "Capture cadence is not a device FPS benchmark."
+  },
+  "limitations": [
+    "No physical HP or IFP test",
+    "No GPU/FPS, battery or LAN benchmark",
+    "Teaching model, not ecological field sampling"
+  ]
+}

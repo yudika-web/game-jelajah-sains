@@ -1,3 +1,6 @@
+import { buildRiver, type RiverView } from './riverWorld';
+import { FishingSession } from '../game/fishingSession';
+import type { FishGroup } from '../data/riverContent';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { places, type PlaceId } from '../data/content';
@@ -49,6 +52,19 @@ export class World {
   onUpdate: (near: PlaceId | null) => void = () => {};
   region: RegionId = 'town';
   private regionRoot = new THREE.Group();
+  private riverView:RiverView|null=null;
+  private fishingSession:FishingSession|null=null;
+  private fishingGroup:FishGroup='flat';
+  private rodTip=new THREE.Vector3();
+  onRiverFrame:(dt:number,active:boolean)=>void=()=>{};
+  beginFishing(session:FishingSession,group:FishGroup){
+    this.stop();this.fishingSession=session;this.fishingGroup=group;this.paused=true;
+    this.interacting=session.site==='A'?'fishingA':'fishingB';
+    this.facing=Math.PI/2;this.player.rotation.y=this.facing;
+    this.followCamera.interactionFraming=true;this.followCamera.interactionYaw=-.7;
+    this.playerRig.tools.rod.visible=true;
+  }
+  endFishing(){this.fishingSession=null;this.playerRig.tools.rod.visible=false;this.riverView?.clearFishing();this.endInteraction();this.stop();}
   private rimbaView:RimbaView|null=null;
   private rimbaProgress=initialRimba();
   pushing=false;
@@ -138,7 +154,7 @@ export class World {
     ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar';
+    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari';
     sprite.scale.set(plantLabel?.65:npcLabel?2:3.5,plantLabel?.325:npcLabel?.375:.66,1);
     sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
@@ -197,7 +213,7 @@ export class World {
         rig.root.position.set(place.x, 0, place.z);
         this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
         s.add(rig.root);
-      } else if (place.id === 'gardenGate'||place.id==='rimbaGate') {
+      } else if (place.id === 'gardenGate'||place.id==='rimbaGate'||place.id==='riverGate') {
         for(const dx of [-1.8,1.8]) b(.3,3.5,.3,'#98784f',place.x+dx,1.75,place.z);
         b(4.2,.5,.5,'#6d8d5c',place.x,3.6,place.z);
       } else if (place.id === 'sampleA' || place.id === 'sampleB') {
@@ -226,12 +242,12 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    const previous=this.region;this.stop(); this.endInteraction();
+    const previous=this.region;this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
     this.regionRoot.traverse(node => {
-      if (node instanceof THREE.Mesh || node instanceof THREE.Sprite) {
-        if (node instanceof THREE.Mesh && !node.userData.sharedGeometry && !node.geometry.userData.shared) geometries.add(node.geometry);
+      if (node instanceof THREE.Mesh || node instanceof THREE.Sprite || node instanceof THREE.Line) {
+        if ((node instanceof THREE.Mesh || node instanceof THREE.Line) && !node.userData.sharedGeometry && !node.geometry.userData.shared) geometries.add(node.geometry);
         for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
           if (material.userData.shared) continue;
           materials.add(material);
@@ -241,7 +257,7 @@ export class World {
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
-    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.region = region; this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
@@ -252,6 +268,15 @@ export class World {
         this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
       this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
+    }
+    else if(region==='river'){
+      const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.riverView=buildRiver({root:this.regionRoot,box:b,label:(...args)=>{this.label(...args);},npc:(x,z)=>{
+        const rig=createCharacter('lestari','lestari');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);
+        this.npcs.push({id:'lestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
+        this.npcLabels.set('lestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'lestari'));
+      }});
+      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13,0,9.5),new THREE.Vector3(-9,3.5,12.5))];
     }
     else {
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -265,7 +290,7 @@ export class World {
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
-    if(fromGate && region === 'town') { this.position.set(previous==='rimba'?7:-14,0,previous==='rimba'?13:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    if(fromGate && region === 'town') { this.position.set(previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
   }
   private updateRimbaCamera() {
@@ -341,6 +366,8 @@ export class World {
     const elapsed = this.clock.getDelta();
     const dt = this.resetFrameTime ? 0 : movementDelta(elapsed);
     this.resetFrameTime = false; this.elapsed += dt;
+    this.onRiverFrame(dt,!document.hidden&&document.hasFocus());
+    if(this.fishingSession?.active){const phase=this.fishingSession.phase;this.playerAnimator.fishingCast=Math.min(1,this.fishingSession.elapsed/.8);this.playerAnimator.setPose(phase==='casting'?'fishCast':phase==='observing'||phase==='released'?'fishPull':'fishWait');}
     let travelled = 0, dx = 0, dz = 0;
     if (!this.paused) {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
@@ -370,6 +397,12 @@ export class World {
       npc.animator.lookAt(nearby ? Math.atan2(Math.sin(targetYaw - npc.rig.root.rotation.y), Math.cos(targetYaw - npc.rig.root.rotation.y)) : 0);
       npc.animator.update(npcDt, 0, this.reducedMotion);
     }
+    if(this.riverView){
+      this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
+      this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
+    }
+    this.canvas.dataset.fishingPhase=this.fishingSession?.phase??'idle';
+    this.canvas.dataset.rodVisible=String(this.playerRig.tools.rod.visible);
     this.rimbaView?.frame(this.position,this.player.rotation.y,travelled,this.pushing,this.reducedMotion);
     this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
     this.followCamera.update(this.position, dt, this.reducedMotion);
@@ -398,12 +431,12 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
-    if(this.region==='garden'||this.region==='rimba') for(const label of this.regionLabels) {
+    if(this.region==='garden'||this.region==='rimba'||this.region==='river') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
       label.visible=!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
-      const width=Math.min(plant?.65:['sari','damar'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      const width=Math.min(plant?.65:['sari','damar','lestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     this.gardenView?.frame(dt, this.reducedMotion);
