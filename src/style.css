@@ -319,3 +319,41 @@ body[data-mode='ifp'] .icon-button { width: 64px; height: 64px; }
   .ifp-camera { bottom: 122px; right: 16px; }
   body[data-mode='ifp'] .joystick { width: 116px; height: 116px; bottom: 35px; left: 20px; }
 }
+
+/* W02 shares the existing controls and character-aware panel framing. */
+.mission-picker { display: grid; gap: 4px; font-size: 9px; color: #6a7c62; margin-top: 12px; }
+.mission-picker select { min-height: 36px; padding: 6px 24px 6px 9px; width: 100%; font-size: 11px; border-radius: 8px; }
+#garden-status { font-size: 11px; line-height: 1.5; color: #4f6b51; margin: 10px 0 0; }
+.garden-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0; }
+.garden-metrics > span { padding: 10px; background: #edf1df; border: 1px solid #e2e7d3; border-radius: 10px; font-size: 10px; }
+.garden-metrics strong { display: block; font-size: 16px; color: #365c50; margin-top: 5px; }
+.garden-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.garden-links button { flex: 1 1 120px; }
+.plant-readings { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 16px 0; }
+.plant-readings > span { display: grid; gap: 5px; background: #f0eddc; padding: 10px; border-radius: 8px; font-size: 12px; }
+.plant-readings strong { font-size: 13px; }.plant-readings small { font-size: 10px; line-height: 1.4; }
+.table-scroll { overflow-x: auto; margin: 16px 0; } table caption { text-align: left; font-size: 11px; padding-bottom: 10px; color: #6a7c62; }
+.growth-figure { margin: 20px 0 10px; }.growth-figure svg { width: 100%; height: auto; aspect-ratio: 420 / 275; display: block; font: 11px sans-serif; fill: #34524a; }
+.growth-figure figcaption { font-size: 11px; line-height: 1.6; color: #6a7c62; }
+.learn-more { border-top: 1px solid #dde4cf; margin-top: 20px; padding-top: 14px; font-size: 12px; line-height: 1.8; }
+.learn-more summary { cursor: pointer; min-height: 40px; color: #41664e; font-weight: bold; }
+#reflection-form { display: grid; gap: 10px; margin-top: 24px; } #reflection-form label { display: grid; gap: 8px; font-size: 12px; }
+textarea { font: inherit; width: 100%; border: 1px solid #cdd8c0; padding: 12px; border-radius: 8px; resize: vertical; background: #fffdf5; color: #284d49; }
+#reflection-form small { font-size: 11px; line-height: 1.6; }
+#travel-transition { position: fixed; inset: 0; z-index: 100; background: #e7eddf; display: grid; place-items: center; color: #365c50; font: 26px Georgia, serif; }
+#travel-transition[hidden] { display: none; }
+@media (max-width: 700px) {
+  .mission-picker { margin-top: 6px; }.mission-picker select { min-height: 32px; font-size: 10px; }
+  .mission-card.compact { max-height: 35dvh; }.mission-card.compact #mission-steps { margin-top: 5px; }
+  #garden-status { font-size: 10px; margin-top: 5px; }
+  .garden-metrics { gap: 5px; }.garden-metrics > span { padding: 8px 6px; }.garden-metrics strong { font-size: 13px; }
+  .plant-readings { gap: 5px; }.plant-readings > span { padding: 8px 6px; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .mission-picker { margin-top: 5px; }.mission-picker select { min-height: 30px; padding: 4px; }
+}
+
+@media (max-width: 700px) {
+  .mission-card.compact h1 { display: none; }
+  .mission-card.compact .mission-picker { font-size: 0; gap: 0; margin-top: 7px; }
+}

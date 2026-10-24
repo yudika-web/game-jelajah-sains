@@ -5,6 +5,11 @@ import { findPath, walkable, type Point } from './navigation';
 import { createCharacter, type CharacterRig } from './character';
 import { CharacterAnimator, turnToward, type InteractionPose } from './characterAnimator';
 import { FollowCamera, type CameraDistance } from './cameraController';
+import { regions } from '../data/regions';
+import type { RegionId } from '../game/gameState';
+import type { GardenProgress, Group } from '../game/gardenMission';
+import { buildGarden, type GardenView } from './gardenWorld';
+import { visibleForPicking } from './picking';
 
 export type InputMode = 'laptop' | 'hp' | 'ifp';
 export class World {
@@ -30,6 +35,11 @@ export class World {
   path: Point[] = [];
   onArrive: (() => void) | null = null;
   onUpdate: (near: PlaceId | null) => void = () => {};
+  region: RegionId = 'town';
+  private regionRoot = new THREE.Group();
+  private gardenView: GardenView | null = null;
+  get places() { return regions[this.region].places; }
+  get navigation() { return regions[this.region].navigation; }
   private npcs: { id: PlaceId; rig: CharacterRig; animator: CharacterAnimator; timer: number }[] = [];
   private ray = new THREE.Raycaster();
   private marker: THREE.Mesh;
@@ -46,6 +56,7 @@ export class World {
   private movementPoint = { x: 0, z: 0 };
   private npcLabels = new Map<PlaceId, THREE.Sprite>();
   private projectedLabel = new THREE.Vector3();
+  private regionLabels: THREE.Sprite[] = [];
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -59,6 +70,7 @@ export class World {
     this.scene.add(new THREE.HemisphereLight('#fff9e8', '#6b9274', 1.6));
     const sun = new THREE.DirectionalLight('#fff0cf', 2.2);
     sun.position.set(-15, 25, 10); this.scene.add(sun);
+    this.scene.add(this.regionRoot);
     this.buildTown();
     this.followCamera = new FollowCamera(this.camera, this.collisionBoxes);
     this.player.position.copy(this.position);
@@ -90,26 +102,28 @@ export class World {
   private flushStatic() {
     for (const [color, geometries] of this.staticGeometry) {
       const geometry = mergeGeometries(geometries);
-      this.scene.add(new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color })));
+      this.regionRoot.add(new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color })));
       geometries.forEach(g => g.dispose());
     }
     this.staticGeometry.clear();
   }
   private label(text: string, x: number, y: number, z: number, id?: PlaceId, building = false) {
-    const c = document.createElement('canvas'); c.width = 512; c.height = 96;
+    const plantLabel = /^[AB][123]$/.test(text);
+    const c = document.createElement('canvas'); c.width = plantLabel ? 128 : 512; c.height = plantLabel ? 64 : 96;
     const ctx = c.getContext('2d')!;
     ctx.fillStyle = building ? '#244b42ee' : '#fffdf3f2';
-    ctx.beginPath(); ctx.roundRect(4, 4, 504, 88, 24); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(4, 4, c.width-8, c.height-8, plantLabel?12:24); ctx.fill();
     ctx.fillStyle = building ? '#fff9e6' : '#244b42';
     ctx.font = '600 30px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text, 256, 49);
+    ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); sprite.scale.set(3.5, 0.66, 1);
-    sprite.userData.place = id; this.scene.add(sprite); return sprite;
+    sprite.position.set(x, y, z); sprite.scale.set(plantLabel?.65:3.5,plantLabel?.325:.66,1);
+    sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
+    sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
   }
   private buildTown() {
-    const s = this.scene;
+    const s = this.regionRoot;
     const b = (w: number, h: number, d: number, c: string, x: number, y: number, z: number) => this.box(s, w, h, d, c, x, y, z, true);
     b(50, 0.9, 48, '#7da57c', 0, -0.5, 0);
     b(32, 0.08, 5, '#dfd7ba', -3, 0.01, 2);
@@ -162,6 +176,9 @@ export class World {
         rig.root.position.set(place.x, 0, place.z);
         this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
         s.add(rig.root);
+      } else if (place.id === 'gardenGate') {
+        for(const dx of [-1.8,1.8]) b(.3,3.5,.3,'#98784f',place.x+dx,1.75,place.z);
+        b(4.2,.5,.5,'#6d8d5c',place.x,3.6,place.z);
       } else if (place.id === 'sampleA' || place.id === 'sampleB') {
         b(1.1, 0.15, 1.4, '#d2ba8b', place.x, 0.14, place.z);
         b(0.4, 0.6, 0.4, place.color, place.x, 0.55, place.z);
@@ -186,38 +203,79 @@ export class World {
       hill.position.set(-35 + i * 12, 2, -33); s.add(hill);
     }
   }
+  setRegion(region: RegionId, fromGate = false) {
+    if (this.region === region) return;
+    this.stop(); this.endInteraction();
+    this.scene.remove(this.regionRoot);
+    const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
+    this.regionRoot.traverse(node => {
+      if (node instanceof THREE.Mesh || node instanceof THREE.Sprite) {
+        if (node instanceof THREE.Mesh && !node.userData.sharedGeometry && !node.geometry.userData.shared) geometries.add(node.geometry);
+        for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+          if (material.userData.shared) continue;
+          materials.add(material);
+          const map = (material as THREE.MeshBasicMaterial).map; if (map) textures.add(map);
+        }
+      }
+    });
+    geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
+    this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null;
+    this.region = region; this.barrier.visible = false;
+    if (region === 'town') this.buildTown();
+    else {
+      const b = (w:number,h:number,d:number,c:string,x:number,y:number,z:number) => { this.box(this.regionRoot,w,h,d,c,x,y,z,true); };
+      this.gardenView = buildGarden({ root: this.regionRoot, box: b, label: (...args) => { this.label(...args); }, npc: (id,x,z) => {
+        const rig = createCharacter('sari', id); rig.root.position.set(x,0,z); this.regionRoot.add(rig.root);
+        this.npcs.push({id,rig,animator:new CharacterAnimator(rig,2.4),timer:0});
+        this.npcLabels.set(id,this.label('Bu Sari',x,3.6,z,id));
+      } });
+      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
+    }
+    if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
+    this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes); this.resetPosition();
+    if(fromGate && region === 'town') { this.position.set(-14,0,0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    this.player.position.copy(this.position); this.canvas.dataset.region = region;
+  }
+  setGarden(p: GardenProgress) {
+    this.gardenView?.update(p);
+    this.canvas.dataset.gardenDay = String(p.day); this.canvas.dataset.can = String(p.can); this.canvas.dataset.tank = String(p.tank);
+    this.canvas.dataset.plantHeights = JSON.stringify({ A: p.planted.A, B: p.planted.B, day: p.day });
+  }
+  waterGarden(group: Group) { this.gardenView?.water(group); }
   goTo(p: Point, onArrive?: () => void) {
-    const path = findPath(this.position, p);
+    const path = findPath(this.position, p, this.navigation);
     if (!path.length) return false;
     this.endInteraction(); this.path = path; this.onArrive = onArrive ?? null;
     this.marker.position.set(p.x, 0.15, p.z); this.marker.visible = true;
     return true;
   }
   stop() { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; }
-  resetPosition() { this.stop(); this.endInteraction(); this.position.set(-1, 0, 6); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  resetPosition() { this.stop(); this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
     this.stop(); this.interacting = id; this.playerAnimator.setPose(pose);
     this.followCamera.interactionFraming = true;
-    const place = places.find(p => p.id === id)!; this.facePoint(place);
+    this.followCamera.interactionYaw = this.region==='garden' && (id==='plotA'||id==='plotB') ? -.85 : 0;
+    const place = this.places.find(p => p.id === id)!; this.facePoint(place);
     const npc = this.npcs.find(n => n.id === id); npc?.animator.greet();
   }
   setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
-  endInteraction() { this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; }
-  setTrial(done: boolean) { this.barrier.visible = done; }
+  endInteraction() { this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
+  setTrial(done: boolean) { this.barrier.visible = done && this.region === 'town'; }
   pick(clientX: number, clientY: number): { place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), this.camera);
     const objects = this.ray.intersectObjects(this.scene.children, true);
-    const hit = objects.find(o => o.object.userData.place);
+    const hit = objects.find(o => o.object.userData.place && visibleForPicking(o.object));
     if (hit) return { place: hit.object.userData.place as PlaceId };
     const point = this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), new THREE.Vector3());
-    return point && walkable(point) ? { point: { x: point.x, z: point.z } } : {};
+    return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
     let nearest: PlaceId | null = null, distance = 2.6;
-    for (const p of places) {
+    for (const p of this.places) {
       const d = Math.hypot(p.x - this.position.x, p.z - this.position.z);
       if (d < distance) { nearest = p.id; distance = d; }
     }
@@ -246,9 +304,9 @@ export class World {
       if (magnitude > 1) { dx /= magnitude; dz /= magnitude; }
       const speed = 4.6 * dt;
       this.movementPoint.x = this.position.x + dx * speed; this.movementPoint.z = this.position.z;
-      if (walkable(this.movementPoint)) this.position.x += dx * speed;
+      if (walkable(this.movementPoint, this.navigation)) this.position.x += dx * speed;
       this.movementPoint.x = this.position.x; this.movementPoint.z = this.position.z + dz * speed;
-      if (walkable(this.movementPoint)) this.position.z += dz * speed;
+      if (walkable(this.movementPoint, this.navigation)) this.position.z += dz * speed;
     }
     const travelled = Math.hypot(this.position.x - oldX, this.position.z - oldZ);
     if (travelled > .00001) this.facing = Math.atan2(this.position.x - oldX, this.position.z - oldZ);
@@ -292,6 +350,16 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
+    if(this.region==='garden') for(const label of this.regionLabels) {
+      const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
+      const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
+      label.visible=distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
+      const maxPixels=plant?38:Math.min(174,innerWidth*.36);
+      const width=Math.min(plant?.65:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      label.scale.set(width,width/(plant?2:512/96),1);
+    }
+    this.gardenView?.frame(dt, this.reducedMotion);
+    this.canvas.dataset.region = this.region;
     this.renderer.render(this.scene, this.camera);
   }
 }

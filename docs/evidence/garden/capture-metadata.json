@@ -1,0 +1,12 @@
+{
+  "originKind": "Vite production preview",
+  "browser": "154.0.8037.57",
+  "renderer": "Chromium SwiftShader",
+  "errors": [],
+  "stats": {
+    "drawCalls": 152,
+    "triangles": 32696
+  },
+  "fixture": "Valid day-4 M14 built through domain events and restored through the import UI; M01 v1 fixture",
+  "note": "Overview, entry, HP, and Bu Sari captures supplement the complete real browser flow screenshots. Ephemeral toast overlays hidden for screenshots. No physical-device FPS claim."
+}

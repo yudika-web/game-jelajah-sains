@@ -10,6 +10,7 @@ export class FollowCamera {
   pitch = .46;
   safeDistance = cameraDistances.normal;
   interactionFraming = false;
+  interactionYaw = 0;
   private target = new THREE.Vector3();
   private offset = new THREE.Vector3();
   private desired = new THREE.Vector3();
@@ -26,6 +27,7 @@ export class FollowCamera {
     // Approximate camera radius keeps the near plane clear of wall corners.
     this.paddedBoxes = boxes.map(b => b.clone().expandByScalar(.30));
   }
+  setObstacles(boxes: THREE.Box3[]) { this.paddedBoxes = boxes.map(b => b.clone().expandByScalar(.30)); }
   reset() { this.yaw = .25; this.pitch = .46; }
   resize(width: number, height: number) {
     this.width = width; this.height = height;
@@ -53,7 +55,8 @@ export class FollowCamera {
     this.camera.setViewOffset(this.width, this.height, this.shiftX, this.shiftY, this.width, this.height);
     // Follow the stable world root, not the animated torso/head.
     this.target.copy(position); this.target.y += 1.4;
-    this.offset.set(Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(this.yaw) * Math.cos(this.pitch));
+    const angle = this.yaw + this.interactionYaw;
+    this.offset.set(Math.sin(angle) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(angle) * Math.cos(this.pitch));
     const requested = cameraDistances[this.distance];
     this.safeDistance = this.clearance(this.offset, requested);
     this.currentDistance = immediate || this.safeDistance < this.currentDistance ? this.safeDistance : damp(this.currentDistance, this.safeDistance, 5, dt);

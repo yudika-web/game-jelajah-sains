@@ -1,27 +1,28 @@
 # Jelajah Sains
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Irisan pertama: satu blok Kota Sains, avatar manusia balok, Bu Nara, Pak Wira, buku, catatan hujan, dua titik sampel, dan misi **M01 Detektif Air Kota**.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Dua wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota** dan **W02 Kebun Kehidupan / M14 Kebun Percobaan**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Penyempurnaan karakter dan kamera: jaket berlapis, ransel, rambut geometris, tangan/sepatu bervolume, sendi siku/lutut, animasi berdasarkan perpindahan nyata, serta NPC dengan identitas dan gestur berbeda. Lihat [perbandingan visual dan rekaman gerak](docs/character-camera-review.md).
 
 Pembentukan ulang berdasarkan acuan tiga sisi: kepala lebih lebar dengan rahang membulat, mata oval dan alis yang terbaca, rambut menyapu berlapis, jaket teal di atas kaus krem, ransel keemasan, serta sepatu cokelat. Lihat [pemeriksaan model terbaru](docs/reference-model-review.md).
 
-Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan pemain/Bu Nara/Pak Wira. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
+Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan pemain/Bu Nara/Pak Wira/Bu Sari. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
 
 ## Menjalankan
 
-Gunakan Node.js 24 LTS (minimum 22.12) dan npm. Tidak memerlukan API key, akun, database server, atau aset CDN.
+Gunakan Node.js 24 LTS (minimum 22.12) dan npm. Tidak memerlukan API key, akun, database server, atau aset CDN. Setelah mengunduh ZIP, ekstrak dan buka terminal di folder yang memuat `package.json`.
 
 ```sh
-cd /workspace/game-jelajah-sains
-npm ci --cache /tmp/jelajah-npm
+npm ci
 npm run dev
 ```
+
+Pada lingkungan cloud ini, repositori berada di `/workspace/game-jelajah-sains`; bila cache npm bawaan tidak dapat ditulis, gunakan `npm ci --cache /tmp/jelajah-npm`.
 
 Dev server memakai port **5173**, bind `0.0.0.0`, dan tidak berpindah port otomatis. Buka alamat server melalui browser yang mendukung WebGL 2. Untuk HP di LAN, gunakan alamat IP laptop/server pada port 5173; perangkat harus berada di jaringan yang sama dan firewall harus mengizinkannya. Perubahan alamat/origin membuat penyimpanan browser terpisah: ekspor cadangan sebelum berpindah alamat. Akses LAN antarperangkat belum diuji pada mesin cloud ini.
 
 ```sh
-npm test          # aturan bukti M01, validasi cadangan, navigasi
+npm test          # M01/M14, air, hari, cadangan, navigasi, karakter
 npm run build     # TypeScript + bundle produksi di dist/
 npm run preview   # periksa bundle produksi di port 4173
 npm run test:e2e  # Chromium: misi lengkap, input, simpan, fallback
@@ -31,7 +32,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14. Keduanya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Gerbang kebun menyediakan jalur kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -58,18 +59,37 @@ Saat berbicara/membaca/mengukur, panel ditempatkan di sisi layar lebar atau bagi
 
 Angka adalah **indeks model 0–100, bukan NTU**. Dua sampel menggunakan sesi hujan simulasi 09.00, bukan jam nyata. Kekeruhan yang turun **tidak membuktikan air aman diminum**. Materi prototipe masih memerlukan telaah guru.
 
+## Menuntaskan M14
+
+1. Masuk Kebun lewat gerbang Kota. Temui **Bu Sari**, lalu terima M14.
+2. Baca **Buku tumbuhan** dan **Catatan Bu Sari**. Di Bu Sari, pilih rencana: ubah air saja, kondisi lain sama, A 100 mL / B 50 mL per tanaman per hari.
+3. Ambil enam benih, penyiram, dan penggaris di **Benih & alat**. Tanam tiga benih kacang hijau di setiap petak.
+4. Catat kondisi awal hari 0 memakai **Ukur Kelompok** pada kedua petak. Isi penyiram di **Tandon air**: kapasitas 1.000 mL, persediaan awal 5.000 mL.
+5. Hari 0–5: siram A total 300 mL dan B total 150 mL. Isi ulang bila kurang. Pada hari 0, 2, dan 4, ukur kedua kelompok sebelum melanjutkan hari di **Meja hasil**. Hari 6 hanya pengukuran akhir.
+6. Periksa tabel/grafik yang berasal dari pengukuran sendiri. Hari 6: rata-rata A **8 cm**, B **5 cm**. Simpulkan di Meja hasil atau bersama Bu Sari, pilih bukti dan keterbatasan yang sesuai.
+
+Jumlah air dan tinggi adalah **data buatan model pembelajaran**, bukan hasil eksperimen nyata atau anjuran penyiraman. Lebih banyak air tidak selalu lebih baik; dosis lain dan jenis tanaman lain belum diuji. Waktu nyata tidak menumbuhkan tanaman. Refleksi bebas disimpan lokal untuk dibaca guru, tanpa penilaian kata kunci atau pengiriman otomatis.
+
+**Ulangi Percobaan M14** di Pengaturan meminta konfirmasi, lalu mereset percobaan saja. M01, sumber yang sudah dibaca, dan riwayat hadiah pertama tetap ada. Hadiah M14 maksimal 100 XP, termasuk setelah ulang, muat ulang, dan pemulihan cadangan lama pada perangkat ini.
+
+Lihat [catatan implementasi, pengujian, dan gambar Kebun](docs/garden-review.md).
+
 ## Penyimpanan
 
-Progres M01, sumber jurnal, rencana, data, upaya kesimpulan, dan hadiah disimpan otomatis ke **IndexedDB**. Tas diturunkan dari status misi sehingga botol dan alat tidak berganda. Setelah memuat ulang, progres dilanjutkan dan avatar kembali ke pos. Waktu simpan muncul di kiri bawah; status gagal simpan ditampilkan secara eksplisit.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14` dan `world` menyimpan percobaan kebun serta wilayah/misi aktif. Kedua misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan JSON berversi. Impor menggantikan progres setelah format dan konsistensinya diperiksa. **Ulangi penyelidikan** meminta konfirmasi; ekspor dahulu bila ingin menyimpan hasil lama. Bila pembacaan penyimpanan gagal, aplikasi tidak menimpa data lama secara otomatis; gunakan cadangan atau mulai ulang secara eksplisit.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 2** berisi kedua misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14 yang ada dipertahankan. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, atau hadiah yang tidak konsisten ditolak.
+
+Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01** dan **Ulangi Percobaan M14** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
 ## Struktur
 
 ```text
 src/
-  data/content.ts       lokasi, kartu pengetahuan, pilihan kesimpulan
-  engine/world.ts       Three.js, avatar, kota, kamera, interaksi raycast
+  data/content.ts       lokasi dan pengetahuan M01
+  data/regions.ts       lokasi, batas, penghalang, dan titik masuk tiap wilayah
+  engine/world.ts       satu renderer, pertukaran wilayah, avatar dan raycast
+  engine/gardenWorld.ts Kebun, pot/tanaman, tandon dan efek penyiraman
   engine/character.ts   model bersendi, penampilan, titik label dan alat
   engine/characterModel.ts geometri acuan, wajah, rambut, jaket, dan ransel
   engine/characterAnimator.ts napas, langkah, gestur dan interpolasi sendi
@@ -77,7 +97,10 @@ src/
   engine/input.ts       keyboard, multi-pointer, analog, pemulihan input
   engine/navigation.ts grid rute aman, batas kota, tabrakan bangunan/air
   game/mission.ts       transisi M01 dan validasi progres, bebas dari renderer
-  game/storage.ts       transaksi IndexedDB
+  game/gardenMission.ts aturan M14, air, hari, pertumbuhan, validasi
+  game/gardenUI.ts      kegiatan kebun, jurnal, tabel dan grafik
+  game/gameState.ts     keadaan wilayah, cadangan v2 dan kompatibilitas v1
+  game/storage.ts       transaksi IndexedDB atomik kedua misi
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -88,6 +111,7 @@ docs/development.md    lingkup prototipe dan pengembangan berikutnya
 docs/evidence/         gambar pembanding dan rekaman WebGL
 scripts/capture-character-evidence.mjs  pengambilan bukti visual yang dapat diulang
 scripts/capture-reference-model.mjs    gambar model terbaru dan tampilan perangkat
+scripts/capture-garden-evidence.mjs     bukti tambahan Kebun pada build produksi
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.

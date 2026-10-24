@@ -25,7 +25,7 @@ it('reaches the interaction approach in front of every object without overlappin
     const approach = { x: b.x, z: b.z + 1.4 };
     const path = findPath({ x: a.x, z: a.z + 1.4 }, approach);
     expect(path.length).toBeGreaterThan(0);
-    expect(path.every(walkable)).toBe(true);
+    expect(path.every(point => walkable(point))).toBe(true);
     expect(path.at(-1)).toEqual(approach);
     expect(Math.hypot(approach.x - b.x, approach.z - b.z)).toBeCloseTo(1.4);
   }

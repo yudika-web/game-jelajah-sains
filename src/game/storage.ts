@@ -1,5 +1,8 @@
 import { parseProgress, type Progress } from './mission';
+import { parseGarden } from './gardenMission';
+import { initialGame, parseTravel, type GameState } from './gameState';
 
+// Schema 1 already has the generic "saves" store. New mission keys need no upgrade.
 const open = () => new Promise<IDBDatabase>((resolve, reject) => {
   const request = indexedDB.open('jelajah-sains', 1);
   request.onupgradeneeded = () => request.result.createObjectStore('saves');
@@ -7,25 +10,38 @@ const open = () => new Promise<IDBDatabase>((resolve, reject) => {
   request.onerror = () => reject(request.error);
   request.onblocked = () => reject(new Error('Tutup tab permainan lama lalu coba lagi.'));
 });
-export async function loadProgress(): Promise<Progress | null> {
+async function readKeys(keys: string[]) {
   const db = await open();
   try {
-    return await new Promise((resolve, reject) => {
-      const request = db.transaction('saves').objectStore('saves').get('M01');
-      request.onsuccess = () => { try { resolve(request.result ? parseProgress(request.result) : null); } catch (e) { reject(e); } };
-      request.onerror = () => reject(request.error);
+    return await new Promise<Record<string, unknown>>((resolve, reject) => {
+      const values: Record<string, unknown> = {}, tx = db.transaction('saves');
+      for (const key of keys) {
+        const r = tx.objectStore('saves').get(key); r.onsuccess = () => { values[key] = r.result; };
+      }
+      tx.oncomplete = () => resolve(values); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
     });
   } finally { db.close(); }
 }
-export async function saveProgress(p: Progress): Promise<void> {
+async function writeKeys(entries: [string, unknown][]) {
   const db = await open();
   try {
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction('saves', 'readwrite');
-      tx.objectStore('saves').put(p, 'M01');
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(tx.error);
+      for (const [key, value] of entries) tx.objectStore('saves').put(value, key);
+      tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
     });
   } finally { db.close(); }
 }
+export async function loadProgress(): Promise<Progress | null> {
+  const values = await readKeys(['M01']); return values.M01 === undefined ? null : parseProgress(values.M01);
+}
+export async function saveProgress(p: Progress): Promise<void> { await writeKeys([['M01', p]]); }
+export async function loadGame(): Promise<GameState> {
+  const values = await readKeys(['M01', 'M14', 'world']);
+  const game = initialGame();
+  if (values.M01 !== undefined) game.M01 = parseProgress(values.M01);
+  if (values.M14 !== undefined) game.M14 = parseGarden(values.M14);
+  if (values.world !== undefined) game.world = parseTravel(values.world);
+  return game;
+}
+export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['world', p.world]]); }

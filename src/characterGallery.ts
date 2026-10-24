@@ -6,7 +6,7 @@ document.querySelector('#gallery')!.innerHTML = `
   <header><a href="/">← Kembali ke Kota Sains</a><span>JELAJAH <b>SAINS</b></span><small>GALERI KARAKTER</small></header>
   <main>
     <div class="gallery-title"><div><p>KENALI PENJELAJAHMU</p><h1>Satu karakter. Tiga sudut pandang.</h1></div>
-    <label>Karakter<select id="gallery-character"><option value="explorer">Penjelajah muda</option><option value="nara">Bu Nara</option><option value="wira">Pak Wira</option></select></label></div>
+    <label>Karakter<select id="gallery-character"><option value="explorer">Penjelajah muda</option><option value="nara">Bu Nara</option><option value="wira">Pak Wira</option><option value="sari">Bu Sari</option></select></label></div>
     <p class="gallery-description">Periksa bentuk kepala, wajah, rambut, pakaian, dan ransel dari setiap sisi.</p>
     <section id="model-stage" aria-label="Model karakter dari depan, samping, dan belakang"><canvas id="model-canvas"></canvas>
       <div class="view-labels"><span>DEPAN</span><span>SAMPING</span><span>BELAKANG</span></div>

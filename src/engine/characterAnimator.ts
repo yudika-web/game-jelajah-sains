@@ -1,6 +1,6 @@
 import type { CharacterRig } from './character';
 
-export type InteractionPose = 'none' | 'greet' | 'read' | 'measure' | 'sample';
+export type InteractionPose = 'none' | 'greet' | 'read' | 'measure' | 'sample' | 'water' | 'ruler' | 'plant';
 export function damp(current: number, target: number, response: number, dt: number) {
   return target + (current - target) * Math.exp(-response * dt);
 }
@@ -77,6 +77,7 @@ export class CharacterAnimator {
       r.tools.notebook.visible = pose === 'read';
       r.tools.meter.visible = pose === 'measure';
       r.tools.sample.visible = pose === 'sample';
+      r.tools.wateringCan.visible = pose === 'water'; r.tools.ruler.visible = pose === 'ruler';
       this.lastPose = pose;
     }
     const interaction = this.interaction;
@@ -85,10 +86,12 @@ export class CharacterAnimator {
       r.leftArm.elbow.rotation.x -= .98 * interaction;
       r.leftArm.hand.rotation.y = .25 * interaction;
       r.head.rotation.x += .17 * interaction;
-    } else if (pose === 'measure' || pose === 'sample') {
+    } else if (pose === 'measure' || pose === 'sample' || pose === 'water' || pose === 'ruler' || pose === 'plant') {
       r.rightArm.shoulder.rotation.x -= .48 * interaction;
       r.rightArm.elbow.rotation.x -= (pose === 'sample' ? .65 : .9) * interaction;
       r.head.rotation.x += .14 * interaction;
+      if(pose==='water') r.rightArm.hand.rotation.z = -.35 * interaction;
+      if(pose==='plant') r.torso.rotation.x += .18 * interaction;
     } else if (pose === 'greet' || this.greeting > 0) {
       const strength = this.pose === 'greet' ? interaction : this.greeting;
       const conversational = r.kind === 'wira';

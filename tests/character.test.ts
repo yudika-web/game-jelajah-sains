@@ -7,7 +7,7 @@ import { findPath, walkable } from '../src/engine/navigation';
 
 describe('articulated characters and movement-derived animation', () => {
   it('retains a broad readable head, grounded feet and a relaxed balanced stance', () => {
-    for (const kind of ['explorer', 'nara', 'wira'] as const) {
+    for (const kind of ['explorer', 'nara', 'wira', 'sari'] as const) {
       const rig = createCharacter(kind);
       rig.root.updateMatrixWorld(true);
       const whole = new Box3().setFromObject(rig.root);
@@ -22,8 +22,8 @@ describe('articulated characters and movement-derived animation', () => {
     }
   });
   it('keeps navigation roots and label/tool attachment identities stable', () => {
-    for (const kind of ['explorer', 'nara', 'wira'] as const) {
-      const rig = createCharacter(kind, kind === 'nara' ? 'nara' : kind === 'wira' ? 'warga' : undefined);
+    for (const kind of ['explorer', 'nara', 'wira', 'sari'] as const) {
+      const rig = createCharacter(kind, kind === 'nara' ? 'nara' : kind === 'wira' ? 'warga' : kind === 'sari' ? 'sari' : undefined);
       const animator = new CharacterAnimator(rig, 1);
       rig.root.position.set(3, 0, 6); const origin = rig.root.position.clone();
       const label = rig.labelSocket.position.clone();
@@ -33,7 +33,7 @@ describe('articulated characters and movement-derived animation', () => {
       expect(rig.labelSocket.position).toEqual(label);
       expect(rig.leftArm.toolSocket.parent).toBe(rig.leftArm.hand);
       expect(rig.rightLeg.knee.parent).toBe(rig.rightLeg.hip);
-      if (kind !== 'explorer') rig.root.traverse(o => expect(o.userData.place).toBe(kind === 'nara' ? 'nara' : 'warga'));
+      if (kind !== 'explorer') rig.root.traverse(o => expect(o.userData.place).toBe(kind === 'nara' ? 'nara' : kind === 'sari' ? 'sari' : 'warga'));
     }
   });
   it('settles the feet after collision without advancing the stride in place', () => {
@@ -60,7 +60,7 @@ describe('articulated characters and movement-derived animation', () => {
   });
   it('uses distinct tools for reading, sampling, and measuring and restores relaxed arms', () => {
     const rig = createCharacter('explorer'), animator = new CharacterAnimator(rig);
-    for (const [pose, tool] of [['read', 'notebook'], ['sample', 'sample'], ['measure', 'meter']] as const) {
+    for (const [pose, tool] of [['read', 'notebook'], ['sample', 'sample'], ['measure', 'meter'], ['water','wateringCan'], ['ruler','ruler']] as const) {
       animator.setPose(pose); for (let i = 0; i < 60; i++) animator.update(1 / 60, 0);
       expect(rig.tools[tool].visible).toBe(true);
       expect(Object.values(rig.tools).filter(t => t.visible)).toHaveLength(1);
@@ -79,6 +79,13 @@ describe('articulated characters and movement-derived animation', () => {
   });
 });
 describe('camera clearance and control continuity', () => {
+  it('replaces region blockers and uses an interaction angle without changing manual yaw', () => {
+    const camera=new PerspectiveCamera(48,1,.1,100), wall=new Box3(new Vector3(-3,0,4),new Vector3(3,6,5));
+    const follow=new FollowCamera(camera,[wall]);follow.yaw=0;follow.pitch=.3;follow.resize(1280,900);follow.update(new Vector3(),.016,false,true);
+    expect(follow.safeDistance).toBeLessThan(5);
+    follow.setObstacles([]);follow.interactionYaw=-.85;follow.update(new Vector3(),.016,false,true);
+    expect(follow.safeDistance).toBe(10.8);expect(follow.yaw).toBe(0);expect(camera.position.x).toBeLessThan(0);
+  });
   it('keeps the camera before a wall and eases outward without changing manual yaw', () => {
     const camera = new PerspectiveCamera(48, 1, .1, 100);
     const wall = new Box3(new Vector3(-3, 0, 4), new Vector3(3, 6, 5));
@@ -95,7 +102,7 @@ describe('camera clearance and control continuity', () => {
     const start = { x: -4.55, z: -9 };
     expect(walkable(start)).toBe(true);
     const path = findPath(start, { x: 0, z: 3 });
-    expect(path.length).toBeGreaterThan(0); expect(path.every(walkable)).toBe(true);
+    expect(path.length).toBeGreaterThan(0); expect(path.every(point => walkable(point))).toBe(true);
   });
   it('does not force a minimum camera distance through a wall when the player is beside it', () => {
     const camera = new PerspectiveCamera(48, 1, .1, 100);

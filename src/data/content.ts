@@ -1,4 +1,4 @@
-export type PlaceId = 'nara' | 'warga' | 'book' | 'rain' | 'sampleA' | 'sampleB' | 'barrier';
+export type PlaceId = 'nara' | 'warga' | 'book' | 'rain' | 'sampleA' | 'sampleB' | 'barrier' | 'gardenGate' | 'sari' | 'gardenBook' | 'fairNotes' | 'seedStore' | 'plotA' | 'plotB' | 'waterTank' | 'recordTable' | 'townGate';
 export interface Place {
   id: PlaceId;
   name: string;
@@ -10,6 +10,7 @@ export interface Place {
 }
 
 export const places: Place[] = [
+  { id: 'gardenGate', name: 'Gerbang menuju Kebun Kehidupan', short: 'Ke Kebun Kehidupan', action: 'Masuk Kebun', x: -16, z: 0, color: '#67935c' },
   { id: 'nara', name: 'Bu Nara · mentor sains', short: 'Bu Nara', action: 'Bicara', x: -4, z: 3, color: '#8d67c8' },
   { id: 'warga', name: 'Pak Wira · warga kota', short: 'Pak Wira', action: 'Bicara', x: 3, z: 6, color: '#e9a251' },
   { id: 'book', name: 'Buku aliran permukaan', short: 'Buku Sains', action: 'Baca', x: -8, z: -3, color: '#527ebe' },

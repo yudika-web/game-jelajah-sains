@@ -8,17 +8,21 @@ export const obstacles: Obstacle[] = [
   { x: 14, z: 0, width: 4, depth: 40 },
 ];
 export const bounds = { minX: -18, maxX: 11, minZ: -17, maxZ: 17 };
-export function walkable(p: Point) {
+export interface NavigationArea { bounds: typeof bounds; obstacles: Obstacle[]; }
+export const townNavigation: NavigationArea = { bounds, obstacles };
+export function walkable(p: Point, area: NavigationArea = townNavigation) {
+  const { bounds, obstacles } = area;
   return p.x >= bounds.minX && p.x <= bounds.maxX && p.z >= bounds.minZ && p.z <= bounds.maxZ &&
     !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + 0.45 && Math.abs(p.z - o.z) < o.depth / 2 + 0.45);
 }
-export function findPath(start: Point, end: Point): Point[] {
-  if (!walkable(start) || !walkable(end)) return [];
+export function findPath(start: Point, end: Point, area: NavigationArea = townNavigation): Point[] {
+  const allowed = (p: Point) => walkable(p, area);
+  if (!allowed(start) || !allowed(end)) return [];
   const segmentClear = (from: Point, to: Point) => {
     const steps = Math.ceil(Math.hypot(to.x - from.x, to.z - from.z) / .1);
     for (let i = 0; i <= steps; i++) {
       const t = steps ? i / steps : 0;
-      if (!walkable({ x: from.x + (to.x - from.x) * t, z: from.z + (to.z - from.z) * t })) return false;
+      if (!allowed({ x: from.x + (to.x - from.x) * t, z: from.z + (to.z - from.z) * t })) return false;
     }
     return true;
   };
@@ -27,7 +31,7 @@ export function findPath(start: Point, end: Point): Point[] {
     const candidates: Point[] = [];
     for (let x = Math.floor(p.x) - 1; x <= Math.ceil(p.x) + 1; x++)
       for (let z = Math.floor(p.z) - 1; z <= Math.ceil(p.z) + 1; z++) {
-        const c = { x, z }; if (walkable(c) && segmentClear(p, c)) candidates.push(c);
+        const c = { x, z }; if (allowed(c) && segmentClear(p, c)) candidates.push(c);
       }
     return candidates.sort((a, b) => Math.hypot(a.x - p.x, a.z - p.z) - Math.hypot(b.x - p.x, b.z - p.z))[0];
   };
@@ -49,7 +53,7 @@ export function findPath(start: Point, end: Point): Point[] {
     }
     for (const d of [{ x: 1, z: 0 }, { x: -1, z: 0 }, { x: 0, z: 1 }, { x: 0, z: -1 }]) {
       const n = { x: current.x + d.x, z: current.z + d.z };
-      if (walkable(n) && !visited.has(key(n))) { visited.set(key(n), current); queue.push(n); }
+      if (allowed(n) && !visited.has(key(n))) { visited.set(key(n), current); queue.push(n); }
     }
   }
   return [];

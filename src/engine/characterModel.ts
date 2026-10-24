@@ -11,17 +11,18 @@ function cached(key: string, build: () => THREE.BufferGeometry) {
   if (!geometry) {
     geometry = build();
     if (geometry.index) geometry = geometry.toNonIndexed();
-    geometry.deleteAttribute('uv'); geometryCache.set(key, geometry);
+    geometry.deleteAttribute('uv'); geometry.userData.shared = true; geometryCache.set(key, geometry);
   }
   return geometry;
 }
 function surface(color: string, flat = false) {
   const key = `${color}/${flat}`;
   let material = materialCache.get(key);
-  if (!material) { material = new THREE.MeshLambertMaterial({ color, flatShading: flat }); materialCache.set(key, material); }
+  if (!material) { material = new THREE.MeshLambertMaterial({ color, flatShading: flat }); material.userData.shared = true; materialCache.set(key, material); }
   return material;
 }
 const palettes = {
+  sari: { skin: '#d9a374', ear: '#bf865b', hair: '#40332a', hairLight: '#59432e', coat: '#65855a', shirt: '#eedcb4', pants: '#655948', boots: '#80583c', cuff: '#c4c895', bag: '#b39857' },
   explorer: { skin: '#efb27d', ear: '#dea06d', hair: '#50372b', hairLight: '#654431', coat: '#267c8d', shirt: '#f5ead4', pants: '#4d4c56', boots: '#8b603e', cuff: '#a0cbd0', bag: '#dda048' },
   nara: { skin: '#c99573', ear: '#b78261', hair: '#403331', hairLight: '#57443d', coat: '#78658f', shirt: '#f6ead5', pants: '#4c4d60', boots: '#635044', cuff: '#c2b5ca', bag: '#9b8057' },
   wira: { skin: '#ce986e', ear: '#b8825c', hair: '#50382b', hairLight: '#654631', coat: '#a0804c', shirt: '#e6d8b9', pants: '#526b61', boots: '#75563c', cuff: '#c3ab77', bag: '#a38550' },
@@ -130,12 +131,16 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     // Back plates prevent the rear silhouette from becoming a single blank cuboid.
     hull(head, 'hair-back-left', [[-.45,.42,-.38],[-.30,.66,-.36],[.0,.65,-.46],[.04,.26,-.57],[-.24,-.10,-.47],[-.46,.03,-.31]], '#493125');
     hull(head, 'hair-back-right', [[.03,.66,-.43],[.39,.55,-.36],[.48,.16,-.30],[.24,-.10,-.47],[.02,.26,-.58]], p.hair);
-  } else if (kind === 'nara') {
+  } else if (kind === 'nara' || kind === 'sari') {
     hull(head, 'teacher-sweep', [[.39,.79,-.06],[.47,.64,.18],[.29,.52,.45],[-.40,.52,.41],[-.38,.65,.13],[.0,.77,.06]], p.hairLight);
     oval(head, [.42, .37, .36], p.hair, .10, .54, -.49);
+    if (kind === 'sari') {
+      box(head,[1.04,.22,.88],'#c0a05e',0,.77,-.04,.08);
+      box(head,[1.25,.08,1.12],'#e3c585',0,.65,.04,.035);
+    }
     // Wire frames leave the new oval eyes unobscured.
-    for (const side of [-1, 1]) line(head, `glasses/${side}`, [[side*.20-.12,.23,.477],[side*.20-.10,.365,.477],[side*.20+.10,.365,.477],[side*.20+.12,.23,.477],[side*.20+.10,.10,.477],[side*.20-.10,.10,.477],[side*.20-.12,.23,.477]], .012, '#5f5354');
-    line(head, 'glasses-bridge', [[-.07,.26,.480],[0,.28,.49],[.07,.26,.480]], .012, '#5f5354');
+    if (kind === 'nara') for (const side of [-1, 1]) line(head, `glasses/${side}`, [[side*.20-.12,.23,.477],[side*.20-.10,.365,.477],[side*.20+.10,.365,.477],[side*.20+.12,.23,.477],[side*.20+.10,.10,.477],[side*.20-.10,.10,.477],[side*.20-.12,.23,.477]], .012, '#5f5354');
+    if (kind === 'nara') line(head, 'glasses-bridge', [[-.07,.26,.480],[0,.28,.49],[.07,.26,.480]], .012, '#5f5354');
   } else {
     box(head, [1.04, .21, .86], '#657c59', 0, .75, -.035, .085);
     box(head, [1.10, .075, .98], '#8d9d6c', 0, .64, .045, .035);
@@ -182,6 +187,9 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
       });
       add(torso, strap, '#c59550', 0, 0, 0);
     }
+  } else if (kind === 'sari') {
+    box(torso,[.58,.61,.08],'#cfb77d',0,-.02,.36,.025);
+    box(torso,[.38,.20,.05],'#b79c61',0,-.10,.41,.015);
   } else if (kind === 'nara') {
     box(torso, [.81, .34, .50], p.coat, 0, -.27, 0, .06);
     box(torso, [.65, .34, .43], p.pants, 0, -.48, 0, .04);
@@ -218,7 +226,14 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   box(meter, [.25,.38,.19], '#e9b451', 0,-.02,.12,.035); box(meter, [.17,.14,.03], '#35595b', 0,.03,.23,.008);
   const sample = group('sample', rightArm.toolSocket);
   box(sample, [.22,.35,.22], '#7ca9ad', 0,-.04,.12,.03); box(sample, [.17,.07,.17], '#f0dfac', 0,.17,.12,.015); box(sample, [.15,.12,.025], '#f6ecd8', 0,-.02,.241,.005);
-  notebook.visible = meter.visible = sample.visible = false;
+  const wateringCan = group('watering-can', rightArm.toolSocket);
+  box(wateringCan,[.32,.30,.27],'#659ea1',0,-.09,.17,.055);
+  hull(wateringCan,'can-spout',[[.11,-.15,.20],[.11,-.04,.20],[.33,.09,.34],[.37,.06,.38]],'#8eb9b9');
+  line(wateringCan,'can-handle',[[-.10,.02,.17],[-.17,.20,.17],[.10,.20,.17],[.13,.02,.17]],.025,'#b9d4cb');
+  const ruler = group('ruler', rightArm.toolSocket);
+  box(ruler,[.09,.73,.045],'#e8c77a',0,.18,.08,.008);
+  for(let i=0;i<10;i++) box(ruler,[i%5===0?.065:.04,.012,.01],'#6b5d43',-.01,-.12+i*.064,.108,.002);
+  notebook.visible = meter.visible = sample.visible = wateringCan.visible = ruler.visible = false;
   for (const [parent, colors] of batches) for (const b of colors.values()) {
     const mesh = new THREE.Mesh(mergeGeometries(b.geometries), surface(b.color,b.flat)); mesh.name = `${parent.name}-geometry`;
     parent.add(mesh); b.geometries.forEach(g => g.dispose());
@@ -228,5 +243,5 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   shadow.rotation.x=-Math.PI/2; shadow.position.y=.092; shadow.scale.y=.72; root.add(shadow);
   const labelSocket = group('label-socket', root, 0, 3.60);
   if (placeId) root.traverse(child => { child.userData.place = placeId; });
-  return { kind, root, visual, torso, head, eyes, leftArm, rightArm, leftLeg, rightLeg, labelSocket, tools: { notebook, meter, sample } };
+  return { kind, root, visual, torso, head, eyes, leftArm, rightArm, leftLeg, rightLeg, labelSocket, tools: { notebook, meter, sample, wateringCan, ruler } };
 }

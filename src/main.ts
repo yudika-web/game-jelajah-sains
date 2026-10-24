@@ -1,12 +1,16 @@
 import './style.css';
-import { places, cards, conclusions, type PlaceId } from './data/content';
-import { initialProgress, transition, steps, parseProgress, type MissionEvent } from './game/mission';
-import { loadProgress, saveProgress } from './game/storage';
+import { cards, conclusions, type PlaceId } from './data/content';
+import { initialProgress, transition, steps, type MissionEvent } from './game/mission';
+import { loadGame, saveGame } from './game/storage';
 import { World, type InputMode } from './engine/world';
 import { bindInput } from './engine/input';
 import { loadPreferences, savePreferences } from './game/preferences';
 import type { InteractionPose } from './engine/characterAnimator';
 import type { CameraDistance } from './engine/cameraController';
+import { regions, regionOf } from './data/regions';
+import { initialGarden, gardenTransition, gardenSteps, type GardenEvent } from './game/gardenMission';
+import { importBackup, makeBackup, type TravelState, type RegionId } from './game/gameState';
+import { createGardenUI, gardenInventory } from './game/gardenUI';
 
 const icons: Record<string, string> = {
   flask: '<path d="M9 3h6m-5 0v7L4 19q-1 2 2 2h12q3 0 2-2l-6-9V3M7 15h10"/>',
@@ -33,10 +37,11 @@ app.innerHTML = `
   <main class="hud" hidden>
     <aside class="mission-card compact">
       <div class="eyebrow"><span class="mission-tag">M01</span> MISI PENYELIDIKAN <button id="toggle-mission" aria-label="Buka rincian misi" aria-expanded="false">+</button></div>
-      <h1>Detektif Air Kota</h1><p class="mission-intro">Ada cerita di balik air yang keruh.<br>Temukan jawabannya lewat bukti.</p>
+      <label class="mission-picker">Misi aktif<select id="active-mission"><option value="M01">M01 · Detektif Air Kota</option><option value="M14">M14 · Kebun Percobaan</option></select></label>
+      <h1 id="mission-name">Detektif Air Kota</h1><p class="mission-intro">Ada cerita di balik air yang keruh.<br>Temukan jawabannya lewat bukti.</p>
       <div class="progress-track"><span id="progress-fill"></span></div>
       <div class="progress-caption"><span id="progress-text">0 dari 6 langkah</span><span>+100 XP</span></div>
-      <ol id="mission-steps"></ol>
+      <p id="garden-status" hidden></p><ol id="mission-steps"></ol>
       <button class="mission-details" id="mission-details">Lihat semua langkah ${icon('arrow')}</button>
       <div class="mission-note">${icon('leaf')} Amati. Bandingkan. Temukan.</div>
     </aside>
@@ -56,7 +61,7 @@ app.innerHTML = `
   <section class="welcome" aria-labelledby="welcome-title">
     <div class="welcome-card"><div class="eyebrow"><span class="live-dot"></span> SELAMAT DATANG, PENJELAJAH</div>
       <h1 id="welcome-title">Rasa ingin tahu.<br>Awal sebuah<br><em>penemuan.</em></h1>
-      <p>Langkah kecil di Kota Sains, petualangan besar untuk memahami dunia. Siap mencari bukti pertamamu?</p>
+      <p>Jelajahi Kota Sains dan Kebun Kehidupan untuk memahami dunia. Siap mencari bukti pertamamu?</p>
       <div class="welcome-mission"><span class="mission-tag">M01</span><div><strong>Detektif Air Kota</strong><small>Metode ilmiah · Dua sampel · Satu penyelidikan</small></div></div>
       <label class="mode-label" for="input-mode">Saya bermain dengan</label>
       <select id="input-mode"><option value="laptop">Laptop · keyboard & mouse</option><option value="hp">HP · analog & sentuh</option><option value="ifp">IFP · satu sentuhan & tombol besar</option></select>
@@ -67,11 +72,15 @@ app.innerHTML = `
     <div class="welcome-world-label"><span class="live-dot"></span> W01 / KOTA SAINS <span>Lingkungan belajar 3D</span></div>
   </section>
   <dialog id="panel" aria-labelledby="panel-title"><div class="dialog-header"><div><span class="eyebrow" id="panel-kicker">JELAJAH SAINS</span><h2 id="panel-title"></h2></div><button class="icon-button" id="close-panel" aria-label="Tutup panel">${icon('close')}</button></div><div id="panel-content"></div></dialog>
+  <div id="travel-transition" role="status" hidden></div>
   <div id="toast" role="status" aria-live="polite" hidden></div>
 `;
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 let progress = initialProgress();
+let garden = initialGarden();
+let travel: TravelState = { region: 'town', activeMission: 'M01' };
+let travelling = false;
 let started = false;
 let world: World | null = null;
 let clearInput = () => {};
@@ -93,16 +102,16 @@ function saveLabel(text: string, failed = false) {
 }
 function persist() {
   if (storageBlocked) { saveLabel('⚠ Simpan nonaktif · cadangkan melalui Pengaturan', true); return; }
-  const snapshot = structuredClone(progress);
-  snapshot.savedAt = new Date().toISOString();
+  const snapshot = structuredClone({ M01: progress, M14: garden, world: travel });
+  snapshot.M01.savedAt = new Date().toISOString();
   const generation = ++saveGeneration;
   saveLabel('◌ Menyimpan progres…');
   saveChain = saveChain.then(async () => {
     try {
-      await saveProgress(snapshot);
+      await saveGame(snapshot);
       if (generation === saveGeneration) {
-        progress.savedAt = snapshot.savedAt;
-        saveLabel(`● Tersimpan ${new Date(snapshot.savedAt!).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`);
+        progress.savedAt = snapshot.M01.savedAt;
+        saveLabel(`● Tersimpan ${new Date(snapshot.M01.savedAt!).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`);
       }
     } catch {
       saveLabel('⚠ Gagal menyimpan · ekspor cadangan di Pengaturan', true);
@@ -119,10 +128,22 @@ function dispatch(event: MissionEvent) {
   return result.ok;
 }
 function updateMission() {
-  const list = steps(progress); const done = list.filter(s => s.done).length;
+  const isGarden = travel.activeMission === 'M14';
+  const list = isGarden ? gardenSteps(garden) : steps(progress);
+  $('mission-name').textContent = isGarden ? 'Kebun Percobaan' : 'Detektif Air Kota';
+  document.querySelector('.welcome-mission .mission-tag')!.textContent = travel.activeMission;
+  document.querySelector('.welcome-mission strong')!.textContent = isGarden ? 'Kebun Percobaan' : 'Detektif Air Kota';
+  document.querySelector('.welcome-mission small')!.textContent = isGarden ? `Hari ${garden.day}/6 · Enam tanaman · Satu percobaan` : 'Metode ilmiah · Dua sampel · Satu penyelidikan';
+  document.querySelector('.mission-card .mission-tag')!.textContent = travel.activeMission;
+  $<HTMLSelectElement>('active-mission').value = travel.activeMission;
+  $('garden-status').hidden = !isGarden;
+  $('garden-status').textContent = `Hari ${garden.day}/6 · Penyiram ${garden.can}/1.000 mL · XP ${progress.reward + garden.reward}`;
+  const completed = isGarden ? garden.completed : progress.completed;
+  const listForRegion = list.map(step => ({ ...step, place: regionOf(step.place as PlaceId) === travel.region ? step.place : regions[travel.region].gate }));
+  const effectiveList = listForRegion; const done = list.filter(s => s.done).length;
   $('progress-fill').style.width = `${done / list.length * 100}%`;
-  $('progress-text').textContent = `${done} dari 6 langkah${progress.completed ? ' · Selesai!' : ''}`;
-  $('mission-steps').innerHTML = list.map((s, i) => `<li class="${s.done ? 'done' : list.findIndex(t => !t.done) === i ? 'active' : ''}"><span class="step-number">${s.done ? '✓' : String(i + 1).padStart(2, '0')}</span><button data-guide="${s.place}"><strong>${s.title}</strong><small>${s.detail}</small></button></li>`).join('');
+  $('progress-text').textContent = `${done} dari ${list.length} langkah${completed ? ' · Selesai!' : ''}`;
+  $('mission-steps').innerHTML = effectiveList.map((s, i) => `<li class="${s.done ? 'done' : list.findIndex(t => !t.done) === i ? 'active' : ''}"><span class="step-number">${s.done ? '✓' : String(i + 1).padStart(2, '0')}</span><button data-guide="${s.place}"><strong>${s.title}</strong><small>${s.detail}</small></button></li>`).join('');
   $('mission-steps').querySelectorAll<HTMLButtonElement>('[data-guide]').forEach(b => { b.onclick = () => navigate(b.dataset.guide as PlaceId); });
 }
 function closePanel() { panel.close(); if (world) { world.paused = !started; world.endInteraction(); } }
@@ -136,7 +157,9 @@ function openPanel(title: string, html: string, kicker = 'CATATAN PENJELAJAH') {
 }
 function navigate(id: PlaceId) {
   if (!world || !started) { toast('Mulai menjelajah terlebih dahulu.'); return; }
-  closePanel(); const place = places.find(p => p.id === id)!;
+  if(regionOf(id) !== world.region) { toast(`Gunakan gerbang menuju ${regions[regionOf(id)].name} dahulu.`); id = regions[world.region].gate; }
+  closePanel(); const place = world.places.find(p => p.id === id);
+  if(!place) return;
   // Stop in front of the object instead of overlapping the NPC or sample bottle.
   const approach = { x: place.x, z: place.z + 1.4 };
   const ok = world.goTo(approach, () => {
@@ -163,7 +186,15 @@ function openPlan(id: 'sampleA' | 'sampleB') {
   };
 }
 function interactAt(id: PlaceId) {
-  if (!world || !started || Math.hypot(world.position.x - places.find(p => p.id === id)!.x, world.position.z - places.find(p => p.id === id)!.z) > 2.65) return;
+  const place = world?.places.find(p => p.id === id);
+  if (!world || !started || travelling || !place || Math.hypot(world.position.x-place.x,world.position.z-place.z)>2.65) return;
+  if(id==='gardenGate'||id==='townGate') {
+    const target: RegionId = id==='gardenGate'?'garden':'town';
+    world.beginInteraction(id,'read');
+    openPanel(`Gerbang menuju ${regions[target].name}`, `<p>Masuk ke ${regions[target].name}. Kedua misi dan isi tas tetap tersimpan.</p><button class="primary" id="enter-region">Masuk ${regions[target].name}</button>`,`${regions[target].code} · PERJALANAN`);
+    $('enter-region').onclick=()=>void changeRegion(target); return;
+  }
+  if(world.region==='garden') { world.beginInteraction(id,id==='sari'?'greet':'read'); gardenUI.interact(id); return; }
   if (id === 'nara' || progress.accepted) {
     const pose: InteractionPose = id === 'nara' || id === 'warga' ? 'greet' : id === 'book' || id === 'rain' ? 'read' : id === 'sampleA' || id === 'sampleB' ? 'sample' : 'measure';
     world.beginInteraction(id, pose);
@@ -213,24 +244,55 @@ function openConclusion() {
   });
 }
 function journal() {
+  if(travel.activeMission==='M14') {gardenUI.journal();return;}
   world?.setInteractionPose('read');
   openPanel('Jurnal Sains', `<div class="journal-summary"><span class="mission-tag">M01</span><span>${progress.completed ? 'Penyelidikan selesai' : 'Penyelidikan berlangsung'}</span></div><h3>Dugaan awal</h3><p>${progress.hypothesis ? '“Semua air keruh pasti berasal dari limbah.” — Pak Wira. Status: dugaan, bukan fakta.' : 'Belum dicatat. Temui Pak Wira.'}</p><h3>Sumber pengetahuan</h3>${(['book', 'rain'] as const).map(id => `<div class="journal-entry"><strong>${progress.sources[id] ? '✓' : '○'} ${cards[id].title}</strong>${progress.sources[id] ? `<p>${cards[id].text}</p>` : '<p>Belum dibaca dan dicatat.</p>'}</div>`).join('')}<h3>Data pengamatan</h3><p class="model-note">Indeks model /100, bukan NTU. Semua menggunakan hujan simulasi yang sama.</p><table><thead><tr><th>Sampel</th><th>Awal</th><th>Sesudah uji</th></tr></thead><tbody><tr><td>A · lahan terbuka</td><td>${progress.samples.A?.value ?? 'Belum diukur'}</td><td>${progress.trial ?? 'Belum diuji'}</td></tr><tr><td>B · pembanding</td><td>${progress.samples.B?.value ?? 'Belum diukur'}</td><td>Tidak diuji ulang</td></tr></tbody></table><h3>Rencana & kesimpulan</h3><p>${progress.plan ? 'Alat kekeruhan virtual; lokasi berbeda; kondisi hujan dan waktu pengambilan sama.' : 'Rencana pengamatan belum dibuat.'}</p><p>${progress.completed ? conclusions[0].text : 'Kumpulkan bukti dan lakukan uji sebelum menyimpulkan.'}</p><small class="source">Percobaan kesimpulan: ${progress.attempts.length} · Hadiah: ${progress.reward} XP · Data lokal pada browser ini.</small>`, 'PENEMUAN · DATA · DUGAAN · PERCOBAAN');
 }
 function inventory() {
   world?.endInteraction();
-  openPanel('Tas penjelajah', `<p>Alat esensial dipinjamkan Bu Nara saat misi diterima. Tidak perlu membeli alat.</p><div class="inventory-grid">${[{ name: 'Botol berlabel A', info: progress.samples.A ? 'Terisi · sampel A · indeks 70' : 'Kosong · khusus titik A' }, { name: 'Botol berlabel B', info: progress.samples.B ? 'Terisi · sampel B · indeks 20' : 'Kosong · khusus titik B' }, { name: 'Alat kekeruhan virtual', info: 'Skala model 0–100 · bukan NTU' }, { name: 'Jurnal & peta', info: 'Catatan otomatis setelah pengamatan' }].map(item => `<div class="inventory-item">${icon('flask')}<strong>${item.name}</strong><small>${progress.accepted ? item.info : 'Terima misi untuk meminjam'}</small></div>`).join('')}</div><div class="callout">Botol A dan B terpisah; membaca hasil tersimpan tidak mengambil sampel baru atau menggandakan hadiah.</div>`, 'PERALATAN MISI M01');
+  openPanel('Tas penjelajah', `<p>Alat esensial dipinjamkan Bu Nara saat misi diterima. Tidak perlu membeli alat.</p><div class="inventory-grid">${[{ name: 'Botol berlabel A', info: progress.samples.A ? 'Terisi · sampel A · indeks 70' : 'Kosong · khusus titik A' }, { name: 'Botol berlabel B', info: progress.samples.B ? 'Terisi · sampel B · indeks 20' : 'Kosong · khusus titik B' }, { name: 'Alat kekeruhan virtual', info: 'Skala model 0–100 · bukan NTU' }, { name: 'Jurnal & peta', info: 'Catatan otomatis setelah pengamatan' }].map(item => `<div class="inventory-item">${icon('flask')}<strong>${item.name}</strong><small>${progress.accepted ? item.info : 'Terima misi untuk meminjam'}</small></div>`).join('')}</div>${gardenInventory(garden)}<div class="callout">Botol A dan B terpisah; membaca hasil tersimpan tidak mengambil sampel baru atau menggandakan hadiah.</div>`, 'PERALATAN MISI M01 & M14');
+}
+function regionMapSvg() {
+  const r = regions[travel.region], isTown = travel.region === 'town';
+  return `<svg id="town-map" viewBox="-20 -19 40 38" role="img" aria-label="Peta ${r.name}"><rect x="-20" y="-19" width="40" height="38" rx="1" fill="#dce4cb"/>${isTown?'<path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/>':''}<path d="M0-17v34M-17 4h33" stroke="#f6e5bc" stroke-width="3"/>${r.navigation.obstacles.map(o=>`<rect x="${o.x-o.width/2}" y="${o.z-o.depth/2}" width="${o.width}" height="${o.depth}" fill="#a7b99e"/>`).join('')}${r.places.map(p=>`<circle cx="${p.x}" cy="${p.z}" r=".7" fill="${p.color}" stroke="#fff" stroke-width=".25"/><text x="${p.x-1}" y="${p.z-1}" font-size="1" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x??0}" cy="${world?.position.z??6}" r=".6" fill="#163d34" stroke="#fff" stroke-width=".3"/></svg>`;
 }
 function map() {
-  world?.endInteraction();
-  openPanel('Peta Kota Sains', `<p>Pilih lokasi untuk berjalan ke sana dan berinteraksi saat tiba. Jalur menghindari bangunan serta sungai. Semua lokasi misi dapat dicapai tanpa melompat.</p><div class="map-layout"><svg id="town-map" viewBox="-20 -19 40 38" role="img" aria-label="Peta wilayah. Sekolah di barat laut, sungai di timur."><rect x="-20" y="-19" width="40" height="38" rx="1" fill="#dce4cb"/><path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/><path d="M0-18v36M-18 2h28" stroke="#f9f0d7" stroke-width="3"/>${obstaclesMap()}${places.map(p => `<circle cx="${p.x}" cy="${p.z}" r="0.8" fill="${p.color}" stroke="#fff" stroke-width=".3"/><text x="${p.x - 0.5}" y="${p.z - 1.3}" font-size="1.3" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x ?? -1}" cy="${world?.position.z ?? 6}" r="0.7" fill="#163d34" stroke="#fff" stroke-width=".35"/></svg><div class="destination-list">${places.map(p => `<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${icon('arrow')}</button>`).join('')}</div></div><p class="model-note">Ketuk tanah kosong di dunia 3D untuk berjalan, atau gunakan daftar lokasi untuk navigasi yang lebih mudah.</p>`, 'W01 · SATU BLOK, BANYAK PERTANYAAN');
-  document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b => { b.onclick = () => navigate(b.dataset.destination as PlaceId); });
+  world?.endInteraction(); const r=regions[travel.region];
+  openPanel(`Peta ${r.name}`, `<p>Pilih tujuan. Pemain berjalan di jalur wilayah ini dan berinteraksi saat tiba. Gerbang menghubungkan Kota dan Kebun.</p><div class="map-layout">${regionMapSvg()}<div class="destination-list">${r.places.map(p=>`<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${icon('arrow')}</button>`).join('')}</div></div>`, `${r.code} · JELAJAH WILAYAH`);
+  document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b=>{b.onclick=()=>navigate(b.dataset.destination as PlaceId);});
 }
-function obstaclesMap() {
-  return '<path d="M-13-12h8v6h-8ZM-14.5 3.5h5v5h-5ZM-7.5 11h5v4h-5ZM0-15h4v4H0Z" fill="#a7b99e"/>';
+function updateRegionUI() {
+  const r=regions[travel.region];
+  document.querySelector('.welcome-world-label')!.innerHTML=`<span class="live-dot"></span> ${r.code} / ${r.name.toUpperCase()} <span>Lingkungan belajar 3D</span>`;
+  document.querySelector('.location')!.innerHTML=`<span class="live-dot"></span><div>${r.name}<small>${r.code} · ${travel.region==='garden'?'KELAS IX / VII':'KELAS VII'}</small></div>`;
+  document.querySelector('.world-note > span:last-child')!.textContent=r.name.toUpperCase();
+  $('mini-map').setAttribute('aria-label',`Buka peta ${r.name}`);
+  $('mini-map').innerHTML=`${regionMapSvg()}<span>${icon('map')} Peta wilayah <kbd>M</kbd></span>`;
+  $('world').setAttribute('aria-label',`Dunia 3D ${r.name}. Gunakan WASD atau kontrol sentuh untuk berjalan.`);
 }
+function refreshWorld() {world?.setTrial(progress.trial===35);world?.setGarden(garden);}
+async function changeRegion(target: RegionId) {
+  if(!world||travelling||world.region===target) return;
+  travelling=true; clearInput();closePanel();world.paused=true;
+  $('travel-transition').textContent=`Menuju ${regions[target].name}…`;$('travel-transition').hidden=false;
+  if(!world.reducedMotion) await new Promise(resolve=>setTimeout(resolve,300));
+  try {
+    world.setRegion(target,true);travel.region=target;travel.activeMission=target==='garden'?'M14':'M01';
+    refreshWorld();updateRegionUI();updateMission();persist();
+  } finally {$('travel-transition').hidden=true;travelling=false;world.paused=!started;}
+}
+function dispatchGarden(event: GardenEvent, place?: PlaceId) {
+  if(place) {
+    const target=world?.places.find(p=>p.id===place);
+    if(!world||world.region!=='garden'||!target||Math.hypot(world.position.x-target.x,world.position.z-target.z)>2.65) {toast('Dekati objek di kebun terlebih dahulu.');return false;}
+  }
+  const result=gardenTransition(garden,event), changed=result.progress!==garden;
+  garden=result.progress;if(changed)persist();refreshWorld();updateMission();toast(result.message);return result.ok;
+}
+const gardenUI=createGardenUI({get:()=>garden,open:openPanel,close:closePanel,send:dispatchGarden,navigate,pose:pose=>world?.setInteractionPose(pose),water:group=>world?.waterGarden(group)});
 function settings() {
   world?.endInteraction();
-  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD / panah: berjalan · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: analog kiri dan seret dunia di kanan dapat dipakai bersamaan. IFP: ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
+  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD / panah: berjalan · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: analog kiri dan seret dunia di kanan dapat dipakai bersamaan. IFP: ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan M01</button><button class="danger" id="reset-garden">Ulangi Percobaan M14</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
   $<HTMLSelectElement>('settings-mode').value = world?.mode ?? modeSelect.value;
   $('settings-mode').onchange = e => setMode((e.target as HTMLSelectElement).value as InputMode);
   $<HTMLSelectElement>('camera-distance').value = world?.cameraDistance ?? preferences.cameraDistance;
@@ -252,8 +314,8 @@ function settings() {
   $('home').onclick = () => { world?.resetPosition(); closePanel(); toast('Kembali ke Pos. Seluruh bukti misi tetap tersimpan.'); };
   $('fullscreen-button').onclick = fullscreen;
   $('export').onclick = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-M01.json'; a.click();
+    const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup({M01:progress,M14:garden,world:travel}), null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-cadangan-v2.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     $('settings-feedback').textContent = 'Cadangan dibuat. Simpan berkas di tempat yang aman.';
   };
@@ -262,12 +324,18 @@ function settings() {
     const file = (e.target as HTMLInputElement).files?.[0]; if (!file) return;
     try {
       if (file.size > 1_000_000) throw new Error('Cadangan terlalu besar (maksimum 1 MB).');
-      const imported = parseProgress(JSON.parse(await file.text()));
+      const imported = importBackup(JSON.parse(await file.text()),{M01:progress,M14:garden,world:travel});
       // Import is explicit replacement; parsing must finish before changing live state.
-      progress = imported; storageBlocked = false; persist(); updateMission(); world?.setTrial(progress.trial === 35);
-      $('settings-feedback').textContent = 'Cadangan valid dimuat. Progres sebelumnya digantikan oleh cadangan ini.';
+      progress=imported.game.M01;garden=imported.game.M14;travel=imported.game.world;storageBlocked=false;
+      world?.setRegion(travel.region);refreshWorld();updateRegionUI();persist();updateMission();
+      $('settings-feedback').textContent = imported.scope==='M01'?'Cadangan valid dimuat: hanya M01 versi 1. M14 dan wilayah saat ini tetap dipertahankan.':'Cadangan valid dimuat: M01, M14, dan wilayah dipulihkan. Hadiah pertama yang sudah tercatat tidak digandakan.';
     } catch (error) { $('settings-feedback').textContent = error instanceof Error ? error.message : 'Cadangan tidak dapat dibaca.'; }
     (e.target as HTMLInputElement).value = '';
+  };
+  $('character-gallery-link').onclick=async e=>{e.preventDefault();await saveChain;location.assign('/character.html');};
+  $('reset-garden').onclick=()=>{
+    openPanel('Ulangi Percobaan M14?', '<p>Hari, rencana, petak, air, data, dan kesimpulan M14 akan dimulai ulang. M01 dan catatan hadiah pertama tetap tersimpan.</p><button class="danger" id="confirm-garden-reset">Ya, ulangi percobaan M14</button>');
+    $('confirm-garden-reset').onclick=()=>{dispatchGarden({type:'reset'});closePanel();};
   };
   $('reset-progress').onclick = () => {
     openPanel('Ulangi penyelidikan?', '<p>Bukti, jurnal, dan hasil M01 lokal akan dihapus dan digantikan penyelidikan baru. Ekspor cadangan melalui Pengaturan jika ingin menyimpan hasil lama.</p><button class="danger" id="confirm-reset">Ya, mulai ulang M01</button><button class="secondary" id="cancel-reset">Batal</button>');
@@ -293,7 +361,7 @@ $('start').onclick = () => {
   document.querySelector<HTMLElement>('.welcome')!.hidden = true;
   document.querySelector<HTMLElement>('.hud')!.hidden = false;
   if ($<HTMLInputElement>('fullscreen').checked) void fullscreen();
-  toast(progress.accepted ? 'Selamat kembali! Buka Jurnal untuk melihat bukti yang tersimpan.' : 'Selamat datang! Temui Bu Nara atau pilih langkah pertama pada kartu misi.');
+  toast(progress.accepted || garden.accepted ? 'Selamat kembali! Buka Jurnal untuk melihat bukti yang tersimpan.' : 'Selamat datang! Temui Bu Nara atau pilih langkah pertama pada kartu misi.');
 };
 $('close-panel').onclick = closePanel;
 panel.addEventListener('close', () => { if (world) { world.paused = !started || panel.open; if (!panel.open) world.endInteraction(); } });
@@ -302,6 +370,7 @@ panel.addEventListener('click', e => {
   if (e.target === panel && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) closePanel();
 });
 $('settings').onclick = settings;
+$('active-mission').onchange=e=>{travel.activeMission=(e.target as HTMLSelectElement).value as 'M01'|'M14';updateMission();persist();};
 $('journal').onclick = journal; $('inventory').onclick = inventory;
 $('map').onclick = map; $('mini-map').onclick = map;
 $('camera-reset').onclick = () => world?.resetCamera();
@@ -322,8 +391,9 @@ document.querySelector('.brand')!.addEventListener('click', e => { e.preventDefa
 
 async function initialize() {
   try {
-    const saved = await loadProgress();
-    if (saved) { progress = saved; $('start').firstChild!.textContent = 'Lanjutkan petualangan '; saveLabel('● Progres sebelumnya dimuat'); }
+    const saved = await loadGame();
+    progress=saved.M01;garden=saved.M14;travel=saved.world;
+    if (progress.accepted || garden.accepted || travel.region==='garden') { $('start').firstChild!.textContent = 'Lanjutkan petualangan '; saveLabel('● Progres sebelumnya dimuat'); }
   } catch {
     storageBlocked = true;
     toast('Progres lokal tidak dapat dibaca. Gunakan cadangan atau mulai ulang lewat Pengaturan. Data lama tidak ditimpa otomatis.');
@@ -331,11 +401,11 @@ async function initialize() {
   }
   updateMission();
   try {
-    world = new World($<HTMLCanvasElement>('world')); world.setTrial(progress.trial === 35);
+    world = new World($<HTMLCanvasElement>('world')); world.setRegion(travel.region);refreshWorld();updateRegionUI();
     world.cameraDistance = preferences.cameraDistance; world.reducedMotion = preferences.reducedMotion;
     world.renderer.setPixelRatio(preferences.lowQuality ? 1 : Math.min(devicePixelRatio, 1.5));
     world.onUpdate = near => {
-      const place = places.find(p => p.id === near);
+      const place = world!.places.find(p => p.id === near);
       $('near-name').textContent = place?.name ?? 'Dekati warga atau penanda';
       $('interact').querySelector('span')!.textContent = place?.action ?? 'Jelajahi';
       $<HTMLButtonElement>('interact').disabled = !place;
@@ -347,7 +417,7 @@ async function initialize() {
     }, (x, y) => {
       const hit = world!.pick(x, y);
       if (hit.place) {
-        const p = places.find(p => p.id === hit.place)!;
+        const p = world!.places.find(p => p.id === hit.place)!;
         if (Math.hypot(world!.position.x - p.x, world!.position.z - p.z) < 2.6) interactAt(hit.place);
         else navigate(hit.place);
       } else if (hit.point && !world!.goTo(hit.point)) toast('Tujuan tidak dapat dicapai. Pilih jalur tanah lain.');
