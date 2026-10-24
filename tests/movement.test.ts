@@ -77,8 +77,8 @@ describe('real movement, independent of renderer, model scale and frame rate', (
     });
     it(`walks/runs safe paths to every mission object and arrives exactly once: ${region}`, () => {
       const area=region==='rimba'?rimbaNavigation(true):r.navigation; // C is reachable after explicit safety confirmation
-      for (const place of r.places) for (const run of [false, true]) {
-        const p = { ...r.spawn }, goal = { x: place.x, z: place.z + 1.4 }, path = findPath(p, goal, area);
+      for (const place of r.places.filter(p=>p.id!=='poolBuoy')) for (const run of [false, true]) {
+        const p = { ...r.spawn }, goal = { x: place.x, z: place.z + (place.id==='poolRamp'?0:1.4) }, path = findPath(p, goal, area);
         expect(path.length).toBeGreaterThan(0);
         const motion = new MovementController(); let arrivals = 0;
         for (let i = 0; i < 180; i++) {

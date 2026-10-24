@@ -21,7 +21,7 @@ export interface CharacterRig {
   bodyMeshes: THREE.Mesh[];
   dimensions: { baseHeight: number; height: number; scale: number; groundY: number; visualY: number; headCenter: number; headHeight: number };
   labelSocket: THREE.Group;
-  tools: { notebook: THREE.Group; meter: THREE.Group; sample: THREE.Group; wateringCan: THREE.Group; ruler: THREE.Group; bucket:THREE.Group; rod:THREE.Group };
+  tools: { notebook: THREE.Group; meter: THREE.Group; sample: THREE.Group; wateringCan: THREE.Group; ruler: THREE.Group; bucket:THREE.Group; rod:THREE.Group; vest:THREE.Group };
 }
 
 export function createCharacter(kind: CharacterKind, placeId?: string): CharacterRig {

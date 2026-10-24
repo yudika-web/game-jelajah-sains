@@ -140,7 +140,8 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   const rod=group('fishing-rod',rightArm.toolSocket);rod.rotation.x=1.6;
   const shaft=box(rod,[.045,2.6,.045],'#635d3c',0,1.05,.1,false);shaft.rotation.x=.15;
   box(rod,[.10,.38,.10],'#b08b4c',0,-.12,.07,false);box(rod,[.16,.16,.10],'#c4c8b3',.09,.10,.1,false);group('rod-tip',rod,0,2.35,.30);
-  const tools={notebook,meter,sample,wateringCan,ruler,bucket,rod};Object.values(tools).forEach(t=>t.visible=false);
+  const vest=group('life-vest',torso);box(vest,[1.40,.90,.10],'#df8b3f',0,.04,.38,false);box(vest,[1.40,.90,.08],'#df8b3f',0,.04,-.37,false);box(vest,[.12,.90,.02],'#efda8f',0,.04,.45,false);
+  const tools={notebook,meter,sample,wateringCan,ruler,bucket,rod,vest};Object.values(tools).forEach(t=>t.visible=false);
   // Measure only neutral body geometry; neither attachments nor a label can alter height.
   root.updateMatrixWorld(true);
   const bounds=new THREE.Box3();for(const body of bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));

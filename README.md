@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**Kolam latihan dan S14 — Terapung atau Tenggelam?** sudah dapat dimainkan: ramp, berenang pada area terbatas, rompi, Kembali ke Tepian, tiga prediksi/percobaan, jurnal, dan hadiah pertama 50 XP. [Panduan dan bukti S14](docs/swimming-buoyancy-review.md).
+
 **W04 Sungai dan Danau — S13 Catatan Ikan Dua Titik** sudah dapat dimainkan: pancing 3D, enam pengamatan terkontrol, pencatatan dan pelepasan atomik, tabel/diagram, serta kesimpulan berbukti. [Panduan, pengujian, gambar, dan cuplikan memancing](docs/river-fishing-review.md).
 
 **W03 Rimba dan Gambut — Bantu Pos Rimba (W03-LOG01)** sudah dapat dimainkan: pengangkutan air dengan ember/gerobak, perbaikan roda, jurnal perjalanan, dan pemulihan habitat. [Cara bermain, aturan, dan bukti hasil](docs/rimba-logistics-review.md).
@@ -42,7 +44,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13. Keempatnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Ketiga wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14. Kelimanya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Ketiga wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -108,11 +110,15 @@ Jurnal mencatat transfer serta perjalanan nyata. Setelah pengiriman, pilih kesim
 
 Dataset latihan tetap, bukan sampling alam. Tidak ada ikan yang dijual atau menjadi isi tas. Tidak ada batas waktu reaksi. Jeda menunggu berhenti saat tab tersembunyi atau fokus hilang. **Batalkan**, Esc, menu, perubahan kontrol/wilayah, atau Kembali ke Pos membatalkan proses yang belum disahkan. Reload kembali ke pos aman, mempertahankan catatan sah. **Ulangi pengamatan S13** meminta konfirmasi dan mempertahankan riwayat hadiah serta tiga misi lain. Air hanya dapat diamati dari darat dan dermaga; berenang dan perahu belum tersedia.
 
+## Kolam latihan dan S14
+
+Pilih S14 pada Misi aktif, terima bersama Kak Lestari, lalu baca Buku gaya apung. Masuk kolam melalui Ramp, berenang dengan WASD/analog atau tujuan sentuh ke Penanda kolam, lalu keluar melalui ramp atau Kembali ke Tepian. Hanya kolam yang membuka izin berenang; sungai lain tetap dibatasi. Di Uji benda A/B/C, pilih prediksi, Jalankan uji, lalu Catat hasil setiap benda. Simpulkan bersama Kak Lestari. Tidak ada batas napas atau waktu reaksi. Reset S14 mempertahankan misi lain dan hadiah pertama. Cadangan v1–v4 tetap diterima dan mempertahankan S14.
+
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Keempat misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kelima misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 4** berisi keempat misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 5** berisi kelima misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 

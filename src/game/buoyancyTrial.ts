@@ -1,0 +1,2 @@
+import type {BuoyancyObject} from '../data/poolContent';
+export class BuoyancyTrial{phase:'idle'|'testing'|'result'='idle';id:BuoyancyObject='A';elapsed=0;revision=0;start(id:BuoyancyObject,revision:number){if(this.phase!=='idle')return false;this.id=id;this.revision=revision;this.elapsed=0;this.phase='testing';return true;}tick(dt:number,active:boolean){if(this.phase!=='testing'||!active||!Number.isFinite(dt)||dt<=0)return;this.elapsed+=Math.min(dt,.1);if(this.elapsed>=1.5)this.phase='result';}cancel(){this.phase='idle';this.elapsed=0;}}

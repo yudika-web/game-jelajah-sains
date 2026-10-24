@@ -1,3 +1,5 @@
+import {poolSwimmingNavigation,entersPool,exitsPool,poolExit,poolMarker,swimSpeeds} from '../data/poolRegion';
+import type {BuoyancyTrial} from '../game/buoyancyTrial';
 import { buildRiver, type RiverView } from './riverWorld';
 import { FishingSession } from '../game/fishingSession';
 import type { FishGroup } from '../data/riverContent';
@@ -52,6 +54,12 @@ export class World {
   onUpdate: (near: PlaceId | null) => void = () => {};
   region: RegionId = 'town';
   private regionRoot = new THREE.Group();
+  swimming=false;private swimDistance=0;
+  onSwimPractice:()=>void=()=>{};onBuoyancyFrame:(dt:number,active:boolean)=>void=()=>{};private buoyancyTrial:BuoyancyTrial|null=null;
+  setBuoyancyTrial(t:BuoyancyTrial|null){this.buoyancyTrial=t;}
+  private swimAppearance(active:boolean){this.playerAnimator.swimming=active;this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const m=this.player.getObjectByName(name);if(m)m.visible=!active;}}
+  returnShore(){this.stop();this.swimming=false;this.swimAppearance(false);this.position.set(poolExit.x,0,poolExit.z);this.endInteraction();}
+  private updateSwimming(distance:number){if(this.region!=='river')return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
   private riverView:RiverView|null=null;
   private fishingSession:FishingSession|null=null;
   private fishingGroup:FishGroup='flat';
@@ -72,7 +80,7 @@ export class World {
   private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
   private gardenView: GardenView | null = null;
   get places() { return regions[this.region].places; }
-  get navigation() { return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
+  get navigation() {if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
   get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
   approach(id:PlaceId) {return this.pushing?rimbaCartConfig.approach:1.4;}
   canPushCart() {return this.region==='rimba'&&this.rimbaProgress.repaired&&Math.hypot(this.position.x-cartParking.x,this.position.z-cartParking.z)<3.25&&walkable(this.position,rimbaNavigation(this.rimbaProgress.cOpen,true));}
@@ -242,7 +250,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    const previous=this.region;this.endFishing();this.stop(); this.endInteraction();
+    const previous=this.region;this.swimming=false;this.swimAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
     this.regionRoot.traverse(node => {
@@ -328,7 +336,7 @@ export class World {
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
   stop(resetRun = true) { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() { this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  resetPosition() {this.swimming=false;this.swimAppearance(false);this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -366,6 +374,7 @@ export class World {
     const elapsed = this.clock.getDelta();
     const dt = this.resetFrameTime ? 0 : movementDelta(elapsed);
     this.resetFrameTime = false; this.elapsed += dt;
+    this.onBuoyancyFrame(dt,!document.hidden&&document.hasFocus());
     this.onRiverFrame(dt,!document.hidden&&document.hasFocus());
     if(this.fishingSession?.active){const phase=this.fishingSession.phase;this.playerAnimator.fishingCast=Math.min(1,this.fishingSession.elapsed/.8);this.playerAnimator.setPose(phase==='casting'?'fishCast':phase==='observing'||phase==='released'?'fishPull':'fishWait');}
     let travelled = 0, dx = 0, dz = 0;
@@ -373,8 +382,8 @@ export class World {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
-      const result = this.movement.step(this.position, this.move, this.yaw, this.running, this.path, dt, this.navigation, this.pushing?rimbaCartConfig:undefined, this.region==='rimba'?this.trackRimbaStep:undefined);
-      travelled = result.distance; dx = result.dx; dz = result.dz;
+      const result = this.movement.step(this.position, this.move, this.yaw, this.running, this.path, dt, this.navigation, this.swimming?swimSpeeds:this.pushing?rimbaCartConfig:undefined, this.region==='rimba'?this.trackRimbaStep:undefined);
+      travelled = result.distance; dx = result.dx; dz = result.dz;this.updateSwimming(travelled);
       if (result.arrived || result.blocked && !this.path.length) {
         this.marker.visible = false; const arrive = this.onArrive; this.onArrive = null;
         if (result.arrived) arrive?.();
@@ -383,6 +392,7 @@ export class World {
     if (travelled > .00001 && !this.interacting) this.facing = Math.atan2(dx, dz);
     this.player.rotation.y = turnToward(this.player.rotation.y, this.facing, dt);
     this.player.position.copy(this.position);
+    if(this.swimming)this.playerAnimator.setPose('none');
     this.playerAnimator.update(dt, travelled, this.reducedMotion);
     for (const npc of this.npcs) {
       const x = this.position.x - npc.rig.root.position.x, z = this.position.z - npc.rig.root.position.z;
@@ -401,6 +411,7 @@ export class World {
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
       this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
+    this.riverView?.pool.frame(this.buoyancyTrial);this.canvas.dataset.swimming=String(this.swimming);
     this.canvas.dataset.fishingPhase=this.fishingSession?.phase??'idle';
     this.canvas.dataset.rodVisible=String(this.playerRig.tools.rod.visible);
     this.rimbaView?.frame(this.position,this.player.rotation.y,travelled,this.pushing,this.reducedMotion);

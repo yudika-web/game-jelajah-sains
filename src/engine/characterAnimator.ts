@@ -12,6 +12,7 @@ export function turnToward(current: number, target: number, dt: number, response
 export class CharacterAnimator {
   pose: InteractionPose = 'none';
   pushing = false;
+  swimming=false;
   fishingCast = 0;
   speed = 0;
   state: 'idle' | 'walk' | 'run' | 'interact' = 'idle';
@@ -46,8 +47,8 @@ export class CharacterAnimator {
     }
     this.time += dt;
     this.speed = dt > 0 ? distance / dt : 0;
-    const walking = this.pose === 'none' && this.speed > .025;
-    this.state = this.pose !== 'none' ? 'interact' : !walking ? 'idle' : this.speed > movementConfig.walkSpeed + .35 ? 'run' : 'walk';
+    const walking = !this.swimming && this.pose === 'none' && this.speed > .025;
+    this.state = this.swimming || this.pose !== 'none' ? 'interact' : !walking ? 'idle' : this.speed > movementConfig.walkSpeed + .35 ? 'run' : 'walk';
     this.blend = damp(this.blend, walking ? Math.min(1, this.speed / movementConfig.walkSpeed) : 0, walking ? 18 : 24, dt);
     this.runBlend = damp(this.runBlend, walking ? Math.max(0, Math.min(1, (this.speed - movementConfig.walkSpeed) / (movementConfig.runSpeed - movementConfig.walkSpeed))) : 0, 14, dt);
     // Stop advancing the cycle at a wall: only a short settling transition remains.
@@ -115,6 +116,7 @@ export class CharacterAnimator {
       r.leftArm.shoulder.rotation.z=-.025;r.rightArm.shoulder.rotation.z=.025;
       r.torso.rotation.x=reducedMotion?0:.06;
     }
+    if(this.swimming){r.visual.position.y=r.dimensions.visualY-.90;r.torso.rotation.x=.85;for(let i=0;i<2;i++){this.arms[i].shoulder.rotation.x=-1.2+(reducedMotion?0:Math.sin(this.time*4+i*Math.PI)*.35*Math.min(1,this.speed));this.legs[i].hip.rotation.x=.5+(reducedMotion?0:Math.sin(this.time*4+i*Math.PI)*.16*Math.min(1,this.speed));}}
     for (let i = 0; i < this.armJoints.length; i++) {
       const rotation = this.armJoints[i].rotation;
       rotation.x = damp(this.previousArmRotations[i * 3], rotation.x, 18, dt);

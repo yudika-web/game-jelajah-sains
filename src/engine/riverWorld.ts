@@ -1,3 +1,5 @@
+import {buildPool} from './poolWorld';
+import type {BuoyancyTrial} from '../game/buoyancyTrial';
 import * as THREE from 'three';
 import { riverPlaces } from '../data/riverRegion';
 import { fishGroups, type FishGroup } from '../data/riverContent';
@@ -24,11 +26,12 @@ export function fishModel(group: FishGroup) {
   return root;
 }
 export interface RiverView {
+  pool:ReturnType<typeof buildPool>;
   frame(dt:number,reduced:boolean,phase:FishingPhase,elapsed:number,group:FishGroup,rodTip:THREE.Vector3,player:THREE.Vector3,site:'A'|'B'):void;
   clearFishing():void;
 }
 export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
-  b(20,.8,40,'#87a879',-7,-.45,1);b(22,.5,40,'#5099a5',14,-.50,1);
+  b(11,.8,40,'#87a879',-2.5,-.45,1);b(1,.8,40,'#87a879',-16.5,-.45,1);b(8,.8,4,'#87a879',-12,-.45,-17);b(8,.8,30,'#87a879',-12,-.45,6);b(22,.5,40,'#5099a5',14,-.50,1);
   b(3.3,.07,31,'#dfd5b1',-2,.025,1);b(15,.06,3,'#d8ccaa',-5,.025,5);b(10,.06,3,'#d8ccaa',-2,.025,-7);
   // Wide wooden pier with its deck at the same walking height as the bank.
   b(8,.20,4,'#9b7953',6,.0,-7);
@@ -48,6 +51,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   for(const x of [-3.8,-.2])b(.25,3.2,.25,'#8b7957',x,1.6,15);b(4,.4,.4,'#578f8d',-2,3.3,15);
   npc(-6,9);
   for(const p of riverPlaces){if(p.id!=='lestari')label(p.short,p.x,p.id==='rodRack'?2.5:2.35,p.z,p.id);const disc=new THREE.Mesh(new THREE.RingGeometry(.62,.73,24),new THREE.MeshBasicMaterial({color:p.color,side:THREE.DoubleSide}));disc.rotation.x=-Math.PI/2;disc.position.set(p.x,.125,p.z);disc.userData.place=p.id;root.add(disc);}
+  const pool=buildPool(root,b);
   const waterLines:THREE.Mesh[]=[];
   const waveMaterial=new THREE.MeshBasicMaterial({color:'#9cd0d0',transparent:true,opacity:.50}),waveGeometry=new THREE.BoxGeometry(.9,.012,.055);
   for(let i=0;i<14;i++){const wave=new THREE.Mesh(waveGeometry,waveMaterial);wave.position.set(4+i%4*3.6,-.225,-15+Math.floor(i/4)*8);root.add(wave);waterLines.push(wave);}
@@ -60,7 +64,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   const caught=Object.fromEntries(fishGroups.map(g=>{const fish=fishModel(g);tackle.add(fish);return[g,fish];})) as Record<FishGroup,THREE.Group>;
   const start=new THREE.Vector3(),end=new THREE.Vector3(),fishStart=new THREE.Vector3();let time=0;
   function clearFishing(){tackle.visible=false;Object.values(caught).forEach(f=>f.visible=false);}
-  return {clearFishing,frame(dt,reduced,phase,elapsed,group,tip,player,site){
+  return {pool,clearFishing,frame(dt,reduced,phase,elapsed,group,tip,player,site){
     if(!reduced){time+=dt;waterLines.forEach((wave,i)=>{wave.position.x=4+i%4*3.6+Math.sin(time*.7+i)*.30;});decorative.forEach((f,i)=>{f.position.x=6+i*3+Math.sin(time*.4+i)*1.1;f.rotation.y=Math.cos(time*.4+i)>0?0:Math.PI;});}
     const active=phase!=='idle';tackle.visible=active;if(!active)return;
     end.set(site==='A'?5:10.3,-.11,player.z-.2);start.copy(tip);

@@ -67,7 +67,7 @@ describe('S13 deterministic sampling and atomic release',()=>{
   const v2=JSON.parse(readFileSync(new URL('./fixtures/m01-m14-v2.json',import.meta.url),'utf8'));
   const v3=makeBackup(initialGame()) as any;v3.version=3;delete v3.missions.S13;
   for(const backup of [v1,v2,v3])expect(importBackup(backup,game).game.S13).toEqual(game.S13);
-  const v4=makeBackup(game);expect(v4.version).toBe(4);expect(importBackup(v4,initialGame()).game).toEqual(game);
+  const v4=makeBackup(game);expect(v4.version).toBe(5);expect(importBackup(v4,initialGame()).game).toEqual(game);
   const bad=structuredClone(v4);bad.missions.S13.records[0].group='flat';expect(()=>importBackup(bad,game)).toThrow();expect(game.S13.records[0].group).toBe('whiskered');
  });
  it('imports an actual pre-S13 v3 completed-cart fixture without losing S13 or its first reward',()=>{
@@ -94,7 +94,7 @@ describe('transient fishing state',()=>{
 });
 describe('shore navigation, collision, rig and controls regression',()=>{
  it('reaches all interaction approaches including the pier from every other one',()=>{
-  const points=[{x:-2,z:11},...riverPlaces.map(p=>({x:p.x,z:p.z+1.4})),...Object.values(fishingPositions)];
+  const points=[{x:-2,z:11},...riverPlaces.filter(p=>p.id!=='poolBuoy').map(p=>({x:p.x,z:p.z+(p.id==='poolRamp'?0:1.4)})),...Object.values(fishingPositions)];
   for(const a of points)for(const b of points){const path=findPath(a,b,riverNavigation);expect(path.length,JSON.stringify({a,b})).toBeGreaterThan(0);let prev=a;for(const p of path){for(let i=0;i<=10;i++)expect(walkable({x:prev.x+(p.x-prev.x)*i/10,z:prev.z+(p.z-prev.z)*i/10},riverNavigation)).toBe(true);prev=p;}}
  });
  it('cannot run into water or leave the pier at several frame intervals',()=>{

@@ -406,3 +406,4 @@ body.fishing-active .mission-card,body.fishing-active .action-area,body.fishing-
 
 .fishing-panel #river-feedback:empty { display:none; }
 @media (max-height:600px) and (min-width:701px) { .fishing-panel { top:72px; max-height:calc(100dvh - 82px); padding:10px; }.fishing-panel:has(#river-record-form) .fish-illustration { display:none; } }
+#swim-return{position:fixed;right:24px;top:92px;z-index:9;min-height:52px;padding:12px 20px;}body.swimming .run-toggle,body.swimming .mission-card,body.swimming .minimap{visibility:hidden}body.buoyancy-testing .mission-card,body.buoyancy-testing .action-area,body.buoyancy-testing .joystick,body.buoyancy-testing .run-toggle,body.buoyancy-testing .minimap,body.buoyancy-testing .ifp-camera{visibility:hidden}#buoyancy-trial button{width:100%;min-height:48px;margin-top:8px;}@media(max-width:700px){#swim-return{right:10px;top:76px;padding:10px;font-size:12px;}body.buoyancy-testing .dock{visibility:hidden}}

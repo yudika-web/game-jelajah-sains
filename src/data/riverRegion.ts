@@ -1,6 +1,8 @@
+import {poolPlaces,poolLandObstacles} from './poolRegion';
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const riverPlaces: Place[] = [
+  ...poolPlaces,
   {id:'lestari',name:'Kak Lestari · peneliti perairan',short:'Kak Lestari',action:'Bicara',x:-6,z:9,color:'#438e91'},
   {id:'rodRack',name:'Rak alat pancing pinjaman',short:'Alat pancing',action:'Pinjam',x:-2,z:8,color:'#b9975e'},
   {id:'fishBook',name:'Buku pengamatan ikan',short:'Buku pengamatan',action:'Baca',x:-10,z:3,color:'#508e95'},
@@ -13,6 +15,7 @@ export const riverPlaces: Place[] = [
 ];
 /** Water begins at x=3; only the pier (-9 < z < -5) is walkable beyond it. */
 export const riverNavigation: NavigationArea = { bounds:{minX:-17,maxX:9.5,minZ:-16,maxZ:18},obstacles:[
+  ...poolLandObstacles,
   {x:7,z:6.5,width:8,depth:23}, {x:7,z:-13,width:8,depth:8},
   {x:-11,z:11,width:4,depth:3}, {x:-6,z:9,width:.6,depth:.6},
   {x:-2,z:7.4,width:1.8,depth:.5},

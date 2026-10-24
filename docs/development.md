@@ -126,3 +126,10 @@ Implementasi mengikuti W04, S13, dan “Memancing sebagai pengamatan ekosistem�
 Cadangan **v4**, skema IndexedDB tetap **1**. Key S13 ditambah dalam store saves dan transaksi bersama empat misi; key lama tidak dihapus. V1 hanya M01, v2 M01/M14/world, v3 tiga misi/world; progres S13 yang tidak dicakup dipertahankan. V4 memvalidasi seluruh misi sebelum mengubah state. Riwayat hadiah pertama S13 digabung monoton agar impor/reset tidak menggandakan XP. Fixture `tests/fixtures/m01-m14-rimba-v3.json` berasal dari hasil W03 sebelum S13: gerobak diperbaiki, 24 L dikirim, sumber 16 L, hadiah 100 XP, M14 hari 4, dan sampel M01 tetap ada.
 
 Bukti browser: `CAPTURE_RIVER_EVIDENCE=1 npm run test:e2e -- tests/river.spec.ts`. Cuplikan: `node scripts/capture-river-evidence.mjs`, sesudah alur penuh menghasilkan final-state.json dan server 5173 hidup; EVIDENCE_ORIGIN dapat mengganti server. Lihat [laporan S13](river-fishing-review.md) untuk hasil dan batas pengujian.
+
+
+## Kolam terbatas dan S14 (commit tahap mandiri)
+
+Branch main pada awal pemeriksaan hanya sampai 51a2b22/S13; tidak ada branch berenang/S14 di remote. Atas arahan pengguna, perubahan perahu/S15 disimpan sementara dalam Git stash, lalu kolam/S14 dibuat sebagai tahap mandiri. `poolRegion.ts` membatasi area dan ramp; navigation berganti otomatis saat masuk/keluar. `poolWorld.ts` memotong tanah untuk kolam, menampilkan ramp, rompi, penanda, serta benda uji. Integrator dan loop lama digunakan; tidak ada sistem input kedua. Kecepatan renang 2,2 unit/detik, Shift tidak menambah kecepatan. Kembali ke Tepian tidak mengurangi XP. Reload kembali ke pos darat.
+
+`buoyancyMission.ts` menyimpan prediksi, hasil model, upaya kesimpulan, refleksi dan hadiah. A 100g/200cm³ dan C 200g/400cm³ sama-sama 0,5g/cm³ (terapung); B 100g/50cm³ = 2g/cm³ (tenggelam). Air 1g/cm³. Prediksi salah tetap tersimpan; hasil perlu uji dan Catat. `BuoyancyTrial` sementara, dipanggil loop World dan berhenti pada blur/tab tersembunyi. Catatan ganda ditolak. S14 menggunakan key sendiri pada IndexedDB skema 1, cadangan v5; impor v1–v4 mempertahankan S14. Tahap ini: 144 unit lulus, build lulus, 4 browser khusus S14 lulus.
