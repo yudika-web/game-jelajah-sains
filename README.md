@@ -24,22 +24,30 @@ Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · 
 
 ## Menjalankan
 
-Gunakan Node.js 24 LTS (minimum 22.12) dan npm. Tidak memerlukan API key, akun, database server, atau aset CDN. Setelah mengunduh ZIP, ekstrak dan buka terminal di folder yang memuat `package.json`.
+**Windows, tanpa mengetik perintah:** ekstrak ZIP, pasang [Node.js 24 LTS beserta npm](https://nodejs.org/) sekali, lalu klik ganda **SIAPKAN_ATAU_PERBARUI.bat**. Setelah muncul BERHASIL, buka **JALANKAN_JELAJAH_SAINS.bat**. Pada hari berikutnya cukup buka file Jalankan tersebut. Gunakan **DIAGNOSTIK_JELAJAH_SAINS.bat** bila ada masalah. [Panduan pertama kali, harian, pembaruan, LAN, dan progres](docs/windows-launcher.md).
+
+Peluncur harian menyajikan **build produksi `dist`**, bukan dev server. Internet dan npm tidak diperlukan untuk bermain jika Node.js/build tersedia. Browser dibuka setelah server siap pada **http://localhost:5173**; biarkan jendela server terbuka, tekan **Ctrl+C** untuk menghentikan. Port tidak berganti otomatis dan aplikasi lain tidak dimatikan. **Jangan membuka index.html langsung.** Paket ini masih memerlukan Node.js, bukan EXE mandiri. BAT belum diuji langsung pada Windows.
+
+Alamat/origin lama tetap perlu diperhatikan: `127.0.0.1`, `localhost`, port 4173, dan IP LAN memiliki penyimpanan browser berbeda. Ekspor di alamat lama lalu impor di alamat baru bila berpindah. IndexedDB tidak dihapus. Kandidat LAN tercetak pada server; akses dari HP/IFP membutuhkan jaringan yang sama dan belum dibuktikan dengan perangkat fisik.
+
+Untuk pengembang atau sistem selain Windows (Node.js >=22.12.0, npm >=10):
 
 ```sh
 npm ci
-npm run dev
+npm run dev       # Vite pengembangan, port 5173 tetap
+npm run prepare:local # instalasi bila perlu + build dengan penggantian aman
+npm start         # server statis produksi, port 5173 tetap
+npm run diagnose:local
 ```
 
-Pada lingkungan cloud ini, repositori berada di `/workspace/game-jelajah-sains`; bila cache npm bawaan tidak dapat ditulis, gunakan `npm ci --cache /tmp/jelajah-npm`.
-
-Dev server memakai port **5173**, bind `0.0.0.0`, dan tidak berpindah port otomatis. Buka alamat server melalui browser yang mendukung WebGL 2. Untuk HP di LAN, gunakan alamat IP laptop/server pada port 5173; perangkat harus berada di jaringan yang sama dan firewall harus mengizinkannya. Perubahan alamat/origin membuat penyimpanan browser terpisah: ekspor cadangan sebelum berpindah alamat. Akses LAN antarperangkat belum diuji pada mesin cloud ini.
+Hentikan dev server sebelum memakai server produksi pada port yang sama. Tidak memerlukan API key, akun, database server, atau aset CDN. Jika cache npm bawaan pada lingkungan cloud tidak dapat ditulis, gunakan `npm ci --cache /tmp/jelajah-npm`; persiapan otomatis memakai cache sementara yang dapat ditulis.
 
 ```sh
-npm test          # M01/M14/Rimba/S13, air, sampling, cadangan, navigasi, karakter
+npm test          # aturan misi, cadangan, navigasi, karakter dan gerak
+npm run test:launcher # server statis, port/identitas, persiapan dan rollback
 npm run build     # TypeScript + bundle produksi di dist/
-npm run preview   # periksa bundle produksi di port 4173
-npm run test:e2e  # Chromium: misi lengkap, input, simpan, fallback
+npm run preview   # pemeriksaan pengembang saja, port 4173
+npm run test:e2e  # Chromium: regresi game + produksi/permainan/galeri
 ```
 
 E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `CHROMIUM_PATH` ke executable Chromium yang terpasang. Pengujian memakai SwiftShader agar WebGL dapat diperiksa tanpa GPU. Ini bukan pengukuran performa perangkat sekolah. Playwright menjalankan dev server sendiri bila port belum digunakan.

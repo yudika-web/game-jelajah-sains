@@ -144,3 +144,14 @@ Prioritas area gerak: jika naik perahu gunakan boatNavigation; jika berenang gun
 Model aliran dipisahkan dalam irrigationContent.ts; aturan misi dalam irrigationMission.ts; state sampling dalam flowSampling.ts. Volume 30 detik = debit × 30/60. Data sebelum 10/2/2 L dan sesudah 10/6/6 L. Tidak ada operasi pada volume M14/Rimba. Record hanya setelah menekan Catat hasil, revision dan ID kondisi-titik menolak duplikasi, cleaning memerlukan ketiga data awal + dugaan + alat, dan conclusion memerlukan enam rekaman serta tindakan.
 
 Cadangan v6 menambah S15 setelah v5/S14; skema IndexedDB tetap 1. Impor v1–v5 mempertahankan misi yang tidak dicakup, semua bagian divalidasi dahulu, dan hadiah pertama tetap monoton. Fixture v4 dari S13 asli dan v5 dari hasil S14 disertakan untuk migrasi. Lihat boat-irrigation-review.md untuk panduan, bukti, hasil akhir dan batas perangkat.
+
+
+## Peluncur Windows dan server produksi lokal
+
+Tiga BAT di akar repository memanggil `scripts/local/prepare.mjs`, `launch.mjs`, dan `diagnose.mjs` dari lokasi file, dengan path dikutip, UTF-8, `pushd`, delayed expansion dimatikan, dan jeda sebelum jendela ditutup. Syarat minimum Node 22.12/npm 10 diperiksa; launcher harian tidak memanggil npm. [Panduan pengguna](windows-launcher.md) dan [hasil pemeriksaan](windows-launcher-review.md).
+
+`static-server.mjs` memakai HTTP/fs bawaan Node, root `dist` saja. GET/HEAD, MIME aset, status identitas, URL rusak, dotfile, traversal, dan symlink keluar root ditangani. Identitas memuat ID protokol, hash folder, dan hash kedua entry build; tidak ada path asli atau data browser. Bind IPv4 0.0.0.0:5173 untuk kandidat LAN; browser laptop selalu localhost:5173. EADDRINUSE memicu pemeriksaan identitas: folder/build sama digunakan kembali, selain itu gagal tanpa mematikan proses atau mengganti port. Pemeriksaan kesiapan selesai sebelum browser dibuka.
+
+`prepare.mjs` mencocokkan SHA-256 package.json/package-lock.json + versi mayor Node/platform/arsitektur dan keberadaan dependensi utama. Marker lokal di `.jelajah-local` bukan data game. Instalasi memakai npm ci --include=dev dan cache TEMP, tanpa audit/fund. Build dijalankan melalui script proyek dengan outDir sementara. Build lama dipindahkan setelah staging tervalidasi, lalu dipulihkan jika promosi gagal. Kunci persiapan mencegah dua proses memperbarui bersamaan. Log ditaruh di LOCALAPPDATA atau TEMP, tidak membaca cadangan/IndexedDB. Folder marker/staging/log diabaikan Git.
+
+`npm run test:launcher` memakai node:test tanpa dependensi baru. `tests/production.spec.ts` membuka server statis pada port uji terisolasi, memblokir seluruh permintaan di luar origin, memeriksa permainan/semua karakter galeri di empat viewport dan memastikan rekaman enam misi IndexedDB tetap sama. Port uji dinamis tidak menjadi perilaku peluncur publik; CLI selalu 5173. Uji ini memerlukan build terbaru terlebih dahulu.
