@@ -1,3 +1,4 @@
+import {workshopPlaces,workshopNavigation} from './workshopRegion';
 import { riverPlaces, riverNavigation } from './riverRegion';
 import { rimbaPlaces, rimbaNavigation } from './rimbaRegion';
 import { places, type Place, type PlaceId } from './content';
@@ -24,10 +25,11 @@ export const gardenNavigation: NavigationArea = {
   ],
 };
 export const regions = {
+  workshop:{name:'Bengkel dan Energi',code:'W06',places:workshopPlaces,navigation:workshopNavigation,spawn:{x:0,z:8},gate:'workshopTownGate' as PlaceId},
   river:{name:'Sungai dan Danau',code:'W04',places:riverPlaces,navigation:riverNavigation,spawn:{x:-2,z:9},gate:'riverTownGate' as PlaceId},
   rimba: {name:'Rimba dan Gambut',code:'W03',places:rimbaPlaces,navigation:rimbaNavigation(),spawn:{x:0,z:9},gate:'forestTownGate' as PlaceId},
   town: { name: 'Kota Sains', code: 'W01', places, navigation: { bounds, obstacles }, spawn: { x: -1, z: 6 }, gate: 'gardenGate' as PlaceId },
   garden: { name: 'Kebun Kehidupan', code: 'W02', places: gardenPlaces, navigation: gardenNavigation, spawn: { x: 0, z: 5.5 }, gate: 'townGate' as PlaceId },
 };
-export const regionOf = (id: PlaceId): RegionId => riverPlaces.some(p=>p.id===id)?'river':rimbaPlaces.some(p=>p.id===id)?'rimba':gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
-export const allPlaces = [...places, ...gardenPlaces, ...rimbaPlaces, ...riverPlaces];
+export const regionOf = (id: PlaceId): RegionId => workshopPlaces.some(p=>p.id===id)?'workshop':riverPlaces.some(p=>p.id===id)?'river':rimbaPlaces.some(p=>p.id===id)?'rimba':gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
+export const allPlaces = [...places, ...gardenPlaces, ...rimbaPlaces, ...riverPlaces, ...workshopPlaces];

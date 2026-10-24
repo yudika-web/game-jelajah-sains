@@ -18,6 +18,7 @@ function color(value: string) {
   return materials.get(key)!;
 }
 const palettes = {
+  bima: {skin:'#dba478',hair:'#372e2b',coat:'#c28b38',shirt:'#dce6df',pants:'#445361',boots:'#68523d',bag:'#b28c48'},
   explorer: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
   explorerGirl: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
   nara: { skin:'#d2a17c', hair:'#403028', coat:'#89639d', shirt:'#f4e4c5', pants:'#424f6b', boots:'#604630', bag:'#b49858' },
@@ -83,6 +84,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     const band=drawing('hair-band',c=>{c.fillStyle=p.bag;c.fillRect(0,0,512,512);},p.bag);
     mesh(pony,geometry('band-plane',()=>new THREE.PlaneGeometry(.40,.10)),band,0,.22,-.213).rotation.y=Math.PI;
   } else if(kind==='nara'||kind==='sari') box(head,[.46,.43,.43],p.hair,.07,.25,-.65).name='hair-bun';
+  if(kind==='bima') {box(head,[1.18,.30,1.0],'#e3b344',0,.67,-.02).name='technician-helmet';box(head,[1.25,.08,1.12],'#f2cd69',0,.54,.04).name='helmet-brim';}
   if(kind==='wira'||kind==='sari'||kind==='damar') {
     const hat=kind==='damar'?'#596c44':kind==='wira'?'#5a6745':'#ccb16d', brim=kind==='wira'?'#73805b':'#e3c78b';
     box(head,[1.12,.32,.94],hat,0,.62,-.03).name='hat-crown';box(head,[1.24,.09,1.08],brim,0,.48,.045).name='hat-brim';
@@ -93,6 +95,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     c.strokeStyle=kind==='wira'?'#8e7f64':p.coat;c.lineWidth=6;
     c.beginPath();c.moveTo(187,0);c.lineTo(218,62);c.lineTo(256,24);c.lineTo(295,62);c.lineTo(325,0);c.stroke();
     if(student) {c.fillStyle=p.bag;for(const x of [72,400]){c.fillRect(x,0,33,372);c.fillStyle='#604b2a';c.fillRect(x-4,147,41,39);c.fillStyle=p.bag;c.fillRect(x+5,156,22,21);} }
+    if(kind==='bima') {c.fillStyle='#ece6ca';c.fillRect(54,0,30,470);c.fillRect(428,0,30,470);c.fillStyle='#475e63';c.fillRect(94,155,74,90);c.fillRect(344,155,74,90);}
     if(kind==='wira'||kind==='damar') {c.strokeStyle='#8b7858';c.lineWidth=8;for(const x of [37,359])for(const y of [160,340]){c.strokeRect(x,y,114,116);c.beginPath();c.moveTo(x,y+28);c.lineTo(x+114,y+28);c.stroke();} }
     if(kind==='nara') {c.fillStyle='#b39970';for(const y of [164,266,368]){c.beginPath();c.arc(256,y,6,0,Math.PI*2);c.fill();}}
     if(kind==='sari') {c.fillStyle=p.bag;c.fillRect(75,100,362,412);c.strokeStyle='#9b814b';c.lineWidth=8;c.strokeRect(152,278,208,130);c.fillRect(96,0,25,128);c.fillRect(391,0,25,128);}

@@ -1,3 +1,6 @@
+import {buildWorkshop,type WorkshopView} from './workshopWorld';
+import {evaluateCircuit} from '../game/circuitModel';
+import type {WorkshopProgress} from '../game/workshopMission';
 import {poolSwimmingNavigation,entersPool,exitsPool,poolExit,poolMarker,swimSpeeds} from '../data/poolRegion';
 import type {BuoyancyTrial} from '../game/buoyancyTrial';
 import { BoatController } from './boatController';
@@ -77,6 +80,8 @@ export class World {
   exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions.river.navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
   recoverBoat(){this.stop();this.boat.recover();this.running=false;this.playerAnimator.boating=false;this.boatAppearance(false);this.flowSampling=null;if(this.region==='river')this.position.set(docks.research.land.x,0,docks.research.land.z);this.endInteraction();}
   sailTo(dock:DockId,arrive?:()=>void){return this.boat.aboard&&this.goTo(docks[dock].water,arrive);}
+  private workshopView:WorkshopView|null=null;
+  setWorkshop(p:WorkshopProgress){this.workshopView?.update(p);this.canvas.dataset.lampOn=String(evaluateCircuit(p).lampOn);this.canvas.dataset.circuitRepaired=String(p.repaired);this.canvas.dataset.circuitConnected=String(p.sourceConnected);this.canvas.dataset.circuitSwitch=String(p.switchClosed);}
   private riverView:RiverView|null=null;
   private fishingSession:FishingSession|null=null;
   private fishingGroup:FishGroup='flat';
@@ -169,8 +174,8 @@ export class World {
     this.staticGeometry.clear();
   }
   private label(text: string, x: number, y: number, z: number, id?: PlaceId, building = false) {
-    const plantLabel = /^[AB][123]$/.test(text);
-    const c = document.createElement('canvas'); c.width = plantLabel ? 128 : 512; c.height = plantLabel ? 64 : 96;
+    const plantLabel = /^[AB][123]$/.test(text), terminalLabel=/^(B[+−-]|[SL][12])$/.test(text),smallLabel=plantLabel||terminalLabel;
+    const c = document.createElement('canvas'); c.width = smallLabel ? 128 : 512; c.height = smallLabel ? 64 : 96;
     const ctx = c.getContext('2d')!;
     ctx.fillStyle = building ? '#244b42ee' : '#fffdf3f2';
     ctx.beginPath(); ctx.roundRect(4, 4, c.width-8, c.height-8, plantLabel?12:24); ctx.fill();
@@ -179,8 +184,8 @@ export class World {
     ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari';
-    sprite.scale.set(plantLabel?.65:npcLabel?2:3.5,plantLabel?.325:npcLabel?.375:.66,1);
+    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari'||id==='bima';
+    sprite.scale.set(terminalLabel?.55:plantLabel?.65:npcLabel?2:3.5,terminalLabel?.275:plantLabel?.325:npcLabel?.375:.66,1);
     sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
   }
@@ -238,7 +243,7 @@ export class World {
         rig.root.position.set(place.x, 0, place.z);
         this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
         s.add(rig.root);
-      } else if (place.id === 'gardenGate'||place.id==='rimbaGate'||place.id==='riverGate') {
+      } else if (place.id === 'gardenGate'||place.id==='rimbaGate'||place.id==='riverGate'||place.id==='workshopGate') {
         for(const dx of [-1.8,1.8]) b(.3,3.5,.3,'#98784f',place.x+dx,1.75,place.z);
         b(4.2,.5,.5,'#6d8d5c',place.x,3.6,place.z);
       } else if (place.id === 'sampleA' || place.id === 'sampleB') {
@@ -282,7 +287,7 @@ export class World {
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
-    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.region = region; this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
@@ -293,6 +298,15 @@ export class World {
         this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
       this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
+    }
+    else if(region==='workshop'){
+      const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.workshopView=buildWorkshop({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{
+        const rig=createCharacter('bima','bima');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);
+        this.npcs.push({id:'bima',rig,animator:new CharacterAnimator(rig,3.1),timer:0});
+        this.npcLabels.set('bima',this.label('Kak Bima',x,rig.labelSocket.position.y,z,'bima'));
+      }});
+      this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width>=7?4:1.2,o.z+o.depth/2)));
     }
     else if(region==='river'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -315,7 +329,7 @@ export class World {
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
-    if(fromGate && region === 'town') { this.position.set(previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    if(fromGate && region === 'town') { this.position.set(previous==='workshop'?-15:previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='workshop'?-3:previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
   }
   private updateRimbaCamera() {

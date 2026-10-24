@@ -1,0 +1,51 @@
+{
+  "reviewDate": "2026-10-25",
+  "timezone": "Asia/Bangkok",
+  "environment": "Linux, Chromium system, SwiftShader",
+  "physicalDevice": false,
+  "node": "24.19.0",
+  "npm": "11.9.0",
+  "checks": {
+    "unit": 214,
+    "launcher": 14,
+    "fullBrowser": 43,
+    "fullBrowserMinutes": 18.3,
+    "finalWorkshopAndProductionBrowser": 8,
+    "finalTargetedMinutes": 2.7,
+    "build": "passed",
+    "preparation": "passed after final game code"
+  },
+  "backupVersion": 7,
+  "indexedDBSchema": 1,
+  "mission": "M17-E1",
+  "chapterM17Status": "Dalam pengembangan",
+  "screenshots": 15,
+  "viewports": [
+    [
+      1440,
+      960
+    ],
+    [
+      1280,
+      900
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      844,
+      390
+    ],
+    [
+      1920,
+      1080
+    ]
+  ],
+  "limitations": [
+    "No physical HP/IFP tests",
+    "No direct Windows BAT or LAN device tests",
+    "No physical GPU/FPS benchmark",
+    "Existing Three.js shared chunk warning above 500 kB"
+  ]
+}

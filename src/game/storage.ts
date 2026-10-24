@@ -1,3 +1,4 @@
+import {parseWorkshop} from './workshopMission';
 import {parseBuoyancy} from './buoyancyMission';
 import { parseIrrigation } from './irrigationMission';
 import { parseRiver } from './riverMission';
@@ -41,7 +42,7 @@ export async function loadProgress(): Promise<Progress | null> {
 }
 export async function saveProgress(p: Progress): Promise<void> { await writeKeys([['M01', p]]); }
 export async function loadGame(): Promise<GameState> {
-  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'world']);
+  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1', 'world']);
   const game = initialGame();
   if (values.M01 !== undefined) game.M01 = parseProgress(values.M01);
   if (values.M14 !== undefined) game.M14 = parseGarden(values.M14);
@@ -49,7 +50,8 @@ export async function loadGame(): Promise<GameState> {
   if(values.S13!==undefined)game.S13=parseRiver(values.S13);
   if(values.S14!==undefined)game.S14=parseBuoyancy(values.S14);
   if(values.S15!==undefined)game.S15=parseIrrigation(values.S15);
+  if(values['M17-E1']!==undefined)game.M17E1=parseWorkshop(values['M17-E1']);
   if (values.world !== undefined) game.world = parseTravel(values.world);
   return game;
 }
-export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['world', p.world]]); }
+export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['M17-E1',p.M17E1], ['world', p.world]]); }

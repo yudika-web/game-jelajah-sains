@@ -1,4 +1,4 @@
-export type PlaceId = 'nara' | 'warga' | 'book' | 'rain' | 'sampleA' | 'sampleB' | 'barrier' | 'gardenGate' | 'sari' | 'gardenBook' | 'fairNotes' | 'seedStore' | 'plotA' | 'plotB' | 'waterTank' | 'recordTable' | 'townGate' | 'rimbaGate' | 'forestTownGate' | 'damar' | 'forestMap' | 'capacityBook' | 'supplyNotes' | 'forestSource' | 'bucketRack' | 'workshop' | 'receiverA' | 'receiverB' | 'receiverC' | 'habitatBoard' | 'riverGate' | 'riverTownGate' | 'lestari' | 'rodRack' | 'fishBook' | 'samplingNotes' | 'fishingA' | 'fishingB' | 'fishTable' | 'fishResults' | 'boatStart' | 'boatObservation' | 'flowBook' | 'irrigationNotes' | 'irrigationScreen' | 'cleaningRack' | 'P1' | 'P2' | 'P3' | 'poolRamp' | 'poolBuoy' | 'densityBook' | 'floatBench';
+export type PlaceId = 'workshopGate' | 'workshopTownGate' | 'bima' | 'circuitBook' | 'faultNotes' | 'circuitSource' | 'circuitSwitch' | 'circuitWire' | 'circuitBoard' | 'inspectionBench' | 'componentRack' | 'researchLamp' | 'nara' | 'warga' | 'book' | 'rain' | 'sampleA' | 'sampleB' | 'barrier' | 'gardenGate' | 'sari' | 'gardenBook' | 'fairNotes' | 'seedStore' | 'plotA' | 'plotB' | 'waterTank' | 'recordTable' | 'townGate' | 'rimbaGate' | 'forestTownGate' | 'damar' | 'forestMap' | 'capacityBook' | 'supplyNotes' | 'forestSource' | 'bucketRack' | 'workshop' | 'receiverA' | 'receiverB' | 'receiverC' | 'habitatBoard' | 'riverGate' | 'riverTownGate' | 'lestari' | 'rodRack' | 'fishBook' | 'samplingNotes' | 'fishingA' | 'fishingB' | 'fishTable' | 'fishResults' | 'boatStart' | 'boatObservation' | 'flowBook' | 'irrigationNotes' | 'irrigationScreen' | 'cleaningRack' | 'P1' | 'P2' | 'P3' | 'poolRamp' | 'poolBuoy' | 'densityBook' | 'floatBench';
 export interface Place {
   id: PlaceId;
   name: string;
@@ -10,6 +10,7 @@ export interface Place {
 }
 
 export const places: Place[] = [
+  {id:'workshopGate',name:'Gerbang jalan Bengkel dan Energi',short:'Ke Bengkel dan Energi',action:'Masuk Bengkel',x:-15,z:-6,color:'#bc9554'},
   {id:'riverGate',name:'Gerbang dermaga Sungai dan Danau',short:'Ke Sungai dan Danau',action:'Masuk Sungai',x:-1,z:-6,color:'#598f99'},
   { id:'rimbaGate',name:'Gerbang jalur penjaga hutan',short:'Ke Rimba dan Gambut',action:'Masuk Rimba',x:8,z:15,color:'#977946' },
   { id: 'gardenGate', name: 'Gerbang menuju Kebun Kehidupan', short: 'Ke Kebun Kehidupan', action: 'Masuk Kebun', x: -16, z: 0, color: '#67935c' },

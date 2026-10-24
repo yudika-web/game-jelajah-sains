@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [W04 / S13 Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v6**, dengan enam misi; rincian migrasi ada pada bagian W04/S13.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v6**, dengan enam misi; rincian mutakhir ada pada bagian W06/M17-E1.
 
 ## Sumber dan keputusan implementasi
 
@@ -155,3 +155,14 @@ Tiga BAT di akar repository memanggil `scripts/local/prepare.mjs`, `launch.mjs`,
 `prepare.mjs` mencocokkan SHA-256 package.json/package-lock.json + versi mayor Node/platform/arsitektur dan keberadaan dependensi utama. Marker lokal di `.jelajah-local` bukan data game. Instalasi memakai npm ci --include=dev dan cache TEMP, tanpa audit/fund. Build dijalankan melalui script proyek dengan outDir sementara. Build lama dipindahkan setelah staging tervalidasi, lalu dipulihkan jika promosi gagal. Kunci persiapan mencegah dua proses memperbarui bersamaan. Log ditaruh di LOCALAPPDATA atau TEMP, tidak membaca cadangan/IndexedDB. Folder marker/staging/log diabaikan Git.
 
 `npm run test:launcher` memakai node:test tanpa dependensi baru. `tests/production.spec.ts` membuka server statis pada port uji terisolasi, memblokir seluruh permintaan di luar origin, memeriksa permainan/semua karakter galeri di empat viewport dan memastikan rekaman enam misi IndexedDB tetap sama. Port uji dinamis tidak menjadi perilaku peluncur publik; CLI selalu 5173. Uji ini memerlukan build terbaru terlebih dahulu.
+
+
+## W06 dan episode rangkaian M17-E1
+
+`workshopRegion.ts` menetapkan lokasi dan penghalang W06. `workshopContent.ts` memuat kartu lokal, terminal, serta dugaan. `circuitModel.ts` mengevaluasi lintasan dari sumber 3 V melalui sakelar, slot kabel S2–L1, lampu yang sesuai, dan jalur kembali. World, diagram, dan status memakai evaluasi yang sama. Satu renderer/loop/input tetap dipakai; `workshopWorld.ts` dimiliki regionRoot dan dibersihkan melalui pola yang sudah ada. Kak Bima memakai factory/rig enam balok dengan tinggi 1,72 unit, helm teknisi dan rompi mustard; tersedia juga di galeri.
+
+`workshopMission.ts` memisahkan aturan dari renderer: uji awal dan pemeriksaan visual mendahului isolasi; kontinuitas dan alat uji lampu hanya tersedia sesudah sumber dilepas. Lampu diuji memakai tester virtual terpisah, bukan menyambungkan ulang rangkaian utama. Kabel hanya terpasang pada slot yang dibuktikan putus, sementara pilihan salah disimpan tanpa mengubah koneksi. Revision menolak event lama/klik ganda. Uji sesudah dan pengamatan nyala wajib sebelum kesimpulan. Membuka sakelar setelah selesai tidak menghapus bukti historis.
+
+Parser memutar ulang riwayat tindakan lalu mencocokkan status, pemeriksaan, sambungan, uji, kesimpulan, dan hadiah. Reset memiliki epoch baru dan mempertahankan hadiah pertama. Cadangan v7 menambah key M17-E1 di store saves yang tetap berskema IndexedDB 1. Impor v1–v6 mempertahankan episode yang tidak tercakup; impor trial v7 lebih lama tetap menggabungkan riwayat hadiah secara monoton. Bab M17 tidak memiliki flag completed dari episode ini: UI selalu menampilkan Dalam pengembangan.
+
+Panel `workshopUI.ts` mengikuti dialog samping/bawah lama. Perakitan dapat memakai dua terminal berurutan atau daftar pasangan, tanpa presisi drag. Keyboard, sentuh, dan ukuran IFP memakai kontrol proyek. Lihat [laporan pemeriksaan W06](workshop-circuit-review.md). Setelah kode final, gunakan jalur persiapan untuk memperbarui dist secara aman agar launcher klik ganda membuka build terbaru.

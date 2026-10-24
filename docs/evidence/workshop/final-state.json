@@ -1,0 +1,768 @@
+{
+  "physicalDevice": false,
+  "mode": "IFP browser simulation",
+  "M01": {
+    "version": 1,
+    "accepted": true,
+    "hypothesis": true,
+    "sources": {
+      "book": true,
+      "rain": true
+    },
+    "plan": true,
+    "samples": {
+      "A": {
+        "value": 70,
+        "session": "hujan-0900"
+      },
+      "B": {
+        "value": 20,
+        "session": "hujan-0900"
+      }
+    },
+    "trial": null,
+    "attempts": [],
+    "completed": false,
+    "reward": 0,
+    "savedAt": "2026-10-24T22:37:35.650Z"
+  },
+  "M14": {
+    "version": 1,
+    "accepted": true,
+    "sources": {
+      "needs": true,
+      "fair": true
+    },
+    "plan": true,
+    "supplies": true,
+    "planted": {
+      "A": true,
+      "B": true
+    },
+    "day": 4,
+    "can": 100,
+    "tank": 3100,
+    "watered": [
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": false,
+        "B": false
+      },
+      {
+        "A": false,
+        "B": false
+      }
+    ],
+    "measurements": [
+      {
+        "day": 0,
+        "group": "A",
+        "heights": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "day": 0,
+        "group": "B",
+        "heights": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "day": 2,
+        "group": "A",
+        "heights": [
+          2,
+          2,
+          2
+        ]
+      },
+      {
+        "day": 2,
+        "group": "B",
+        "heights": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "day": 4,
+        "group": "A",
+        "heights": [
+          5,
+          4,
+          6
+        ]
+      },
+      {
+        "day": 4,
+        "group": "B",
+        "heights": [
+          3,
+          2,
+          4
+        ]
+      }
+    ],
+    "attempts": [],
+    "reflection": "",
+    "completed": false,
+    "reward": 0,
+    "firstCompletedAt": null
+  },
+  "W03-LOG01": {
+    "version": 1,
+    "episode": "W03-LOG01",
+    "revision": 0,
+    "accepted": false,
+    "sources": {
+      "map": false,
+      "capacity": false,
+      "supply": false,
+      "habitat": false
+    },
+    "inspected": {
+      "A": false,
+      "B": false,
+      "C": false
+    },
+    "total": null,
+    "bucketTaken": false,
+    "parts": false,
+    "repaired": false,
+    "cOpen": false,
+    "activeTool": null,
+    "armed": null,
+    "source": 40000,
+    "bucket": 0,
+    "cart": 0,
+    "targets": {
+      "A": 0,
+      "B": 0,
+      "C": 0
+    },
+    "transfers": [],
+    "trips": [],
+    "attempts": [],
+    "concluded": false,
+    "report": false,
+    "restoration": null,
+    "completed": false,
+    "reflection": "",
+    "reward": 0,
+    "firstCompletedAt": null
+  },
+  "S13": {
+    "version": 1,
+    "mission": "S13",
+    "revision": 17,
+    "accepted": true,
+    "sources": {
+      "observation": true,
+      "procedure": true,
+      "limits": true
+    },
+    "rod": true,
+    "plan": true,
+    "plans": [
+      {
+        "tool": "same-rod",
+        "bait": "different",
+        "trials": "three",
+        "duration": "same-duration",
+        "session": "same-session",
+        "factor": "location",
+        "correct": false
+      },
+      {
+        "tool": "same-rod",
+        "bait": "standard",
+        "trials": "three",
+        "duration": "same-duration",
+        "session": "same-session",
+        "factor": "location",
+        "correct": true
+      }
+    ],
+    "records": [
+      {
+        "id": "A-1",
+        "site": "A",
+        "index": 0,
+        "group": "flat",
+        "feature": "flat",
+        "note": "Badan lebar terlihat.",
+        "released": true
+      },
+      {
+        "id": "B-1",
+        "site": "B",
+        "index": 0,
+        "group": "whiskered",
+        "feature": "whiskered",
+        "note": "B-1: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "A-2",
+        "site": "A",
+        "index": 1,
+        "group": "flat",
+        "feature": "flat",
+        "note": "A-2: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "B-2",
+        "site": "B",
+        "index": 1,
+        "group": "long",
+        "feature": "long",
+        "note": "B-2: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "A-3",
+        "site": "A",
+        "index": 2,
+        "group": "long",
+        "feature": "long",
+        "note": "A-3: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "B-3",
+        "site": "B",
+        "index": 2,
+        "group": "whiskered",
+        "feature": "whiskered",
+        "note": "B-3: ciri terlihat pada model",
+        "released": true
+      }
+    ],
+    "fishAttempts": [
+      {
+        "site": "A",
+        "index": 0,
+        "feature": "whiskered",
+        "correct": false
+      },
+      {
+        "site": "A",
+        "index": 0,
+        "feature": "flat",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 0,
+        "feature": "whiskered",
+        "correct": true
+      },
+      {
+        "site": "A",
+        "index": 1,
+        "feature": "flat",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 1,
+        "feature": "long",
+        "correct": true
+      },
+      {
+        "site": "A",
+        "index": 2,
+        "feature": "long",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 2,
+        "feature": "whiskered",
+        "correct": true
+      }
+    ],
+    "conclusions": [
+      {
+        "flatA": "A",
+        "whiskeredB": "B",
+        "longBoth": "both",
+        "sampleLimit": "small",
+        "causeLimit": "clean",
+        "correct": false
+      },
+      {
+        "flatA": "A",
+        "whiskeredB": "B",
+        "longBoth": "both",
+        "sampleLimit": "small",
+        "causeLimit": "unproven",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T12:48:09.445Z",
+    "reflection": "Data sampel kecil belum menunjukkan populasi seluruh sungai."
+  },
+  "S14": {
+    "version": 1,
+    "mission": "S14",
+    "revision": 11,
+    "accepted": true,
+    "source": true,
+    "practice": true,
+    "predictions": [
+      {
+        "id": "A",
+        "result": "sink"
+      },
+      {
+        "id": "B",
+        "result": "sink"
+      },
+      {
+        "id": "C",
+        "result": "sink"
+      }
+    ],
+    "records": [
+      {
+        "id": "A",
+        "massG": 100,
+        "volumeCm3": 200,
+        "density": 0.5,
+        "result": "float",
+        "prediction": "sink"
+      },
+      {
+        "id": "B",
+        "massG": 100,
+        "volumeCm3": 50,
+        "density": 2,
+        "result": "sink",
+        "prediction": "sink"
+      },
+      {
+        "id": "C",
+        "massG": 200,
+        "volumeCm3": 400,
+        "density": 0.5,
+        "result": "float",
+        "prediction": "sink"
+      }
+    ],
+    "attempts": [
+      {
+        "rule": "mass",
+        "compare": "A-C",
+        "limits": "model",
+        "correct": false
+      },
+      {
+        "rule": "density",
+        "compare": "A-C",
+        "limits": "model",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T13:23:44.565Z"
+  },
+  "S15": {
+    "version": 1,
+    "mission": "S15",
+    "revision": 20,
+    "accepted": true,
+    "sources": {
+      "flow": true,
+      "duration": false,
+      "barrier": false,
+      "notes": true
+    },
+    "tutorial": {
+      "boarded": true,
+      "arrived": true,
+      "landed": true,
+      "distanceMm": 18000
+    },
+    "inspected": true,
+    "records": [
+      {
+        "id": "blocked-P1",
+        "point": "P1",
+        "condition": "blocked",
+        "volumeMl": 10000,
+        "seconds": 30,
+        "order": 1
+      },
+      {
+        "id": "blocked-P2",
+        "point": "P2",
+        "condition": "blocked",
+        "volumeMl": 2000,
+        "seconds": 30,
+        "order": 2
+      },
+      {
+        "id": "blocked-P3",
+        "point": "P3",
+        "condition": "blocked",
+        "volumeMl": 2000,
+        "seconds": 30,
+        "order": 3
+      },
+      {
+        "id": "clear-P1",
+        "point": "P1",
+        "condition": "clear",
+        "volumeMl": 10000,
+        "seconds": 30,
+        "order": 4
+      },
+      {
+        "id": "clear-P2",
+        "point": "P2",
+        "condition": "clear",
+        "volumeMl": 6000,
+        "seconds": 30,
+        "order": 5
+      },
+      {
+        "id": "clear-P3",
+        "point": "P3",
+        "condition": "clear",
+        "volumeMl": 6000,
+        "seconds": 30,
+        "order": 6
+      }
+    ],
+    "hypotheses": [
+      {
+        "choice": "loss",
+        "correct": false
+      },
+      {
+        "choice": "obstruction",
+        "correct": true
+      }
+    ],
+    "hypothesis": true,
+    "tools": true,
+    "cleaned": true,
+    "cleanAfterOrder": 3,
+    "attempts": [
+      {
+        "supply": "same",
+        "branch": "increased",
+        "cause": "obstruction",
+        "limits": "all",
+        "correct": false
+      },
+      {
+        "supply": "same",
+        "branch": "increased",
+        "cause": "obstruction",
+        "limits": "model-only",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Pasokan tetap; volume cabang meningkat pada durasi sama.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T13:50:03.624Z"
+  },
+  "M17-E1": {
+    "version": 1,
+    "mission": "M17-E1",
+    "epoch": 0,
+    "revision": 23,
+    "accepted": true,
+    "sources": {
+      "loop": true,
+      "switch": false,
+      "inspect": false,
+      "notes": true
+    },
+    "hypotheses": [
+      "battery"
+    ],
+    "inspected": {
+      "source": true,
+      "switch": true,
+      "wire": true,
+      "lamp": true
+    },
+    "continuity": true,
+    "spareWire": false,
+    "sourceConnected": true,
+    "switchClosed": true,
+    "repaired": true,
+    "tests": {
+      "before": {
+        "lampOn": false,
+        "voltage": 3
+      },
+      "after": {
+        "lampOn": true,
+        "voltage": 3
+      }
+    },
+    "observed": true,
+    "connections": [
+      [
+        "S2",
+        "L1"
+      ]
+    ],
+    "wiringAttempts": [
+      {
+        "a": "B+",
+        "b": "B-",
+        "result": "short"
+      },
+      {
+        "a": "S2",
+        "b": "L1",
+        "result": "correct"
+      }
+    ],
+    "attempts": [
+      {
+        "cause": "empty-battery",
+        "evidence": "before-after",
+        "limit": "virtual-3v",
+        "correct": false
+      },
+      {
+        "cause": "broken-path",
+        "evidence": "before-after",
+        "limit": "virtual-3v",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T22:37:30.263Z",
+    "rewardProof": {
+      "at": "2026-10-24T22:37:30.263Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "source": "loop"
+        },
+        {
+          "type": "read",
+          "source": "notes"
+        },
+        {
+          "type": "hypothesis",
+          "choice": "battery"
+        },
+        {
+          "type": "inspect",
+          "component": "source"
+        },
+        {
+          "type": "inspect",
+          "component": "switch"
+        },
+        {
+          "type": "inspect",
+          "component": "wire"
+        },
+        {
+          "type": "test",
+          "stage": "before"
+        },
+        {
+          "type": "isolate"
+        },
+        {
+          "type": "continuity"
+        },
+        {
+          "type": "inspect",
+          "component": "lamp"
+        },
+        {
+          "type": "takeWire"
+        },
+        {
+          "type": "repair",
+          "a": "B+",
+          "b": "B-"
+        },
+        {
+          "type": "repair",
+          "a": "S2",
+          "b": "L1"
+        },
+        {
+          "type": "reconnect"
+        },
+        {
+          "type": "switch",
+          "closed": true
+        },
+        {
+          "type": "test",
+          "stage": "after"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "reflect",
+          "text": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas."
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "cause": "empty-battery",
+            "evidence": "before-after",
+            "limit": "virtual-3v"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "cause": "broken-path",
+            "evidence": "before-after",
+            "limit": "virtual-3v"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "source": "loop"
+      },
+      {
+        "type": "read",
+        "source": "notes"
+      },
+      {
+        "type": "hypothesis",
+        "choice": "battery"
+      },
+      {
+        "type": "inspect",
+        "component": "source"
+      },
+      {
+        "type": "inspect",
+        "component": "switch"
+      },
+      {
+        "type": "inspect",
+        "component": "wire"
+      },
+      {
+        "type": "test",
+        "stage": "before"
+      },
+      {
+        "type": "isolate"
+      },
+      {
+        "type": "continuity"
+      },
+      {
+        "type": "inspect",
+        "component": "lamp"
+      },
+      {
+        "type": "takeWire"
+      },
+      {
+        "type": "repair",
+        "a": "B+",
+        "b": "B-"
+      },
+      {
+        "type": "repair",
+        "a": "S2",
+        "b": "L1"
+      },
+      {
+        "type": "reconnect"
+      },
+      {
+        "type": "switch",
+        "closed": true
+      },
+      {
+        "type": "test",
+        "stage": "after"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "reflect",
+        "text": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas."
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "cause": "empty-battery",
+          "evidence": "before-after",
+          "limit": "virtual-3v"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "cause": "broken-path",
+          "evidence": "before-after",
+          "limit": "virtual-3v"
+        }
+      },
+      {
+        "type": "switch",
+        "closed": false
+      },
+      {
+        "type": "switch",
+        "closed": true
+      }
+    ]
+  },
+  "world": {
+    "region": "workshop",
+    "activeMission": "M17-E1"
+  }
+}

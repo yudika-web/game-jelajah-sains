@@ -415,3 +415,12 @@ body.aboard-boat .minimap{visibility:hidden}
 @media(max-height:600px) and (min-width:701px){#boat-controls{max-width:31vw;width:260px;grid-template-columns:repeat(2,1fr);}}
 
 @media(max-height:600px) and (min-width:701px){#boat-controls{top:148px;bottom:76px;width:27vw;max-width:230px;max-height:calc(100dvh - 224px);padding:4px;}}
+
+/* Circuit episode uses the existing side/bottom dialog; terminals need no precision drag. */
+.circuit-diagram { margin: 12px 0; padding: 10px; border: 1px solid #cdd4c2; border-radius: 12px; background: #f8f5e8; }
+.circuit-diagram svg { display: block; width: 100%; height: auto; aspect-ratio: 360 / 165; min-height: 130px; max-height: 190px; font: 12px sans-serif; fill: #294f47; }
+.circuit-diagram figcaption { font-size: 12px; line-height: 1.6; }
+.terminal-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 12px 0; }
+.terminal-grid button { min-height: 52px; padding: 10px; white-space: normal; }
+.terminal-grid button[aria-pressed=true] { outline: 3px solid #b38332; background: #f1dfaf; }
+body[data-mode=ifp] .terminal-grid button { min-height: 64px; }

@@ -1,3 +1,4 @@
+import {finishedWorkshop} from './helpers/workshop';
 import { test, expect } from '@playwright/test';
 import { createStaticServer } from '../scripts/local/static-server.mjs';
 import { APP_ROOT } from '../scripts/local/common.mjs';
@@ -31,30 +32,39 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await expect(page.locator('#world')).toHaveAttribute('data-ready', 'true');
     await page.locator('#start').click();
     await expect(page.locator('#start')).not.toBeVisible();
-    // Existing v6 progress is loaded from IndexedDB at the production origin, then
+    // Existing six-mission progress plus completed M17-E1 is loaded from IndexedDB at the production origin, then
     // checked across a real gallery round trip. The server never reads the DB.
-    const fixture = JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8'));
+    const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),world:{region:'workshop',activeMission:'M17-E1'}};
     await page.evaluate(async save => {
       await new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('jelajah-sains', 1);
         request.onsuccess = () => {
           const db = request.result, tx = db.transaction('saves', 'readwrite');
-          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15'].includes(key))) tx.objectStore('saves').put(value, key);
+          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1'].includes(key))) tx.objectStore('saves').put(value, key);
           tx.objectStore('saves').put(save.world, 'world');
           tx.oncomplete = () => { db.close(); resolve(); }; tx.onerror = () => reject(tx.error);
         }; request.onerror = () => reject(request.error);
       });
     }, fixture);
     await page.reload(); await expect(page.locator('#start')).toContainText('Lanjutkan');
+    await page.locator('#input-mode').selectOption('ifp');await page.locator('#start').click();
+    await expect(page.locator('#world')).toHaveAttribute('data-region','workshop');
+    await expect(page.locator('#world')).toHaveAttribute('data-lamp-on','true');
+    await page.locator('#map').click();await page.locator('[data-destination=circuitSwitch]').click();
+    await expect(page.locator('#panel-title')).toHaveText('Sakelar model',{timeout:30000});
+    await page.locator('#circuit-toggle').click();await expect(page.locator('#world')).toHaveAttribute('data-lamp-on','false');
+    await page.locator('#circuit-toggle').click();await expect(page.locator('#world')).toHaveAttribute('data-lamp-on','true');
+    await page.locator('#close-panel').click();await expect(page.locator('#save-status')).toContainText('Tersimpan');
     const savedBefore = await page.evaluate(async () => new Promise(resolve => {
       const request = indexedDB.open('jelajah-sains', 1);
       request.onsuccess = () => { const db = request.result, read = db.transaction('saves').objectStore('saves').getAll(); read.onsuccess = () => { db.close(); resolve(read.result); }; };
     }));
     await page.goto(`${origin}/character.html?avatar=siswi`);
     await expect(page.locator('#gallery-character')).toBeVisible();
-    for (const value of ['explorerGirl', 'explorer', 'nara', 'wira', 'sari', 'damar', 'lestari']) {
+    for (const value of ['explorerGirl', 'explorer', 'nara', 'wira', 'sari', 'damar', 'lestari', 'bima']) {
       await page.locator('#gallery-character').selectOption(value);
       await expect(page.locator('canvas')).toHaveAttribute('data-character', value);
+      if(value==='bima'&&viewport.width===1280&&process.env.CAPTURE_WORKSHOP_EVIDENCE)await page.screenshot({path:'docs/evidence/workshop/11-bima-gallery.png'});
     }
     await page.locator('#gallery-detail').click();
     await expect(page.locator('#gallery-detail')).toHaveAttribute('aria-pressed', 'true');
