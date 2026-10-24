@@ -1,0 +1,138 @@
+{
+  "version": 2,
+  "missions": {
+    "M01": {
+      "version": 1,
+      "accepted": true,
+      "hypothesis": true,
+      "sources": {
+        "book": true,
+        "rain": true
+      },
+      "plan": true,
+      "samples": {
+        "A": {
+          "value": 70,
+          "session": "hujan-0900"
+        },
+        "B": {
+          "value": 20,
+          "session": "hujan-0900"
+        }
+      },
+      "trial": null,
+      "attempts": [],
+      "completed": false,
+      "reward": 0,
+      "savedAt": "2026-10-23T15:00:00.000Z"
+    },
+    "M14": {
+      "version": 1,
+      "accepted": true,
+      "sources": {
+        "needs": true,
+        "fair": true
+      },
+      "plan": true,
+      "supplies": true,
+      "planted": {
+        "A": true,
+        "B": true
+      },
+      "day": 4,
+      "can": 100,
+      "tank": 3100,
+      "watered": [
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": true,
+          "B": true
+        },
+        {
+          "A": false,
+          "B": false
+        },
+        {
+          "A": false,
+          "B": false
+        }
+      ],
+      "measurements": [
+        {
+          "day": 0,
+          "group": "A",
+          "heights": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "day": 0,
+          "group": "B",
+          "heights": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "day": 2,
+          "group": "A",
+          "heights": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "day": 2,
+          "group": "B",
+          "heights": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "day": 4,
+          "group": "A",
+          "heights": [
+            5,
+            4,
+            6
+          ]
+        },
+        {
+          "day": 4,
+          "group": "B",
+          "heights": [
+            3,
+            2,
+            4
+          ]
+        }
+      ],
+      "attempts": [],
+      "reflection": "",
+      "completed": false,
+      "reward": 0,
+      "firstCompletedAt": null
+    }
+  },
+  "world": {
+    "region": "town",
+    "activeMission": "M01"
+  }
+}

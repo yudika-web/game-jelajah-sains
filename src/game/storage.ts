@@ -1,4 +1,5 @@
 import { parseProgress, type Progress } from './mission';
+import { parseRimba } from './rimbaMission';
 import { parseGarden } from './gardenMission';
 import { initialGame, parseTravel, type GameState } from './gameState';
 
@@ -37,11 +38,12 @@ export async function loadProgress(): Promise<Progress | null> {
 }
 export async function saveProgress(p: Progress): Promise<void> { await writeKeys([['M01', p]]); }
 export async function loadGame(): Promise<GameState> {
-  const values = await readKeys(['M01', 'M14', 'world']);
+  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'world']);
   const game = initialGame();
   if (values.M01 !== undefined) game.M01 = parseProgress(values.M01);
   if (values.M14 !== undefined) game.M14 = parseGarden(values.M14);
+  if (values['W03-LOG01'] !== undefined) game.Rimba = parseRimba(values['W03-LOG01']);
   if (values.world !== undefined) game.world = parseTravel(values.world);
   return game;
 }
-export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['world', p.world]]); }
+export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['world', p.world]]); }

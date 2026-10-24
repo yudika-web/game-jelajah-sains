@@ -1,0 +1,29 @@
+{
+  "unit": {
+    "command": "npm test",
+    "passed": 96,
+    "failed": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "result": "passed",
+    "warning": "Existing shared Three.js chunk exceeds 500 kB."
+  },
+  "browser": {
+    "command": "CAPTURE_RIMBA_EVIDENCE=1 npm run test:e2e",
+    "passed": 23,
+    "failed": 0,
+    "durationMinutes": 9.6,
+    "renderer": "Chromium system / SwiftShader",
+    "physicalDeviceTested": false
+  },
+  "coverage": [
+    "M01 completion and old save",
+    "M14 completion and backup/reset",
+    "Rimba IFP full cart and bucket completion",
+    "HP portrait/landscape analog + camera and partial bucket delivery",
+    "Laptop cart speeds/wheels/collision/park",
+    "Legacy backups v1/v2 and new v3",
+    "Running, camera, gallery and world scale"
+  ]
+}

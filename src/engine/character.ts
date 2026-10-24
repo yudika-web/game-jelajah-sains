@@ -1,7 +1,7 @@
 import type * as THREE from 'three';
 import { buildReferenceCharacter } from './characterModel';
 
-export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari';
+export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari' | 'damar';
 export interface ArmRig { shoulder: THREE.Group; elbow: THREE.Group; hand: THREE.Group; toolSocket: THREE.Group; }
 export interface LegRig { hip: THREE.Group; knee: THREE.Group; ankle: THREE.Group; }
 export interface CharacterRig {
@@ -21,7 +21,7 @@ export interface CharacterRig {
   bodyMeshes: THREE.Mesh[];
   dimensions: { baseHeight: number; height: number; scale: number; groundY: number; visualY: number; headCenter: number; headHeight: number };
   labelSocket: THREE.Group;
-  tools: { notebook: THREE.Group; meter: THREE.Group; sample: THREE.Group; wateringCan: THREE.Group; ruler: THREE.Group };
+  tools: { notebook: THREE.Group; meter: THREE.Group; sample: THREE.Group; wateringCan: THREE.Group; ruler: THREE.Group; bucket:THREE.Group };
 }
 
 export function createCharacter(kind: CharacterKind, placeId?: string): CharacterRig {

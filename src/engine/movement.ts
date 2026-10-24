@@ -31,7 +31,7 @@ export class MovementController {
   readonly result = { distance: 0, dx: 0, dz: 0, arrived: false, blocked: false };
   stop() { this.speed = this.headingX = this.headingZ = 0; }
 
-  step(position: Point, input: Point, yaw: number, run: boolean, path: Point[], seconds: number, area: NavigationArea) {
+  step(position: Point, input: Point, yaw: number, run: boolean, path: Point[], seconds: number, area: NavigationArea, speeds: {walkSpeed:number;runSpeed:number} = movementConfig, onStep?: (distance:number,seconds:number,position:Point)=>void) {
     const result = this.result;
     result.distance = result.dx = result.dz = 0; result.arrived = result.blocked = false;
     const dt = movementDelta(seconds);
@@ -58,7 +58,7 @@ export class MovementController {
         dx /= remaining; dz /= remaining;
       }
       const magnitude = Math.hypot(dx, dz);
-      const targetSpeed = (run ? movementConfig.runSpeed : movementConfig.walkSpeed) * magnitude;
+      const targetSpeed = (run ? speeds.runSpeed : speeds.walkSpeed) * magnitude;
       const rate = targetSpeed > this.speed ? movementConfig.acceleration : movementConfig.deceleration;
       const rampTime = Math.min(h, Math.abs(targetSpeed - this.speed) / rate);
       const endSpeed = this.speed + Math.sign(targetSpeed - this.speed) * rate * rampTime;
@@ -79,6 +79,7 @@ export class MovementController {
         position.z = sweepAxis(position, 'z', this.headingZ * distance, area);
       }
       const moved = Math.hypot(position.x - oldX, position.z - oldZ);
+      if(moved>1e-10) onStep?.(moved,h,position);
       result.distance += moved; result.dx += position.x - oldX; result.dz += position.z - oldZ;
       if (moved < 1e-10) {
         this.speed = 0; result.blocked = true;

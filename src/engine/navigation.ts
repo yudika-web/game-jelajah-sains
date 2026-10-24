@@ -2,6 +2,7 @@ import { characterConfig } from './characterConfig';
 export interface Point { x: number; z: number; }
 export interface Obstacle { x: number; z: number; width: number; depth: number; }
 export const obstacles: Obstacle[] = [
+  {x:6.2,z:15,width:.3,depth:.3}, {x:9.8,z:15,width:.3,depth:.3}, // W03 gate pillars
   { x: -9, z: -9, width: 8, depth: 6 },
   { x: -12, z: 6, width: 5, depth: 5 },
   { x: -5, z: 13, width: 5, depth: 4 },
@@ -9,12 +10,12 @@ export const obstacles: Obstacle[] = [
   { x: 14, z: 0, width: 4, depth: 40 },
 ];
 export const bounds = { minX: -18, maxX: 11, minZ: -17, maxZ: 17 };
-export interface NavigationArea { bounds: typeof bounds; obstacles: Obstacle[]; }
+export interface NavigationArea { bounds: typeof bounds; obstacles: Obstacle[]; radius?: number; }
 export const townNavigation: NavigationArea = { bounds, obstacles };
 export function walkable(p: Point, area: NavigationArea = townNavigation) {
   const { bounds, obstacles } = area;
   return p.x >= bounds.minX && p.x <= bounds.maxX && p.z >= bounds.minZ && p.z <= bounds.maxZ &&
-    !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + characterConfig.navigationRadius && Math.abs(p.z - o.z) < o.depth / 2 + characterConfig.navigationRadius);
+    !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + (area.radius ?? characterConfig.navigationRadius) && Math.abs(p.z - o.z) < o.depth / 2 + (area.radius ?? characterConfig.navigationRadius));
 }
 /** Sweep one axis to the first expanded wall, including very thin blockers. */
 export function sweepAxis(p: Point, axis: 'x' | 'z', delta: number, area: NavigationArea) {
@@ -23,8 +24,8 @@ export function sweepAxis(p: Point, axis: 'x' | 'z', delta: number, area: Naviga
     Math.min(horizontal ? area.bounds.maxX : area.bounds.maxZ, start + delta));
   for (const o of area.obstacles) {
     const center = horizontal ? o.x : o.z, otherCenter = horizontal ? o.z : o.x;
-    const half = (horizontal ? o.width : o.depth) / 2 + characterConfig.navigationRadius;
-    const otherHalf = (horizontal ? o.depth : o.width) / 2 + characterConfig.navigationRadius;
+    const half = (horizontal ? o.width : o.depth) / 2 + (area.radius ?? characterConfig.navigationRadius);
+    const otherHalf = (horizontal ? o.depth : o.width) / 2 + (area.radius ?? characterConfig.navigationRadius);
     if (Math.abs(other - otherCenter) >= otherHalf) continue;
     // A tiny outward epsilon keeps floating point rounding on the walkable side.
     if (delta > 0 && start <= center - half) target = Math.min(target, center - half - 1e-8);

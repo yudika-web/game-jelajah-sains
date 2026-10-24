@@ -22,6 +22,7 @@ const palettes = {
   explorerGirl: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
   nara: { skin:'#d2a17c', hair:'#403028', coat:'#89639d', shirt:'#f4e4c5', pants:'#424f6b', boots:'#604630', bag:'#b49858' },
   wira: { skin:'#d49e71', hair:'#433126', coat:'#b6a17b', shirt:'#efe1bf', pants:'#4f5c3f', boots:'#7c5634', bag:'#b49858' },
+  damar: {skin:'#d49e71',hair:'#433126',coat:'#a87835',shirt:'#e8dfb9',pants:'#485942',boots:'#695039',bag:'#b89850'},
   sari: { skin:'#d9a374', hair:'#433126', coat:'#698757', shirt:'#ecddbb', pants:'#60543d', boots:'#765330', bag:'#c2a465' },
 };
 /** All drawings are local, cached textures. Unit/measurement tools can run without a DOM. */
@@ -81,8 +82,8 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     const band=drawing('hair-band',c=>{c.fillStyle=p.bag;c.fillRect(0,0,512,512);},p.bag);
     mesh(pony,geometry('band-plane',()=>new THREE.PlaneGeometry(.40,.10)),band,0,.22,-.213).rotation.y=Math.PI;
   } else if(kind==='nara'||kind==='sari') box(head,[.46,.43,.43],p.hair,.07,.25,-.65).name='hair-bun';
-  if(kind==='wira'||kind==='sari') {
-    const hat=kind==='wira'?'#5a6745':'#ccb16d', brim=kind==='wira'?'#73805b':'#e3c78b';
+  if(kind==='wira'||kind==='sari'||kind==='damar') {
+    const hat=kind==='damar'?'#596c44':kind==='wira'?'#5a6745':'#ccb16d', brim=kind==='wira'?'#73805b':'#e3c78b';
     box(head,[1.12,.32,.94],hat,0,.62,-.03).name='hat-crown';box(head,[1.24,.09,1.08],brim,0,.48,.045).name='hat-brim';
   }
   const coat=drawing(`coat/${kind}`,c=> {
@@ -91,7 +92,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     c.strokeStyle=kind==='wira'?'#8e7f64':p.coat;c.lineWidth=6;
     c.beginPath();c.moveTo(187,0);c.lineTo(218,62);c.lineTo(256,24);c.lineTo(295,62);c.lineTo(325,0);c.stroke();
     if(student) {c.fillStyle=p.bag;for(const x of [72,400]){c.fillRect(x,0,33,372);c.fillStyle='#604b2a';c.fillRect(x-4,147,41,39);c.fillStyle=p.bag;c.fillRect(x+5,156,22,21);} }
-    if(kind==='wira') {c.strokeStyle='#8b7858';c.lineWidth=8;for(const x of [37,359])for(const y of [160,340]){c.strokeRect(x,y,114,116);c.beginPath();c.moveTo(x,y+28);c.lineTo(x+114,y+28);c.stroke();} }
+    if(kind==='wira'||kind==='damar') {c.strokeStyle='#8b7858';c.lineWidth=8;for(const x of [37,359])for(const y of [160,340]){c.strokeRect(x,y,114,116);c.beginPath();c.moveTo(x,y+28);c.lineTo(x+114,y+28);c.stroke();} }
     if(kind==='nara') {c.fillStyle='#b39970';for(const y of [164,266,368]){c.beginPath();c.arc(256,y,6,0,Math.PI*2);c.fill();}}
     if(kind==='sari') {c.fillStyle=p.bag;c.fillRect(75,100,362,412);c.strokeStyle='#9b814b';c.lineWidth=8;c.strokeRect(152,278,208,130);c.fillRect(96,0,25,128);c.fillRect(391,0,25,128);}
   },p.coat);
@@ -129,7 +130,13 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   const handle=mesh(wateringCan,geometry('can-handle',()=>new THREE.TorusGeometry(.15,.025,5,10)),color('#bad5ce'),0,.12,.16,false);handle.rotation.y=Math.PI/2;
   const ruler=group('ruler',rightArm.toolSocket);box(ruler,[.09,.73,.045],'#e8c77a',0,.18,.08,false);
   for(let i=0;i<10;i++)box(ruler,[i%5===0?.065:.04,.012,.01],'#6b5d43',-.01,-.12+i*.064,.108,false,.002);
-  const tools={notebook,meter,sample,wateringCan,ruler};Object.values(tools).forEach(t=>t.visible=false);
+  const bucket=group('bucket',rightArm.toolSocket);
+  box(bucket,[.50,.46,.48],'#bd9852',0,-.30,.15,false);
+  box(bucket,[.39,.015,.37],'#75b9c5',0,-.13,.15,false).name='bucket-water';
+  const bucketHandle=mesh(bucket,geometry('bucket-handle',()=>new THREE.TorusGeometry(.24,.025,5,10,Math.PI)),color('#4f6063'),0,-.08,.15,false);
+  const indicator=box(bucket,[.25,.26,.012],'#73c1d0',0,-.29,.397,false);indicator.name='bucket-fill-indicator';
+  bucketHandle.rotation.z=0;
+  const tools={notebook,meter,sample,wateringCan,ruler,bucket};Object.values(tools).forEach(t=>t.visible=false);
   // Measure only neutral body geometry; neither attachments nor a label can alter height.
   root.updateMatrixWorld(true);
   const bounds=new THREE.Box3();for(const body of bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));

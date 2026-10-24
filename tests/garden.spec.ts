@@ -120,13 +120,13 @@ test('M14 backups: new format, old M01 scope, invalid import atomicity and rewar
   await expect(page.locator('#settings-feedback')).toContainText('M01, M14');await expect(page.locator('#world')).toHaveAttribute('data-region','garden');
   const before=await readGarden(page);
   await page.locator('#import-file').setInputFiles({name:'old-m01.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(old))});
-  await expect(page.locator('#settings-feedback')).toContainText('M14 dan wilayah saat ini tetap');expect(await readGarden(page)).toEqual(before);
+  await expect(page.locator('#settings-feedback')).toContainText('M14, Pos Rimba, dan wilayah saat ini tetap');expect(await readGarden(page)).toEqual(before);
   const invalid=structuredClone(backup);invalid.missions.M14.can=-1;
   await page.locator('#import-file').setInputFiles({name:'bad-garden.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))});
   await expect(page.locator('#settings-feedback')).toContainText('tidak valid');expect(await readGarden(page)).toEqual(before);
   const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;
-  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v2.json');
-  const exported=JSON.parse(readFileSync((await download.path())!,'utf8'));expect(exported.version).toBe(2);expect(exported.missions.M14).toEqual(before);expect(exported.missions.M01.samples.A.value).toBe(70);
+  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v3.json');
+  const exported=JSON.parse(readFileSync((await download.path())!,'utf8'));expect(exported.version).toBe(3);expect(exported.missions.M14).toEqual(before);expect(exported.missions.M01.samples.A.value).toBe(70);
   await page.locator('#reset-garden').click();await expect(page.locator('#panel-title')).toHaveText('Ulangi Percobaan M14?');
   expect((await readGarden(page)).day).toBe(6);await page.locator('#confirm-garden-reset').click();
   const reset=await readGarden(page);expect(reset.day).toBe(0);expect(reset.reward).toBe(100);expect(reset.firstCompletedAt).toBe(before.firstCompletedAt);

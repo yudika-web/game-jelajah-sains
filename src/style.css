@@ -374,3 +374,11 @@ body[data-mode='ifp'] .run-toggle { left: 44px; bottom: 251px; min-width: 134px;
   .run-toggle { left: auto; right: 20px; top: 84px; bottom: auto; min-width: 100px; min-height: 52px; padding: 6px 10px; }
   body[data-mode='ifp'] .run-toggle { left: auto; right: 16px; top: 84px; bottom: auto; min-width: 100px; }
 }
+
+/* Logistics tables remain readable without covering the exploration controls. */
+.rimba-balance { font-size: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
+#rimba-preview { min-height: 64px; }
+#panel-content > .secondary, #panel-content > .primary { margin: 6px 8px 6px 0; }
+#rimba-reflection-form textarea { width: 100%; }
+#rimba-transfers, #rimba-trips { min-width: 470px; }
+#garden-status { line-height: 1.6; }

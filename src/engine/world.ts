@@ -8,6 +8,9 @@ import { FollowCamera, type CameraDistance } from './cameraController';
 import { regions } from '../data/regions';
 import type { RegionId } from '../game/gameState';
 import type { GardenProgress, Group } from '../game/gardenMission';
+import { buildRimba, type RimbaView } from './rimbaWorld';
+import { initialRimba, type RimbaProgress } from '../game/rimbaMission';
+import { rimbaNavigation, rimbaCartConfig, cartParking } from '../data/rimbaRegion';
 import { buildGarden, type GardenView } from './gardenWorld';
 import { visibleForPicking } from './picking';
 import { MovementController, movementDelta } from './movement';
@@ -46,9 +49,18 @@ export class World {
   onUpdate: (near: PlaceId | null) => void = () => {};
   region: RegionId = 'town';
   private regionRoot = new THREE.Group();
+  private rimbaView:RimbaView|null=null;
+  private rimbaProgress=initialRimba();
+  pushing=false;
+  onRimbaMotion:(distance:number,seconds:number,position:Point)=>void=()=>{};
+  private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
   private gardenView: GardenView | null = null;
   get places() { return regions[this.region].places; }
-  get navigation() { return regions[this.region].navigation; }
+  get navigation() { return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
+  get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
+  approach(id:PlaceId) {return this.pushing?rimbaCartConfig.approach:1.4;}
+  canPushCart() {return this.region==='rimba'&&this.rimbaProgress.repaired&&Math.hypot(this.position.x-cartParking.x,this.position.z-cartParking.z)<3.25&&walkable(this.position,rimbaNavigation(this.rimbaProgress.cOpen,true));}
+  setPushing(value:boolean) {if(value&&!this.canPushCart())return false;this.stop();this.pushing=value;this.playerAnimator.pushing=value;if(this.region==='rimba')this.updateRimbaCamera();return true;}
   private npcs: { id: PlaceId; rig: CharacterRig; animator: CharacterAnimator; timer: number }[] = [];
   private ray = new THREE.Raycaster();
   private marker: THREE.Mesh;
@@ -126,7 +138,7 @@ export class World {
     ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari';
+    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar';
     sprite.scale.set(plantLabel?.65:npcLabel?2:3.5,plantLabel?.325:npcLabel?.375:.66,1);
     sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
@@ -185,7 +197,7 @@ export class World {
         rig.root.position.set(place.x, 0, place.z);
         this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
         s.add(rig.root);
-      } else if (place.id === 'gardenGate') {
+      } else if (place.id === 'gardenGate'||place.id==='rimbaGate') {
         for(const dx of [-1.8,1.8]) b(.3,3.5,.3,'#98784f',place.x+dx,1.75,place.z);
         b(4.2,.5,.5,'#6d8d5c',place.x,3.6,place.z);
       } else if (place.id === 'sampleA' || place.id === 'sampleB') {
@@ -214,7 +226,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    this.stop(); this.endInteraction();
+    const previous=this.region;this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
     this.regionRoot.traverse(node => {
@@ -229,10 +241,10 @@ export class World {
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
-    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null;
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.region = region; this.barrier.visible = false;
     if (region === 'town') this.buildTown();
-    else {
+    else if(region==='garden') {
       const b = (w:number,h:number,d:number,c:string,x:number,y:number,z:number) => { this.box(this.regionRoot,w,h,d,c,x,y,z,true); };
       this.gardenView = buildGarden({ root: this.regionRoot, box: b, label: (...args) => { this.label(...args); }, npc: (id,x,z) => {
         const rig = createCharacter('sari', id); rig.root.position.set(x,0,z); this.regionRoot.add(rig.root);
@@ -241,10 +253,37 @@ export class World {
       } });
       this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
     }
+    else {
+      const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.rimbaView=buildRimba({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{
+        const rig=createCharacter('damar','damar');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);
+        this.npcs.push({id:'damar',rig,animator:new CharacterAnimator(rig,1.7),timer:0});
+        this.npcLabels.set('damar',this.label('Pak Damar',x,rig.labelSocket.position.y,z,'damar'));
+      }});
+      this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,2.5,o.z+o.depth/2)));
+      this.rimbaView.update(this.rimbaProgress);
+    }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
-    this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes); this.resetPosition();
-    if(fromGate && region === 'town') { this.position.set(-14,0,0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
+    if(fromGate && region === 'town') { this.position.set(previous==='rimba'?7:-14,0,previous==='rimba'?13:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
+  }
+  private updateRimbaCamera() {
+    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width===4?3.5:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
+    this.followCamera.setObstacles(this.collisionBoxes);
+  }
+  setRimba(p:RimbaProgress) {
+    const opened=p.cOpen!==this.rimbaProgress.cOpen;
+    this.rimbaProgress=p;this.rimbaView?.update(p);
+    if(p.activeTool!=='cart'&&this.pushing){this.pushing=false;this.playerAnimator.pushing=false;this.stop();}
+    this.playerRig.tools.bucket.visible=this.region==='rimba'&&p.activeTool==='bucket';
+    const gauge=this.playerRig.tools.bucket.getObjectByName('bucket-fill-indicator')!;gauge.scale.y=Math.max(.01,p.bucket/4000);gauge.visible=p.bucket>0;
+    const water=this.playerRig.tools.bucket.getObjectByName('bucket-water')!;water.visible=p.bucket>0;water.position.y=-.49+.36*p.bucket/4000;
+    if(this.region==='rimba'&&opened)this.updateRimbaCamera();
+    const color=this.region==='rimba'?(p.report?'#d3dfce':'#cbb59a'):'#d9e9e3';
+    (this.scene.background as THREE.Color).set(color);(this.scene.fog as THREE.Fog).color.set(color);
+    this.canvas.dataset.cartRepaired=String(p.repaired);this.canvas.dataset.cartWater=String(p.cart);this.canvas.dataset.bucketWater=String(p.bucket);
+    this.canvas.dataset.rimbaSource=String(p.source);this.canvas.dataset.rimbaTargets=JSON.stringify(p.targets);
   }
   setGarden(p: GardenProgress) {
     this.gardenView?.update(p);
@@ -264,7 +303,7 @@ export class World {
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
   stop(resetRun = true) { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() { this.stop(); this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  resetPosition() { this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -287,7 +326,7 @@ export class World {
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
-    let nearest: PlaceId | null = null, distance: number = characterConfig.interactionRadius;
+    let nearest: PlaceId | null = null, distance: number = this.interactionRadius;
     for (const p of this.places) {
       const d = Math.hypot(p.x - this.position.x, p.z - this.position.z);
       if (d < distance) { nearest = p.id; distance = d; }
@@ -307,7 +346,7 @@ export class World {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
-      const result = this.movement.step(this.position, this.move, this.yaw, this.running, this.path, dt, this.navigation);
+      const result = this.movement.step(this.position, this.move, this.yaw, this.running, this.path, dt, this.navigation, this.pushing?rimbaCartConfig:undefined, this.region==='rimba'?this.trackRimbaStep:undefined);
       travelled = result.distance; dx = result.dx; dz = result.dz;
       if (result.arrived || result.blocked && !this.path.length) {
         this.marker.visible = false; const arrive = this.onArrive; this.onArrive = null;
@@ -331,6 +370,8 @@ export class World {
       npc.animator.lookAt(nearby ? Math.atan2(Math.sin(targetYaw - npc.rig.root.rotation.y), Math.cos(targetYaw - npc.rig.root.rotation.y)) : 0);
       npc.animator.update(npcDt, 0, this.reducedMotion);
     }
+    this.rimbaView?.frame(this.position,this.player.rotation.y,travelled,this.pushing,this.reducedMotion);
+    this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
     this.followCamera.update(this.position, dt, this.reducedMotion);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
@@ -357,12 +398,12 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
-    if(this.region==='garden') for(const label of this.regionLabels) {
+    if(this.region==='garden'||this.region==='rimba') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
-      label.visible=distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
+      label.visible=!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
-      const width=Math.min(plant?.65:label.userData.place==='sari'?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      const width=Math.min(plant?.65:['sari','damar'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     this.gardenView?.frame(dt, this.reducedMotion);

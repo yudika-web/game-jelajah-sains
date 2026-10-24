@@ -1,3 +1,4 @@
+import { rimbaPlaces, rimbaNavigation } from './rimbaRegion';
 import { places, type Place, type PlaceId } from './content';
 import { obstacles, bounds, type NavigationArea } from '../engine/navigation';
 import type { RegionId } from '../game/gameState';
@@ -22,8 +23,9 @@ export const gardenNavigation: NavigationArea = {
   ],
 };
 export const regions = {
+  rimba: {name:'Rimba dan Gambut',code:'W03',places:rimbaPlaces,navigation:rimbaNavigation(),spawn:{x:0,z:9},gate:'forestTownGate' as PlaceId},
   town: { name: 'Kota Sains', code: 'W01', places, navigation: { bounds, obstacles }, spawn: { x: -1, z: 6 }, gate: 'gardenGate' as PlaceId },
   garden: { name: 'Kebun Kehidupan', code: 'W02', places: gardenPlaces, navigation: gardenNavigation, spawn: { x: 0, z: 5.5 }, gate: 'townGate' as PlaceId },
 };
-export const regionOf = (id: PlaceId): RegionId => gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
-export const allPlaces = [...places, ...gardenPlaces];
+export const regionOf = (id: PlaceId): RegionId => rimbaPlaces.some(p=>p.id===id)?'rimba':gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
+export const allPlaces = [...places, ...gardenPlaces, ...rimbaPlaces];

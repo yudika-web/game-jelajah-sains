@@ -11,6 +11,7 @@ export function turnToward(current: number, target: number, dt: number, response
 }
 export class CharacterAnimator {
   pose: InteractionPose = 'none';
+  pushing = false;
   speed = 0;
   state: 'idle' | 'walk' | 'run' | 'interact' = 'idle';
   private runBlend = 0;
@@ -104,6 +105,11 @@ export class CharacterAnimator {
       r.rightArm.shoulder.rotation.x = (conversational ? -.55 : -.65) * strength;
       r.rightArm.hand.rotation.z = conversational ? greet * .35 : greet;
       if (conversational) { r.leftArm.shoulder.rotation.x -= .20 * strength; r.head.rotation.x += .045 * strength; }
+    }
+    if(this.pushing && this.pose==='none') {
+      r.leftArm.shoulder.rotation.x=-.85;r.rightArm.shoulder.rotation.x=-.85;
+      r.leftArm.shoulder.rotation.z=-.025;r.rightArm.shoulder.rotation.z=.025;
+      r.torso.rotation.x=reducedMotion?0:.06;
     }
     for (let i = 0; i < this.armJoints.length; i++) {
       const rotation = this.armJoints[i].rotation;

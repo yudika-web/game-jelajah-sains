@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { analogInput, MovementController, movementConfig, movementDelta } from '../src/engine/movement';
 import { findPath, sweepAxis, walkable, type NavigationArea } from '../src/engine/navigation';
+import { rimbaNavigation } from '../src/data/rimbaRegion';
 import { regions } from '../src/data/regions';
 import { CharacterAnimator } from '../src/engine/characterAnimator';
 import { createCharacter } from '../src/engine/character';
@@ -75,14 +76,15 @@ describe('real movement, independent of renderer, model scale and frame rate', (
       }
     });
     it(`walks/runs safe paths to every mission object and arrives exactly once: ${region}`, () => {
+      const area=region==='rimba'?rimbaNavigation(true):r.navigation; // C is reachable after explicit safety confirmation
       for (const place of r.places) for (const run of [false, true]) {
-        const p = { ...r.spawn }, goal = { x: place.x, z: place.z + 1.4 }, path = findPath(p, goal, r.navigation);
+        const p = { ...r.spawn }, goal = { x: place.x, z: place.z + 1.4 }, path = findPath(p, goal, area);
         expect(path.length).toBeGreaterThan(0);
         const motion = new MovementController(); let arrivals = 0;
         for (let i = 0; i < 180; i++) {
-          const result = motion.step(p, { x: 0, z: 0 }, 0, run, path, .1, r.navigation);
+          const result = motion.step(p, { x: 0, z: 0 }, 0, run, path, .1, area);
           if (result.arrived) arrivals++;
-          expect(walkable(p, r.navigation)).toBe(true);
+          expect(walkable(p, area)).toBe(true);
         }
         expect(p).toEqual(goal); expect(path).toEqual([]); expect(arrivals).toBe(1); expect(motion.speed).toBe(0);
       }

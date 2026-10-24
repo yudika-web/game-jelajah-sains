@@ -1,6 +1,6 @@
 # Catatan pengembangan prototipe 0.1
 
-Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
 ## Sumber dan keputusan implementasi
 
@@ -88,3 +88,20 @@ Analog memiliki area mati radial 0,06 dengan rentang sisanya dinormalisasi kemba
 Animator membaca jarak aktual setelah tabrakan, mengklasifikasikan idle/walk/run/interact, lalu membaurkan amplitudo dan kemiringan tubuh. Irama langkah tetap berdasarkan jarak sehingga otomatis lebih cepat saat berlari. Lengan/kaki tetap balok utuh; NPC tanpa perpindahan tetap diam. Pengurangan gerakan menekan ayunan/condong dekoratif tanpa mengubah integrator. Kamera, FOV, skala, penghalang, radius interaksi, misi, dan format simpan tidak diubah.
 
 Reproduksi bukti video setelah build: `node scripts/capture-running-evidence.mjs` (server preview 4173; dapat diganti lewat `EVIDENCE_ORIGIN`). Memerlukan Chromium sistem dan ffmpeg. Tangkapan HP/IFP diperbarui dengan `CAPTURE_RUNNING_EVIDENCE=1 npm run test:e2e -- tests/running.spec.ts`.
+
+
+## W03 Rimba dan Gambut — W03-LOG01
+
+Episode mengikuti bagian dukungan pos kebakaran dan prototipe pembuktian pada rancangan, dengan ID sendiri. M01/M14 tetap memakai aturan dan identitas lama. `rimbaMission.ts` menyimpan reducer logistik murni: mL integer, neraca 40.000, dua wadah independen, transfer atomik, syarat jalur C, bukti pengiriman, dan hadiah pertama. `parseRimba` memutar ulang transfer, menghubungkannya ke muatan/perjalanan, lalu memeriksa volume agregat, prasyarat, kesimpulan, dan hadiah. Cadangan v3 menambah key `W03-LOG01`; IndexedDB tetap skema 1/store saves. Impor v1/v2 mempertahankan misi yang tidak dicakup. Fixture gabungan lama berada di `tests/fixtures/m01-m14-v2.json`.
+
+`rimbaUI.ts` menangani materi, pemilihan jumlah, pratinjau, tanda terima sekali pakai, jurnal, serta kesimpulan. Main hanya mengintegrasikan reducer, kedekatan objek, perpindahan wilayah, alat, dan penyimpanan. Tidak ada transaksi air atau keadaan misi yang diturunkan dari animasi. Pengembalian sisa air ke sumber tersedia agar pemain yang mengisi lebih dari kebutuhan tidak terjebak.
+
+`rimbaRegion.ts` mendefinisikan posisi, jalur C, dan area navigasi yang di-cache untuk kondisi terbuka/tertutup serta pemain/gerobak. Batas area sumber dibagi oleh domain dan renderer dari `rimbaMission.ts`. `NavigationArea.radius` opsional, default tetap 0,45. Gerobak memakai radius bundar 1,65 yang mencakup seluruh model pada semua arah; bounds dipersempit sesuai selisih radius. Kecepatan khusus 3,4/4,2 diteruskan ke integrator bersama. Rute tetap menahan setiap waypoint, dan tabrakan manual memakai sweep. Tiang gerbang baru memiliki penghalang yang sesuai. Unit test memeriksa semua pasangan pendekatan gerobak, volume model dalam footprint, dan rotasi roda dari jarak.
+
+`rimbaWorld.ts` memakai geometri lokal untuk pos dan benda logistik. Pak Damar memakai rig factory yang sama, varian penampilan baru, tinggi 1,74. Ember menjadi attachment di tangan dan tidak ikut pengukuran tubuh. `CharacterAnimator.pushing` mengatur tangan tanpa menghentikan locomotion dari jarak aktual. Saat dilepas, pengaturan lama kembali berlaku. Satu renderer/loop/input dipakai seluruh wilayah; grup dan sumber daya wilayah lama dilepas, cache karakter bersama dipertahankan.
+
+`RimbaSession` menerima callback substep integrator hanya ketika benar-benar berpindah. Di luar area sumber, muatan memulai trip; kembali ke area menutupnya. Jarak/waktu dikumpulkan dan ditulis sekitar satu detik gerak atau sebelum panel/lifecycle, dengan mm/ms integer. Tidak ada penambahan untuk waktu membaca, perbaikan, jeda, atau aplikasi tertutup. Ini waktu gerak, bukan pengukuran waktu total alat. Batas area ditandai garis krem. Parkir di Bengkel, keluar wilayah, Kembali ke Pos, dan reload menyimpan alat pada titik parkir tetap tanpa menghapus isi/perbaikan. Reload menutup trip terbuka, tidak melanjutkan hitungan selama aplikasi tidak aktif.
+
+Jurnal membandingkan hanya alat yang benar-benar mengirim. Enam muatan ember / dua gerobak merupakan perhitungan kapasitas yang dilabeli, bukan data uji alat yang belum dipakai. Upaya kesimpulan yang salah dan benar tetap tercatat; refleksi bebas tidak dinilai otomatis. Petugas melaporkan penanganan setelah kesimpulan, lalu pemulihan habitat menyelesaikan episode. Langit berubah lebih tenang, tetapi batas area terdampak tetap berlaku.
+
+Bukti dapat direproduksi melalui `CAPTURE_RIMBA_EVIDENCE=1 npm run test:e2e -- tests/rimba.spec.ts`. Pengujian browser memakai input nyata pada dunia WebGL; alur IFP mencakup persiapan penuh dan perbaikan gerobak. Pengujian ember enam muatan memakai fixture persiapan, lalu melakukan setiap pengisian, perjalanan, dan penuangan di browser tanpa perbaikan gerobak. HP memeriksa dua jari, penuangan sebagian, dan pembukaan C. Laptop memeriksa Shift/kecepatan khusus, roda, batas penghalang, parkir, dan pemulihan lari normal. Ukuran viewport bukan perangkat fisik.
