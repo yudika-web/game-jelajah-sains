@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**Perahu W04 dan S15 — Misteri Saluran Irigasi** sudah tersedia: kendali nyata tiga perangkat, dua dermaga, enam pengukuran sebelum/sesudah, pembersihan hambatan, jurnal, dan hadiah sekali. [Cara bermain, model aliran, pengujian dan cuplikan](docs/boat-irrigation-review.md).
+
 **Kolam latihan dan S14 — Terapung atau Tenggelam?** sudah dapat dimainkan: ramp, berenang pada area terbatas, rompi, Kembali ke Tepian, tiga prediksi/percobaan, jurnal, dan hadiah pertama 50 XP. [Panduan dan bukti S14](docs/swimming-buoyancy-review.md).
 
 **W04 Sungai dan Danau — S13 Catatan Ikan Dua Titik** sudah dapat dimainkan: pancing 3D, enam pengamatan terkontrol, pencatatan dan pelepasan atomik, tabel/diagram, serta kesimpulan berbukti. [Panduan, pengujian, gambar, dan cuplikan memancing](docs/river-fishing-review.md).
@@ -44,7 +46,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14. Kelimanya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Ketiga wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15. Keenamnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Ketiga wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -55,6 +57,8 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Mi
 | Jurnal / Tas / Peta | J / I / M | Tombol bawah | Tombol besar bawah |
 | Gerobak Rimba | Bengkel → Dorong; WASD/Shift; kembali ke Bengkel → Parkir | Tombol Bengkel/Tas → Parkir; analog + toggle | Tujuan Peta/kartu; tombol Dorong/Parkir |
 | Memancing W04 | E di titik; Tab/Enter pada Mulai, Tarik, Catat dan lepaskan | Tombol besar tanpa drag atau reaksi cepat | Pilih A/B di Peta, lalu tombol memancing |
+| Berenang (kolam) | WASD / panah; masuk/keluar ramp | Analog dan kamera terpisah | Pilih penanda/ramp di Peta; Kembali ke Tepian |
+| Perahu | Naik → Mulai; WASD/panah, Shift; E di dermaga | Analog, kamera dua jari; Pelan/Jelajah | Pilih dermaga di Peta atau ketuk air sah; Sandar → Turun |
 | Jeda | Esc / Pengaturan | Pengaturan | Pengaturan |
 
 Jalan **5,2 unit/detik**, lari **8,0 unit/detik**, tanpa stamina. Saat mendorong gerobak, kecepatannya **3,4 / 4,2 unit/detik** dengan ruang tabrakan lebih lebar. Parkir mengembalikan gerak biasa. Dorongan analog kecil memberi kecepatan proporsional. Shift/toggle sendiri tidak menggerakkan pemain. **Berhenti** atau input manual membatalkan perjalanan otomatis. Saat memilih tujuan dari Peta, mode sebelum membuka peta dipakai untuk rute itu.
@@ -112,13 +116,21 @@ Dataset latihan tetap, bukan sampling alam. Tidak ada ikan yang dijual atau menj
 
 ## Kolam latihan dan S14
 
-Pilih S14 pada Misi aktif, terima bersama Kak Lestari, lalu baca Buku gaya apung. Masuk kolam melalui Ramp, berenang dengan WASD/analog atau tujuan sentuh ke Penanda kolam, lalu keluar melalui ramp atau Kembali ke Tepian. Hanya kolam yang membuka izin berenang; sungai lain tetap dibatasi. Di Uji benda A/B/C, pilih prediksi, Jalankan uji, lalu Catat hasil setiap benda. Simpulkan bersama Kak Lestari. Tidak ada batas napas atau waktu reaksi. Reset S14 mempertahankan misi lain dan hadiah pertama. Cadangan v1–v4 tetap diterima dan mempertahankan S14.
+Pilih S14 pada Misi aktif, terima bersama Kak Lestari, lalu baca Buku gaya apung. Masuk kolam melalui Ramp, berenang dengan WASD/analog atau tujuan sentuh ke Penanda kolam, lalu keluar melalui ramp atau Kembali ke Tepian. Hanya kolam yang membuka izin berenang; sungai lain tetap dibatasi. Di Uji benda A/B/C, pilih prediksi, Jalankan uji, lalu Catat hasil setiap benda. Simpulkan bersama Kak Lestari. Tidak ada batas napas atau waktu reaksi. Reset S14 mempertahankan misi lain dan hadiah pertama. Cadangan v1–v5 tetap diterima dan mempertahankan misi yang tidak dicakup.
+
+## Menuntaskan S15 — Misteri Saluran Irigasi
+
+Pilih S15 di W04 dan terima bersama Kak Lestari. Baca Buku debit serta Catatan pasokan, lalu naik di Dermaga riset. Pilih Mulai bergerak dan berlayar ke Dermaga pengamatan (Peta/ketuk air atau WASD/analog). Sandar, lalu Turun. Periksa saringan di darat, jalankan dan catat tiga pengukuran awal P1/P2/P3. Pilih dugaan dari data, ambil alat pembersih, lalu bersihkan saringan. Ukur dan catat ulang ketiga titik. Kembali dengan perahu dan simpulkan bersama Kak Lestari.
+
+Setiap pengukuran **30 detik simulasi dipercepat** dengan alat **12 L**: sebelum 10/2/2 L, sesudah 10/6/6 L. Pasokan model tetap 20 L/menit; hambatan membatasi bagian yang menuju cabang, sedangkan sisanya diteruskan ke jalur utama. Data ini bukan debit seluruh sungai atau bukti air aman diminum. Pembacaan tidak mengambil persediaan air Rimba/Kebun.
+
+Perahu Pelan **3,5** / Jelajah **5,0 unit/detik**, dengan lambung beradius konservatif 1,65. Ini angka kendali, bukan data eksperimen. Naik dan turun hanya pada titik sandar sah. Berhenti dan Kembali ke Dermaga selalu tersedia saat naik; pemulihan tidak mengurangi bukti/XP. Reload kembali ke pos darat dan perahu di dermaga awal. Renang tetap hanya kolam, bukan seluruh sungai. Reset S15 terpisah dan hadiah pertama 50 XP tidak berulang. [Laporan lengkap](docs/boat-irrigation-review.md).
 
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kelima misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Keenam misi ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 5** berisi kelima misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 6** berisi keenam misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -148,11 +160,24 @@ src/
   data/riverRegion.ts   posisi dan batas tepian/dermaga W04
   data/riverContent.ts  dataset tetap, ciri, kartu pengetahuan S13
   engine/riverWorld.ts  air ringan, model ikan, tali/pelampung dan pelepasan
+  data/poolContent.ts   massa, volume, massa jenis dan materi S14
+  data/poolRegion.ts    kolam, ramp dan izin berenang
+  engine/poolWorld.ts   visual kolam dan tiga benda uji
+  game/buoyancyMission.ts aturan S14, prediksi, hasil, kesimpulan
+  game/buoyancyTrial.ts uji sementara sampai Catat hasil
+  game/buoyancyUI.ts    latihan berenang dan jurnal S14
+  data/boatRegion.ts    dermaga, jalur air dan konfigurasi perahu
+  engine/boatController.ts keadaan runtime naik/sandar/turun
+  engine/boatWorld.ts   lambung, saluran, saringan, dan alat sampling
+  data/irrigationContent.ts model debit dan materi S15
+  game/irrigationMission.ts aturan bukti sebelum/sesudah dan hadiah
+  game/flowSampling.ts  pengukuran sementara sampai Catat hasil
+  game/irrigationUI.ts  kontrol perahu, kegiatan dan jurnal S15
   game/riverMission.ts  aturan sampling, catatan atomik dan validasi S13
   game/fishingSession.ts state memancing sementara, tanpa timer tambahan
   game/riverUI.ts       kegiatan memancing, kartu, jurnal, tabel dan diagram
-  game/gameState.ts     keadaan wilayah, cadangan v4 dan kompatibilitas v1/v2/v3
-  game/storage.ts       transaksi IndexedDB atomik keempat misi
+  game/gameState.ts     keadaan wilayah, cadangan v6 dan kompatibilitas v1–v5
+  game/storage.ts       transaksi IndexedDB atomik keenam misi
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -165,10 +190,12 @@ scripts/capture-character-evidence.mjs  pengambilan bukti visual yang dapat diul
 scripts/capture-reference-model.mjs    gambar model terbaru dan tampilan perangkat
 scripts/capture-garden-evidence.mjs     bukti tambahan Kebun pada build produksi
 scripts/capture-block-avatar.mjs        bukti karakter/proporsi pada kamera pembanding
+scripts/capture-swimming-evidence.mjs  cuplikan ramp, berenang, pemulihan
+scripts/capture-boat-evidence.mjs      cuplikan naik, berlayar, sandar, turun
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.
 
 ## Batas prototipe
 
-Belum mencakup wilayah di luar empat wilayah ini, lompat/berenang, kendaraan selain gerobak, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.
+Belum mencakup wilayah di luar empat wilayah ini, lompat/menyelam, berenang di luar kolam, kendaraan selain gerobak/perahu, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.

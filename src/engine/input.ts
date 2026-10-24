@@ -80,7 +80,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
     cameraPointer = null;
     if (!dragged && !world.paused) tap(e.clientX, e.clientY);
   });
-  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; });
+  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; if(world.boat.aboard)clear(); });
   world.canvas.addEventListener('lostpointercapture', e => { if (e.pointerId === cameraPointer) cameraPointer = null; });
   return clear;
 }

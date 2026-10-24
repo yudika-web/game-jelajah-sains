@@ -2,7 +2,7 @@
 
 Episode terbaru tersedia di [W04 / S13 Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v4**, dengan empat misi; rincian migrasi ada pada bagian W04/S13.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v6**, dengan enam misi; rincian migrasi ada pada bagian W04/S13.
 
 ## Sumber dan keputusan implementasi
 
@@ -133,3 +133,14 @@ Bukti browser: `CAPTURE_RIVER_EVIDENCE=1 npm run test:e2e -- tests/river.spec.ts
 Branch main pada awal pemeriksaan hanya sampai 51a2b22/S13; tidak ada branch berenang/S14 di remote. Atas arahan pengguna, perubahan perahu/S15 disimpan sementara dalam Git stash, lalu kolam/S14 dibuat sebagai tahap mandiri. `poolRegion.ts` membatasi area dan ramp; navigation berganti otomatis saat masuk/keluar. `poolWorld.ts` memotong tanah untuk kolam, menampilkan ramp, rompi, penanda, serta benda uji. Integrator dan loop lama digunakan; tidak ada sistem input kedua. Kecepatan renang 2,2 unit/detik, Shift tidak menambah kecepatan. Kembali ke Tepian tidak mengurangi XP. Reload kembali ke pos darat.
 
 `buoyancyMission.ts` menyimpan prediksi, hasil model, upaya kesimpulan, refleksi dan hadiah. A 100g/200cm³ dan C 200g/400cm³ sama-sama 0,5g/cm³ (terapung); B 100g/50cm³ = 2g/cm³ (tenggelam). Air 1g/cm³. Prediksi salah tetap tersimpan; hasil perlu uji dan Catat. `BuoyancyTrial` sementara, dipanggil loop World dan berhenti pada blur/tab tersembunyi. Catatan ganda ditolak. S14 menggunakan key sendiri pada IndexedDB skema 1, cadangan v5; impor v1–v4 mempertahankan S14. Tahap ini: 144 unit lulus, build lulus, 4 browser khusus S14 lulus.
+
+
+## Integrasi perahu W04 / S15 sesudah S14
+
+Tahap mandiri berenang/S14 berada pada commit 137f4fd, dengan 144 unit, build dan 4 browser khusus lulus. Perubahan perahu yang disimpan sebelum tahap ini dipulihkan dari stash dan konflik disatukan secara eksplisit, termasuk rig rompi, animasi, navigasi, frame hooks, penyimpanan, serta UI. Tidak ada pekerjaan pengguna yang dihapus atau diganti placeholder.
+
+Prioritas area gerak: jika naik perahu gunakan boatNavigation; jika berenang gunakan poolSwimmingNavigation; selebihnya area darat wilayah aktif. Kolam tidak menjadi rute perahu, dan jalur perahu tidak membuka izin berenang. Integrator lama memakai kecepatan 3,5/5,0 untuk perahu, 2,2/2,2 untuk renang, dan 5,2/8,0 di darat. Circle radius 1,65 mencakup hull pada semua rotasi. Docking memerlukan tanda air dengan toleransi 0,5; turun memeriksa titik darat walkable. Posisi kendaraan/transient sampling tidak dipersistenkan; reload kembali ke pos dan dermaga awal.
+
+Model aliran dipisahkan dalam irrigationContent.ts; aturan misi dalam irrigationMission.ts; state sampling dalam flowSampling.ts. Volume 30 detik = debit × 30/60. Data sebelum 10/2/2 L dan sesudah 10/6/6 L. Tidak ada operasi pada volume M14/Rimba. Record hanya setelah menekan Catat hasil, revision dan ID kondisi-titik menolak duplikasi, cleaning memerlukan ketiga data awal + dugaan + alat, dan conclusion memerlukan enam rekaman serta tindakan.
+
+Cadangan v6 menambah S15 setelah v5/S14; skema IndexedDB tetap 1. Impor v1–v5 mempertahankan misi yang tidak dicakup, semua bagian divalidasi dahulu, dan hadiah pertama tetap monoton. Fixture v4 dari S13 asli dan v5 dari hasil S14 disertakan untuk migrasi. Lihat boat-irrigation-review.md untuk panduan, bukti, hasil akhir dan batas perangkat.

@@ -1,5 +1,6 @@
 import {buildPool} from './poolWorld';
 import type {BuoyancyTrial} from '../game/buoyancyTrial';
+import { buildIrrigation,type IrrigationView } from './boatWorld';
 import * as THREE from 'three';
 import { riverPlaces } from '../data/riverRegion';
 import { fishGroups, type FishGroup } from '../data/riverContent';
@@ -27,6 +28,7 @@ export function fishModel(group: FishGroup) {
 }
 export interface RiverView {
   pool:ReturnType<typeof buildPool>;
+  irrigation:IrrigationView;
   frame(dt:number,reduced:boolean,phase:FishingPhase,elapsed:number,group:FishGroup,rodTip:THREE.Vector3,player:THREE.Vector3,site:'A'|'B'):void;
   clearFishing():void;
 }
@@ -38,7 +40,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   for(let x=2.2;x<10;x+=.45)b(.03,.012,3.95,'#6f573f',x,.107,-7);
   for(const x of [3,6,9])for(const z of [-8.6,-5.4])b(.18,1,.18,'#7c6449',x,-.3,z);
   // Physical water boundary and railings leave both marked observation stations clear.
-  for(let z=-15;z<18;z+=1.5)if(z< -9||z> -5){b(.12,.85,.12,'#8e7e58',2.9,.425,z);b(.10,.10,1.6,'#baab7a',2.9,.70,z);}
+  for(let z=-15;z<18;z+=1.5)if((z< -9||z> -5)&&(z<11.5||z>14.5)){b(.12,.85,.12,'#8e7e58',2.9,.425,z);b(.10,.10,1.6,'#baab7a',2.9,.70,z);}
   for(const x of [-17.8])for(let z=-16;z<19;z+=2){b(.13,.9,.13,'#8b7956',x,.45,z);b(.12,.12,2.1,'#b1a076',x,.7,z);}
   b(4,3.1,3,'#d7ddc1',-11,1.55,11);b(4.5,.3,3.5,'#508a85',-11,3.2,11);
   b(1.1,2.1,.12,'#64837b',-11,1.05,12.57);b(1,.9,.12,'#9ac6cb',-12.1,1.9,12.58);label('POS RISET PERAIRAN',-11,3.9,11,undefined,true);
@@ -52,6 +54,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   npc(-6,9);
   for(const p of riverPlaces){if(p.id!=='lestari')label(p.short,p.x,p.id==='rodRack'?2.5:2.35,p.z,p.id);const disc=new THREE.Mesh(new THREE.RingGeometry(.62,.73,24),new THREE.MeshBasicMaterial({color:p.color,side:THREE.DoubleSide}));disc.rotation.x=-Math.PI/2;disc.position.set(p.x,.125,p.z);disc.userData.place=p.id;root.add(disc);}
   const pool=buildPool(root,b);
+  const irrigation=buildIrrigation(root,b);
   const waterLines:THREE.Mesh[]=[];
   const waveMaterial=new THREE.MeshBasicMaterial({color:'#9cd0d0',transparent:true,opacity:.50}),waveGeometry=new THREE.BoxGeometry(.9,.012,.055);
   for(let i=0;i<14;i++){const wave=new THREE.Mesh(waveGeometry,waveMaterial);wave.position.set(4+i%4*3.6,-.225,-15+Math.floor(i/4)*8);root.add(wave);waterLines.push(wave);}
@@ -64,7 +67,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   const caught=Object.fromEntries(fishGroups.map(g=>{const fish=fishModel(g);tackle.add(fish);return[g,fish];})) as Record<FishGroup,THREE.Group>;
   const start=new THREE.Vector3(),end=new THREE.Vector3(),fishStart=new THREE.Vector3();let time=0;
   function clearFishing(){tackle.visible=false;Object.values(caught).forEach(f=>f.visible=false);}
-  return {pool,clearFishing,frame(dt,reduced,phase,elapsed,group,tip,player,site){
+  return {pool,irrigation,clearFishing,frame(dt,reduced,phase,elapsed,group,tip,player,site){
     if(!reduced){time+=dt;waterLines.forEach((wave,i)=>{wave.position.x=4+i%4*3.6+Math.sin(time*.7+i)*.30;});decorative.forEach((f,i)=>{f.position.x=6+i*3+Math.sin(time*.4+i)*1.1;f.rotation.y=Math.cos(time*.4+i)>0?0:Math.PI;});}
     const active=phase!=='idle';tackle.visible=active;if(!active)return;
     end.set(site==='A'?5:10.3,-.11,player.z-.2);start.copy(tip);

@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-24",
+  "reportTimezone": "Asia/Bangkok",
+  "initialCommit": "51a2b22ddb62539b4ebd02e5b43b13e037fd14fa",
+  "swimmingStageCommit": "137f4fdd3367f642ab58eed10880807033f7a57a",
+  "swimmingStage": {
+    "unitPassed": 144,
+    "build": "passed",
+    "browserPassed": 4
+  },
+  "integrated": {
+    "unitCommand": "npm test",
+    "unitPassed": 173,
+    "buildCommand": "npm run build",
+    "build": "passed",
+    "fullBrowserCommand": "CAPTURE_BOAT_EVIDENCE=1 CAPTURE_SWIM_EVIDENCE=1 npm run test:e2e -- --reporter=line",
+    "fullBrowserPassed": 35,
+    "fullBrowserMinutes": 15.7,
+    "finalBoatCommand": "CAPTURE_BOAT_EVIDENCE=1 npm run test:e2e -- tests/boat.spec.ts --reporter=line",
+    "finalBoatPassed": 4,
+    "finalBoatMinutes": 2.3
+  },
+  "browser": "Chromium 154.0.8037.57",
+  "renderer": "WebGL 2 SwiftShader",
+  "physicalDevice": false,
+  "viewports": {
+    "laptopAndIFP": [
+      1440,
+      960
+    ],
+    "phonePortrait": [
+      390,
+      844
+    ],
+    "phoneLandscape": [
+      844,
+      390
+    ]
+  },
+  "videos": {
+    "boatSeconds": 11.2,
+    "swimmingSeconds": 6.1,
+    "size": [
+      960,
+      600
+    ],
+    "codec": "VP9",
+    "note": "Capture cadence is not a physical-device FPS benchmark."
+  },
+  "backupVersion": 6,
+  "indexedDBSchema": 1,
+  "legacyBackupsAccepted": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "limitations": [
+    "No physical HP/IFP tests",
+    "No GPU/FPS, battery, thermal or LAN benchmark",
+    "Simplified teaching models, no complex current or wave simulation"
+  ]
+}

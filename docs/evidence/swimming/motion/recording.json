@@ -1,0 +1,19 @@
+{
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "Chromium SwiftShader",
+  "viewport": [
+    1280,
+    800
+  ],
+  "camera": "near",
+  "seconds": 5.978624105453491,
+  "frames": 68,
+  "sequence": [
+    "enter via ramp",
+    "automatic swimming state",
+    "actual motion to pool marker",
+    "Return to Shore"
+  ],
+  "note": "Integration build with boat/S15 present; completed mission fixture. Capture cadence is not a device FPS benchmark."
+}

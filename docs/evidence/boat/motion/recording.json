@@ -1,0 +1,23 @@
+{
+  "browser": "154.0.8037.57",
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL 2 SwiftShader",
+  "viewport": [
+    1280,
+    800
+  ],
+  "frames": 118,
+  "seconds": 11.16751480102539,
+  "sequence": [
+    "board",
+    "seated with vest",
+    "start",
+    "water path navigation",
+    "stop",
+    "resume route",
+    "moor",
+    "exit on land"
+  ],
+  "note": "Completed mission fixture; all boat movement in this clip uses browser controls. Capture cadence is not a device FPS benchmark.",
+  "errors": []
+}

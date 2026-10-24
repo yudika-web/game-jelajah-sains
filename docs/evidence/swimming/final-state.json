@@ -24,7 +24,7 @@
     "attempts": [],
     "completed": false,
     "reward": 0,
-    "savedAt": "2026-10-24T13:23:44.566Z"
+    "savedAt": "2026-10-24T13:46:55.104Z"
   },
   "M14": {
     "version": 1,
@@ -391,7 +391,7 @@
     "completed": true,
     "reflection": "",
     "reward": 50,
-    "firstCompletedAt": "2026-10-24T13:23:44.565Z"
+    "firstCompletedAt": "2026-10-24T13:46:55.104Z"
   },
   "world": {
     "region": "river",

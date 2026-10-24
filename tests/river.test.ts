@@ -67,7 +67,7 @@ describe('S13 deterministic sampling and atomic release',()=>{
   const v2=JSON.parse(readFileSync(new URL('./fixtures/m01-m14-v2.json',import.meta.url),'utf8'));
   const v3=makeBackup(initialGame()) as any;v3.version=3;delete v3.missions.S13;
   for(const backup of [v1,v2,v3])expect(importBackup(backup,game).game.S13).toEqual(game.S13);
-  const v4=makeBackup(game);expect(v4.version).toBe(5);expect(importBackup(v4,initialGame()).game).toEqual(game);
+  const v4=makeBackup(game);expect(v4.version).toBe(6);expect(importBackup(v4,initialGame()).game).toEqual(game);
   const bad=structuredClone(v4);bad.missions.S13.records[0].group='flat';expect(()=>importBackup(bad,game)).toThrow();expect(game.S13.records[0].group).toBe('whiskered');
  });
  it('imports an actual pre-S13 v3 completed-cart fixture without losing S13 or its first reward',()=>{
@@ -94,13 +94,13 @@ describe('transient fishing state',()=>{
 });
 describe('shore navigation, collision, rig and controls regression',()=>{
  it('reaches all interaction approaches including the pier from every other one',()=>{
-  const points=[{x:-2,z:11},...riverPlaces.filter(p=>p.id!=='poolBuoy').map(p=>({x:p.x,z:p.z+(p.id==='poolRamp'?0:1.4)})),...Object.values(fishingPositions)];
-  for(const a of points)for(const b of points){const path=findPath(a,b,riverNavigation);expect(path.length,JSON.stringify({a,b})).toBeGreaterThan(0);let prev=a;for(const p of path){for(let i=0;i<=10;i++)expect(walkable({x:prev.x+(p.x-prev.x)*i/10,z:prev.z+(p.z-prev.z)*i/10},riverNavigation)).toBe(true);prev=p;}}
+  const points=[{x:-2,z:11},...riverPlaces.filter(p=>p.id!=='poolBuoy').map(p=>({x:p.x,z:p.z+(['poolRamp','boatStart','boatObservation'].includes(p.id)?0:1.4)})),...Object.values(fishingPositions)];
+  for(const a of points)for(const b of points){if((a.x>15)!==(b.x>15)){expect(findPath(a,b,riverNavigation)).toEqual([]);continue;}const path=findPath(a,b,riverNavigation);expect(path.length,JSON.stringify({a,b})).toBeGreaterThan(0);let prev=a;for(const p of path){for(let i=0;i<=10;i++)expect(walkable({x:prev.x+(p.x-prev.x)*i/10,z:prev.z+(p.z-prev.z)*i/10},riverNavigation)).toBe(true);prev=p;}}
  });
  it('cannot run into water or leave the pier at several frame intervals',()=>{
   for(const dt of [1/120,1/60,1/30,1/10])for(const [x,z]of [[1,5],[7,-7]]){
    const movement=new MovementController(),p={x,z};for(let i=0;i<3/dt;i++)movement.step(p,{x:1,z:0},0,true,[],dt,riverNavigation);
-   expect(walkable(p,riverNavigation)).toBe(true);expect(p.x).toBeLessThanOrEqual(z===5?2.55:9.5);
+   expect(walkable(p,riverNavigation)).toBe(true);expect(p.x).toBeLessThanOrEqual(z===5?2.55:9.55);
   }
   expect(findPath({x:1,z:5},{x:6,z:5},riverNavigation)).toEqual([]);expect(walkable({x:7,z:-4},riverNavigation)).toBe(false);
  });
