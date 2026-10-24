@@ -332,7 +332,7 @@ function settings() {
     } catch (error) { $('settings-feedback').textContent = error instanceof Error ? error.message : 'Cadangan tidak dapat dibaca.'; }
     (e.target as HTMLInputElement).value = '';
   };
-  $('character-gallery-link').onclick=async e=>{e.preventDefault();await saveChain;location.assign('/character.html');};
+  $('character-gallery-link').onclick=async e=>{e.preventDefault();await saveChain;location.assign('/character.html'+location.search);};
   $('reset-garden').onclick=()=>{
     openPanel('Ulangi Percobaan M14?', '<p>Hari, rencana, petak, air, data, dan kesimpulan M14 akan dimulai ulang. M01 dan catatan hadiah pertama tetap tersimpan.</p><button class="danger" id="confirm-garden-reset">Ya, ulangi percobaan M14</button>');
     $('confirm-garden-reset').onclick=()=>{dispatchGarden({type:'reset'});closePanel();};

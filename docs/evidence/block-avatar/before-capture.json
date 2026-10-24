@@ -1,0 +1,45 @@
+{
+  "phase": "before",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "camera": {
+    "distance": 10.8,
+    "yaw": 0.25,
+    "pitch": 0.46,
+    "targetHeight": 1.02
+  },
+  "note": "Both comparison phases use the calibrated 1.02 target height. Original pre-patch target was 1.4. Reduced motion enabled; models and environment are the actual game factories.",
+  "shots": [
+    {
+      "name": "nara-dialogue",
+      "x": "-4.00",
+      "z": "4.39",
+      "yaw": "0.250",
+      "distance": "normal"
+    },
+    {
+      "name": "nara-pair",
+      "x": "-4.00",
+      "z": "4.39",
+      "yaw": "0.250",
+      "distance": "normal"
+    },
+    {
+      "name": "wira-dialogue",
+      "x": "3.00",
+      "z": "7.45",
+      "yaw": "0.250",
+      "distance": "normal"
+    },
+    {
+      "name": "laboratory-door",
+      "x": "-5.05",
+      "z": "16.42",
+      "yaw": "0.250",
+      "distance": "normal"
+    }
+  ],
+  "errors": []
+}

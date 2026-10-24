@@ -1,3 +1,4 @@
+import { characterConfig } from './characterConfig';
 export interface Point { x: number; z: number; }
 export interface Obstacle { x: number; z: number; width: number; depth: number; }
 export const obstacles: Obstacle[] = [
@@ -13,7 +14,7 @@ export const townNavigation: NavigationArea = { bounds, obstacles };
 export function walkable(p: Point, area: NavigationArea = townNavigation) {
   const { bounds, obstacles } = area;
   return p.x >= bounds.minX && p.x <= bounds.maxX && p.z >= bounds.minZ && p.z <= bounds.maxZ &&
-    !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + 0.45 && Math.abs(p.z - o.z) < o.depth / 2 + 0.45);
+    !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + characterConfig.navigationRadius && Math.abs(p.z - o.z) < o.depth / 2 + characterConfig.navigationRadius);
 }
 export function findPath(start: Point, end: Point, area: NavigationArea = townNavigation): Point[] {
   const allowed = (p: Point) => walkable(p, area);

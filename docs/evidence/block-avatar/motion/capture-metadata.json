@@ -1,0 +1,12 @@
+{
+  "screenshots": 0,
+  "videoFrames": 188,
+  "recordedSeconds": 12.51,
+  "browser": "154.0.8037.57",
+  "renderer": "Chromium SwiftShader (software rendering)",
+  "renderStats": {
+    "drawCalls": 171,
+    "triangles": 5378
+  },
+  "note": "Capture cadence is not a physical-device FPS benchmark."
+}

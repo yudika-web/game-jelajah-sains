@@ -1,6 +1,6 @@
 # Catatan pengembangan prototipe 0.1
 
-Pemeriksaan bentuk karakter terbaru tersedia di [Pembentukan ulang dari acuan tiga sisi](reference-model-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
 ## Sumber dan keputusan implementasi
 
@@ -65,3 +65,13 @@ Lihat [laporan W02/M14](garden-review.md) untuk alur, bukti visual, dan hasil pe
 `gardenMission.ts` adalah sumber kebenaran untuk persediaan air, petak, perlakuan, hari simulasi, pengukuran, dan hadiah. Penyiraman memeriksa total dosis sebelum memindahkan air; peristiwa berulang pada kelompok/hari yang sama tidak menambah dosis. Tombol hari membawa nomor hari yang diharapkan, sehingga event lama tidak memajukan dua hari. Benih diturunkan dari dua status kelompok (masing-masing tiga). Semua aksi dunia diperiksa jaraknya di integrasi UI. Pertumbuhan visual dihitung deterministik dari titik model yang sama dengan pengukuran, tetapi hanya event pengukuran yang menambahkan baris jurnal. Grafik memakai `measurements` yang sama dengan tabel, termasuk rata-rata yang dihitung dari ketiga tinggi.
 
 Skema IndexedDB tetap **1**, store `saves`, dengan key `M01`, `M14`, dan `world`. Format internal masing-masing misi tetap **1**; format ekspor gabungan **2**. `loadGame` hanya mengisi default untuk key yang belum ada, dan kegagalan validasi tidak menimpa simpanan lama. `saveGame` menulis ketiga key secara atomik. `importBackup` memeriksa semua bagian sebelum mutasi dan mempertahankan M14 untuk cadangan M01 v1. Riwayat `firstCompletedAt` dan hadiah pertama M14 dipertahankan saat reset dan digabung secara monoton ketika mengimpor cadangan lebih lama pada perangkat yang sama. XP diturunkan dari hadiah per misi, bukan ditambah setiap klik. Ini penyimpanan lokal untuk pembelajaran, bukan sistem anti manipulasi atau penilaian daring.
+
+## Patch avatar balok dan ukuran absolut
+
+Lihat [laporan patch](block-avatar-review.md). `characterConfig.ts` menjadi sumber tinggi target semua varian, lantai kaki, label, tinggi sasaran kamera, radius navigasi/interaksi, pintu, bangku, dan meja. Model baru tetap memakai kontrak rig lama, tetapi siku/lutut hanya socket kompatibilitas tanpa ruas visual terpisah. Enam mesh utama adalah kepala, torso, lengan kiri/kanan, serta kaki kiri/kanan. Wajah, pakaian, tangan, dan sepatu memakai canvas lokal/material datar yang dibagi pakai; rambut terdiri dari tiga bentuk besar dan tambahan kuncir/sanggul bila sesuai.
+
+`bodyMeshes` memisahkan tubuh dari alat, bayangan, label, dan penanda. Batas geometri netral dihitung sebelum label/bayangan dibuat. Faktor `targetHeight / baseHeight` ditetapkan dengan `visual.scale.setScalar`, bukan dikalikan dengan skala sebelumnya. Posisi visual mengoreksi telapak ke Y 0,10; akar navigasi tetap berskala 1. Alat pada socket diwarisi skala visual sekali. Animator mempertahankan root navigasi, mengayun anggota utuh dari bahu/pinggul, membatasi kaki di dalam rok Nara, dan mengoreksi sudut terendah kaki saat melangkah.
+
+Siswa dan siswi sama-sama 1,60 unit. `?avatar=siswi` memilih varian pada awal konstruksi dunia; query dipertahankan saat membuka/menutup galeri dan tidak masuk format misi/cadangan. Galeri memakai factory yang sama, tanpa skala tambahan. Mode biasa membingkai model sesuai tinggi aktual untuk inspeksi; `?framing=compare` memakai frustum lama yang tetap agar perubahan ukuran terlihat. Kamera permainan tetap memakai 8,5/10,8/14 unit dan sudut kontrol lama, dengan tinggi sasaran 1,02 unit.
+
+Pintu 2,10 unit dan tapak bangunan dipertahankan. Bangku diturunkan ke 0,50 dan permukaan meja kebun ke 0,84. Pot/bed serta tanaman disesuaikan secara visual; tinggi pertumbuhan ditampilkan 5× (`0,05 unit/cm`) dan panel menjelaskannya, sementara data cm dan aturan M14 tidak berubah. Penghalang tidak memerlukan perubahan tapak. Jangkauan interaksi 2,6, pendekatan 1,4, dan radius navigasi 0,45 dipertahankan.

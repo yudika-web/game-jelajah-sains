@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { damp } from './characterAnimator';
+import { characterConfig } from './characterConfig';
 
 export type CameraDistance = 'near' | 'normal' | 'far';
 export const cameraDistances: Record<CameraDistance, number> = { near: 8.5, normal: 10.8, far: 14 };
@@ -54,7 +55,7 @@ export class FollowCamera {
     this.shiftY = reducedMotion || immediate ? shiftY : damp(this.shiftY, shiftY, 8, dt);
     this.camera.setViewOffset(this.width, this.height, this.shiftX, this.shiftY, this.width, this.height);
     // Follow the stable world root, not the animated torso/head.
-    this.target.copy(position); this.target.y += 1.4;
+    this.target.copy(position); this.target.y += characterConfig.cameraTargetHeight;
     const angle = this.yaw + this.interactionYaw;
     this.offset.set(Math.sin(angle) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(angle) * Math.cos(this.pitch));
     const requested = cameraDistances[this.distance];

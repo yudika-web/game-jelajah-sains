@@ -18,7 +18,7 @@ interface Context {
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const button = (id: string, text: string, disabled = false, style = 'primary') => `<button class="${style}" id="${id}" ${disabled ? 'disabled' : ''}>${text}</button>`;
 const number = (n: number) => n.toLocaleString('id-ID');
-const modelNote = '<p class="model-note">Data buatan dari model pembelajaran. Pertumbuhan dipercepat; bukan hasil percobaan nyata atau rekomendasi penyiraman. Waktu nyata tidak mengubah tanaman.</p>';
+const modelNote = '<p class="model-note">Data buatan dari model pembelajaran. Tanaman diperbesar 5× untuk pengamatan visual; tinggi dicatat dalam cm. Pertumbuhan dipercepat; bukan hasil percobaan nyata atau rekomendasi penyiraman. Waktu nyata tidak mengubah tanaman.</p>';
 export function measurementTable(p: GardenProgress) {
   const rows = [...p.measurements].sort((a,b) => a.day-b.day || a.group.localeCompare(b.group));
   return `<div class="table-scroll"><table id="growth-table"><caption>Pengukuran yang benar-benar dicatat · cm</caption><thead><tr><th>Hari</th><th>Kelompok</th><th>1</th><th>2</th><th>3</th><th>Rata-rata (cm)</th></tr></thead><tbody>${rows.length ? rows.map(m => `<tr data-reading="${m.day}-${m.group}" data-average="${average(m.heights)}"><td>${m.day}</td><th>${m.group}</th>${m.heights.map(h=>`<td>${h}</td>`).join('')}<td>${average(m.heights)}</td></tr>`).join('') : '<tr><td colspan="6">Belum diukur. Gunakan penggaris di kedua petak.</td></tr>'}</tbody></table></div>`;

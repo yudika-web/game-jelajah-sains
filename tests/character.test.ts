@@ -4,25 +4,42 @@ import { createCharacter } from '../src/engine/character';
 import { CharacterAnimator, turnToward } from '../src/engine/characterAnimator';
 import { FollowCamera } from '../src/engine/cameraController';
 import { findPath, walkable } from '../src/engine/navigation';
+import { characterBodyBounds } from '../src/engine/characterModel';
+import { characterConfig, environmentDimensions, playerVariant } from '../src/engine/characterConfig';
 
 describe('articulated characters and movement-derived animation', () => {
-  it('retains a broad readable head, grounded feet and a relaxed balanced stance', () => {
-    for (const kind of ['explorer', 'nara', 'wira', 'sari'] as const) {
-      const rig = createCharacter(kind);
-      rig.root.updateMatrixWorld(true);
-      const whole = new Box3().setFromObject(rig.root);
-      const head = new Box3().setFromObject(rig.head).getSize(new Vector3());
-      const body = whole.getSize(new Vector3());
-      expect(head.x / body.x).toBeGreaterThan(.65);
-      expect(head.y / body.y).toBeGreaterThan(.30);
-      expect(head.y / body.y).toBeLessThan(.45);
-      expect(whole.min.y).toBeGreaterThan(.07); expect(whole.min.y).toBeLessThan(.13);
-      expect(rig.leftLeg.hip.position.x).toBeLessThan(-.20);
-      expect(rig.rightLeg.hip.position.x).toBeGreaterThan(.20);
+  it('builds six rigid blocks at absolute configured heights, grounded and repeatable', () => {
+    for(const kind of ['explorer','explorerGirl','nara','wira','sari'] as const) {
+      const rig=createCharacter(kind), again=createCharacter(kind), bounds=characterBodyBounds(rig);
+      expect(rig.core).toHaveLength(6);
+      expect(bounds.max.y-bounds.min.y).toBeCloseTo(characterConfig.heights[kind],6);
+      expect(bounds.min.y).toBeCloseTo(characterConfig.groundY,6);
+      expect(rig.root.scale.toArray()).toEqual([1,1,1]);
+      expect(rig.visual.scale.toArray()).toEqual([rig.dimensions.scale,rig.dimensions.scale,rig.dimensions.scale]);
+      expect(again.dimensions.scale).toBe(rig.dimensions.scale);
+      expect(again.dimensions.height).toBe(rig.dimensions.height);
+      expect(rig.leftArm.shoulder.children.filter(n=>n.type==='Mesh')).toHaveLength(1);
+      expect(rig.leftLeg.hip.children.filter(n=>n.type==='Mesh')).toHaveLength(1);
+      expect(rig.leftArm.elbow.children.filter(n=>n.type==='Mesh')).toHaveLength(0);
+      expect(rig.leftLeg.knee.children.filter(n=>n.type==='Mesh')).toHaveLength(0);
+      expect(environmentDimensions.door.height-bounds.max.y).toBeGreaterThan(.20);
+      expect(rig.labelSocket.position.y-bounds.max.y).toBeCloseTo(.30);
     }
   });
+  it('ignores held tools, labels and shadow when measuring body height',()=> {
+    const rig=createCharacter('explorer');const before=characterBodyBounds(rig);
+    Object.values(rig.tools).forEach(t=>{t.visible=true;t.scale.setScalar(10);});
+    rig.labelSocket.position.y=100;rig.root.getObjectByName('contact-shadow')!.position.y=-20;
+    expect(characterBodyBounds(rig)).toEqual(before);
+  });
+  it('provides a distinct siswi silhouette without changing student size or mission state',()=> {
+    const boy=createCharacter('explorer'),girl=createCharacter('explorerGirl');
+    expect(boy.root.getObjectByName('ponytail')).toBeUndefined();expect(girl.root.getObjectByName('ponytail')).toBeDefined();
+    expect(girl.dimensions.height).toBe(boy.dimensions.height);
+    expect(playerVariant('siswi')).toBe('explorerGirl');expect(playerVariant(null)).toBe('explorer');
+  });
   it('keeps navigation roots and label/tool attachment identities stable', () => {
-    for (const kind of ['explorer', 'nara', 'wira', 'sari'] as const) {
+    for (const kind of ['explorer', 'explorerGirl', 'nara', 'wira', 'sari'] as const) {
       const rig = createCharacter(kind, kind === 'nara' ? 'nara' : kind === 'wira' ? 'warga' : kind === 'sari' ? 'sari' : undefined);
       const animator = new CharacterAnimator(rig, 1);
       rig.root.position.set(3, 0, 6); const origin = rig.root.position.clone();
@@ -33,7 +50,7 @@ describe('articulated characters and movement-derived animation', () => {
       expect(rig.labelSocket.position).toEqual(label);
       expect(rig.leftArm.toolSocket.parent).toBe(rig.leftArm.hand);
       expect(rig.rightLeg.knee.parent).toBe(rig.rightLeg.hip);
-      if (kind !== 'explorer') rig.root.traverse(o => expect(o.userData.place).toBe(kind === 'nara' ? 'nara' : kind === 'sari' ? 'sari' : 'warga'));
+      if (kind !== 'explorer' && kind !== 'explorerGirl') rig.root.traverse(o => expect(o.userData.place).toBe(kind === 'nara' ? 'nara' : kind === 'sari' ? 'sari' : 'warga'));
     }
   });
   it('settles the feet after collision without advancing the stride in place', () => {
@@ -43,8 +60,8 @@ describe('articulated characters and movement-derived animation', () => {
     for (let i = 0; i < 90; i++) animator.update(1 / 60, 0);
     expect(animator.stride).toBe(stride);
     expect(animator.speed).toBe(0);
-    expect(rig.leftLeg.hip.rotation.x).toBeCloseTo(-.025, 3);
-    expect(rig.rightLeg.hip.rotation.x).toBeCloseTo(-.025, 3);
+    expect(rig.leftLeg.hip.rotation.x).toBeCloseTo(0, 3);
+    expect(rig.rightLeg.hip.rotation.x).toBeCloseTo(0, 3);
   });
   it('is stable across different frame rates, follows the shortest turn, and clamps head motion', () => {
     const a = new CharacterAnimator(createCharacter('explorer')), b = new CharacterAnimator(createCharacter('explorer'));
@@ -67,7 +84,7 @@ describe('articulated characters and movement-derived animation', () => {
     }
     animator.setPose('none'); for (let i = 0; i < 120; i++) animator.update(1 / 60, 0);
     expect(Object.values(rig.tools).some(t => t.visible)).toBe(false);
-    expect(rig.rightArm.elbow.rotation.x).toBeCloseTo(-.13, 3);
+    expect(rig.rightArm.elbow.rotation.x).toBeCloseTo(0, 3);
   });
   it('suppresses idle sway, blinking and gait under reduced motion while retaining tool poses', () => {
     const rig = createCharacter('explorer'), animator = new CharacterAnimator(rig);
@@ -77,6 +94,26 @@ describe('articulated characters and movement-derived animation', () => {
     animator.setPose('measure'); animator.update(.1, 0, true);
     expect(rig.tools.meter.visible).toBe(true);
   });
+});
+it('rigid feet do not sink while walking; Nara legs stay inside the upper skirt',()=> {
+  for(const kind of ['explorer','nara'] as const) {
+    const rig=createCharacter(kind),animator=new CharacterAnimator(rig);
+    for(let frame=0;frame<80;frame++) {
+      animator.update(1/60,4.6/60);
+      rig.root.updateMatrixWorld(true);
+      for(const leg of rig.core.filter(m=>m.name.includes('leg-block'))) {
+        expect(new Box3().setFromObject(leg).min.y).toBeGreaterThanOrEqual(characterConfig.groundY-.0001);
+        if(kind==='nara') {
+          const positions=leg.geometry.getAttribute('position');
+          for(let i=0;i<positions.count;i++) {
+            const v=new Vector3().fromBufferAttribute(positions,i).applyMatrix4(leg.matrixWorld);
+            if(v.y>=characterConfig.groundY+.65*rig.dimensions.scale&&v.y<=characterConfig.groundY+1.5*rig.dimensions.scale)
+              expect(Math.abs(v.z)).toBeLessThanOrEqual(.42*rig.dimensions.scale+.001);
+          }
+        }
+      }
+    }
+  }
 });
 describe('camera clearance and control continuity', () => {
   it('replaces region blockers and uses an interaction angle without changing manual yaw', () => {

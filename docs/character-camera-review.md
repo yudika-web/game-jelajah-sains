@@ -1,5 +1,7 @@
 # Pemeriksaan karakter dan kamera
 
+> Bentuk karakter pada laporan ini adalah rekaman tahap sebelumnya. Model terbaru dan ukuran terkalibrasi tersedia di [laporan patch avatar balok](block-avatar-review.md).
+
 Laporan ini mencatat tahap karakter/kamera pada commit `8e10bcf`. Pembentukan ulang berikutnya berdasarkan acuan baru memiliki [laporan dan gambar tersendiri](reference-model-review.md).
 
 Tahap ini menyempurnakan pemain, Bu Nara, Pak Wira, animasi, dan kamera pada Kota Sains yang sudah ada. Tidak ada penambahan wilayah atau misi. `src/game/mission.ts` dan `src/game/storage.ts` tetap menggunakan kontrak versi 1 yang sama: data A 70, B 20, uji A 35, bukti wajib, upaya kesimpulan, jurnal, hadiah 100 XP, ekspor/impor, dan IndexedDB tetap dipertahankan.

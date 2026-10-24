@@ -3,245 +3,153 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { ArmRig, CharacterKind, CharacterRig, LegRig } from './character';
+import { characterConfig } from './characterConfig';
 
-const geometryCache = new Map<string, THREE.BufferGeometry>();
-const materialCache = new Map<string, THREE.MeshLambertMaterial>();
-function cached(key: string, build: () => THREE.BufferGeometry) {
-  let geometry = geometryCache.get(key);
-  if (!geometry) {
-    geometry = build();
-    if (geometry.index) geometry = geometry.toNonIndexed();
-    geometry.deleteAttribute('uv'); geometry.userData.shared = true; geometryCache.set(key, geometry);
-  }
-  return geometry;
+const geometries = new Map<string, THREE.BufferGeometry>();
+const materials = new Map<string, THREE.Material>();
+function geometry(key: string, make: () => THREE.BufferGeometry) {
+  let g = geometries.get(key);
+  if (!g) { g = make(); g.userData.shared = true; geometries.set(key, g); }
+  return g;
 }
-function surface(color: string, flat = false) {
-  const key = `${color}/${flat}`;
-  let material = materialCache.get(key);
-  if (!material) { material = new THREE.MeshLambertMaterial({ color, flatShading: flat }); material.userData.shared = true; materialCache.set(key, material); }
-  return material;
+function color(value: string) {
+  const key = `color/${value}`;
+  if (!materials.has(key)) { const m = new THREE.MeshLambertMaterial({ color: value }); m.userData.shared = true; materials.set(key, m); }
+  return materials.get(key)!;
 }
 const palettes = {
-  sari: { skin: '#d9a374', ear: '#bf865b', hair: '#40332a', hairLight: '#59432e', coat: '#65855a', shirt: '#eedcb4', pants: '#655948', boots: '#80583c', cuff: '#c4c895', bag: '#b39857' },
-  explorer: { skin: '#efb27d', ear: '#dea06d', hair: '#50372b', hairLight: '#654431', coat: '#267c8d', shirt: '#f5ead4', pants: '#4d4c56', boots: '#8b603e', cuff: '#a0cbd0', bag: '#dda048' },
-  nara: { skin: '#c99573', ear: '#b78261', hair: '#403331', hairLight: '#57443d', coat: '#78658f', shirt: '#f6ead5', pants: '#4c4d60', boots: '#635044', cuff: '#c2b5ca', bag: '#9b8057' },
-  wira: { skin: '#ce986e', ear: '#b8825c', hair: '#50382b', hairLight: '#654631', coat: '#a0804c', shirt: '#e6d8b9', pants: '#526b61', boots: '#75563c', cuff: '#c3ab77', bag: '#a38550' },
+  explorer: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
+  explorerGirl: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
+  nara: { skin:'#d2a17c', hair:'#403028', coat:'#89639d', shirt:'#f4e4c5', pants:'#424f6b', boots:'#604630', bag:'#b49858' },
+  wira: { skin:'#d49e71', hair:'#433126', coat:'#b6a17b', shirt:'#efe1bf', pants:'#4f5c3f', boots:'#7c5634', bag:'#b49858' },
+  sari: { skin:'#d9a374', hair:'#433126', coat:'#698757', shirt:'#ecddbb', pants:'#60543d', boots:'#765330', bag:'#c2a465' },
 };
-
-/** Local, articulated reference model; all dimensions are in the existing gameplay scale. */
+/** All drawings are local, cached textures. Unit/measurement tools can run without a DOM. */
+function drawing(key: string, paint: (c: CanvasRenderingContext2D) => void, fallback: string, transparent = false) {
+  if (!materials.has(key)) {
+    let map: THREE.CanvasTexture | null = null;
+    if (typeof document !== 'undefined') {
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 512;
+      const c = canvas.getContext('2d')!; paint(c);
+      map = new THREE.CanvasTexture(canvas); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 2;
+    }
+    const m = transparent ? new THREE.MeshBasicMaterial({ map, color: map ? '#ffffff' : fallback, transparent:true, depthWrite:false, side:THREE.FrontSide }) : new THREE.MeshLambertMaterial({ map, color:map?'#ffffff':fallback });
+    m.userData.shared = true; materials.set(key,m);
+  }
+  return materials.get(key)!;
+}
 export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): CharacterRig {
-  const p = palettes[kind];
+  const p = palettes[kind], girl = kind === 'explorerGirl', student = kind === 'explorer' || girl;
   const root = new THREE.Group(); root.name = `character-${kind}`;
-  const group = (name: string, parent: THREE.Group, x = 0, y = 0, z = 0) => {
-    const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); parent.add(g); return g;
+  const group = (name: string, parent: THREE.Object3D, x=0,y=0,z=0) => { const g=new THREE.Group();g.name=name;g.position.set(x,y,z);parent.add(g);return g; };
+  const visual = group('visual',root), bodyMeshes: THREE.Mesh[] = [], core: THREE.Mesh[] = [];
+  const boxGeometry = (w:number,h:number,d:number,r=.025) => geometry(`box/${w}/${h}/${d}/${r}`,()=>new RoundedBoxGeometry(w,h,d,1,Math.min(r,w*.1,h*.1,d*.1)));
+  const mesh = (parent:THREE.Object3D,g:THREE.BufferGeometry,m:THREE.Material|THREE.Material[],x=0,y=0,z=0,body=true,name='detail') => {
+    const o=new THREE.Mesh(g,m);o.name=name;o.position.set(x,y,z);parent.add(o);
+    o.userData.sharedGeometry=!!g.userData.shared;if(body)bodyMeshes.push(o);return o;
   };
-  const visual = group('visual', root, 0, .1);
-  const batches = new Map<THREE.Group, Map<string, { color: string; flat: boolean; geometries: THREE.BufferGeometry[] }>>();
-  const add = (parent: THREE.Group, base: THREE.BufferGeometry, color: string, x: number, y: number, z: number, flat = false, rz = 0) => {
-    const geometry = base.clone(); if (rz) geometry.rotateZ(rz); geometry.translate(x, y, z);
-    let colors = batches.get(parent); if (!colors) { colors = new Map(); batches.set(parent, colors); }
-    const key = `${color}/${flat}`;
-    let bucket = colors.get(key); if (!bucket) { bucket = { color, flat, geometries: [] }; colors.set(key, bucket); }
-    bucket.geometries.push(geometry);
+  const box = (parent:THREE.Object3D,size:[number,number,number],c:string,x:number,y:number,z:number,body=true,r=.025) => mesh(parent,boxGeometry(...size,r),color(c),x,y,z,body);
+  const hull = (parent:THREE.Object3D,key:string,points:number[][],c:string) => mesh(parent,geometry(`hull/${key}`,()=>new ConvexGeometry(points.map(v=>new THREE.Vector3(...v as [number,number,number])))),color(c));
+  const texturedBox = (parent:THREE.Object3D,size:[number,number,number],base:string,front:THREE.Material,x:number,y:number,z:number,name:string) => {
+    const m=color(base), o=mesh(parent,boxGeometry(...size),[m,m,m,m,front,m],x,y,z,true,name);core.push(o);return o;
   };
-  const boxGeometry = (w: number, h: number, d: number, radius: number, segments = 2) => cached(`box/${w}/${h}/${d}/${radius}/${segments}`, () => new RoundedBoxGeometry(w, h, d, segments, Math.min(radius, w * .45, h * .45, d * .45)));
-  const box = (parent: THREE.Group, size: [number, number, number], color: string, x: number, y: number, z: number, radius = .04, rz = 0) => add(parent, boxGeometry(...size, radius), color, x, y, z, false, rz);
-  const oval = (parent: THREE.Group, size: [number, number, number], color: string, x: number, y: number, z: number) => {
-    const g = cached(`oval/${size}`, () => new THREE.SphereGeometry(1, 16, 12).scale(size[0] / 2, size[1] / 2, size[2] / 2));
-    add(parent, g, color, x, y, z);
-  };
-  const line = (parent: THREE.Group, name: string, points: number[][], radius: number, color: string) => {
-    const g = cached(`line/${name}`, () => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(v => new THREE.Vector3(...v as [number, number, number]))), 10, radius, 5, false));
-    add(parent, g, color, 0, 0, 0);
-  };
-  const hull = (parent: THREE.Group, name: string, points: number[][], color: string) => {
-    const g = cached(`hull/${name}`, () => new ConvexGeometry(points.map(v => new THREE.Vector3(...v as [number, number, number]))));
-    add(parent, g, color, 0, 0, 0, true);
-  };
-  const lock = (name: string, points: [number, number][], depth: number, z: number, color: string) => {
-    const g = cached(`lock/${name}`, () => {
-      const shape = new THREE.Shape(); shape.moveTo(...points[0]);
-      for (let i = 1; i < points.length; i++) shape.lineTo(...points[i]); shape.closePath();
-      const geometry = new THREE.ExtrudeGeometry(shape, {depth, bevelEnabled:true, bevelThickness:.025, bevelSize:.025, bevelSegments:1, steps:1, curveSegments:2});
-      // Sweep the root back onto the scalp: the locks are volumes, not upright fins.
-      const positions = geometry.getAttribute('position');
-      for (let i = 0; i < positions.count; i++) positions.setZ(i, positions.getZ(i) - Math.max(0, positions.getY(i) - .55) * 1.1);
-      geometry.computeVertexNormals(); return geometry;
-    });
-    add(head, g, color, 0, 0, z, true);
-  };
-  const broad = kind === 'wira' ? .07 : 0;
-  const torso = group('torso', visual, 0, 1.34);
-  const head = group('head', torso, 0, .79);
-  const eyes = group('eyes', head, 0, .23, .405);
-
-  // Soft jaw and broad cheeks: the head is wider than the jacket's central body.
-  const face = cached(`head/${broad}`, () => {
-    const g = new RoundedBoxGeometry(.96 + broad * .4, .86, .79, 3, .205);
-    const positions = g.getAttribute('position');
-    for (let i = 0; i < positions.count; i++) {
-      const y = positions.getY(i);
-      const jaw = y < -.10 ? 1 - Math.min(.11, (-y - .10) / .33 * .11) : 1;
-      positions.setX(i, positions.getX(i) * jaw);
-    }
-    return g;
+  const torso=group('torso',visual,0,2.0), head=group('head',torso,0,1.125), eyes=group('eyes',head,0,0,.416);
+  const headBox=mesh(head,boxGeometry(1.03,.95,.82,.045),color(p.skin),0,0,0,true,'head-block');core.push(headBox);
+  const faceMaterial=drawing(`face/${kind}`,c=> {
+    c.strokeStyle='#24221f';c.fillStyle='#24221f';c.lineCap='round';c.lineJoin='round';
+    c.lineWidth=14;
+    for(const side of [-1,1]) { const x=256+side*100;c.beginPath();c.moveTo(x-33,144+(girl?side*4:0));c.quadraticCurveTo(x, girl?127:139, x+34,147);c.stroke(); }
+    c.lineWidth=12;c.beginPath();c.moveTo(202,342);c.quadraticCurveTo(256,girl?390:400,311,342);c.stroke();
+    if(kind==='nara') {c.lineWidth=10;for(const x of [156,356]) {c.beginPath();c.ellipse(x,244,67,76,0,0,Math.PI*2);c.stroke();}c.beginPath();c.moveTo(223,236);c.quadraticCurveTo(256,215,289,236);c.stroke();}
+    if(kind==='wira') {c.beginPath();c.moveTo(174,314);c.bezierCurveTo(193,274,238,275,256,298);c.bezierCurveTo(279,275,319,275,339,314);c.quadraticCurveTo(296,337,256,313);c.quadraticCurveTo(216,337,174,314);c.fill();}
+  },'#24221f',true);
+  const plane=geometry('face-plane',()=>new THREE.PlaneGeometry(.94,.86));
+  mesh(head,plane,faceMaterial,0,0,.415,true,'flat-face');
+  const eyeMaterial=drawing(`eyes/${girl?'girl':'classic'}`,c=> {c.fillStyle='#151a19';for(const side of [-1,1]) {c.beginPath();c.ellipse(256+side*100,girl?242:246,18,girl?35:38,0,0,Math.PI*2);c.fill();}},'#151a19',true);
+  mesh(eyes,plane,eyeMaterial,0,0,.002,true,'flat-oval-eyes');
+  // Three large hair forms: a U-shaped rear/temple cap, a crown, and a solid swept fringe.
+  const hairCap=geometry('hair-cap',()=> {
+    const parts=[new THREE.BoxGeometry(1.10,.62,.17).translate(0,.25,-.43),new THREE.BoxGeometry(.13,.62,.65).translate(-.49,.25,-.10),new THREE.BoxGeometry(.13,.62,.65).translate(.49,.25,-.10)].map(g=>g.toNonIndexed());
+    const result=mergeGeometries(parts);parts.forEach(g=>g.dispose());return result;
   });
-  add(head, face, p.skin, 0, .18, 0);
-  oval(head, [.27, .23, .29], p.skin, 0, -.23, 0);
-  for (const side of [-1, 1]) {
-    oval(head, [.19, .27, .19], p.skin, side * .493, .10, -.015);
-    oval(head, [.09, .16, .035], p.ear, side * .535, .10, .079);
-    oval(eyes, [.177, .225, .035], '#fff8e9', side * .20, 0, 0);
-    oval(eyes, [.125, .180, .025], '#35271f', side * .20 + .009, -.012, .025);
-    oval(eyes, [.030, .047, .014], '#fff8e9', side * .20 - .017, .038, .043);
-    line(head, `brow/${side}`, [[side * .20 - .09, .411, .392], [side * .20 - .02, .435, .407], [side * .20 + .08, .420, .397]], .026, p.hair);
+  mesh(head,hairCap,color(p.hair),0,0,0,true,'hair-rear-cap');
+  box(head,[1.10,.27,.91],p.hair,0,.50,-.035).name='hair-crown';
+  hull(head,'swept-fringe',[[-.55,.22,.38],[-.55,.56,.33],[.16,.72,.25],[.45,.54,.30],[.45,.29,.39],[-.05,.37,.52],[-.55,.22,.52]],p.hair).name='hair-fringe';
+  if(girl) {
+    const pony=box(head,[.40,.86,.42],p.hair,0,-.04,-.62);pony.name='ponytail';pony.rotation.x=-.13;
+    // Band is a flat patch on the same rear hair silhouette.
+    const band=drawing('hair-band',c=>{c.fillStyle=p.bag;c.fillRect(0,0,512,512);},p.bag);
+    mesh(pony,geometry('band-plane',()=>new THREE.PlaneGeometry(.40,.10)),band,0,.22,-.213).rotation.y=Math.PI;
+  } else if(kind==='nara'||kind==='sari') box(head,[.46,.43,.43],p.hair,.07,.25,-.65).name='hair-bun';
+  if(kind==='wira'||kind==='sari') {
+    const hat=kind==='wira'?'#5a6745':'#ccb16d', brim=kind==='wira'?'#73805b':'#e3c78b';
+    box(head,[1.12,.32,.94],hat,0,.62,-.03).name='hat-crown';box(head,[1.24,.09,1.08],brim,0,.48,.045).name='hat-brim';
   }
-  oval(head, [.116, .118, .137], p.skin, 0, .067, .409);
-  line(head, 'smile', [[-.138, -.076, .376], [-.07, -.113, .398], [.036, -.119, .401], [.142, -.065, .373]], .013, '#895435');
-
-  // An actual 3D scalp: the front hairline is high, sides/back wrap below the ears.
-  const scalp = cached('hair/scalp', () => {
-    const vertices: number[] = [], indices: number[] = [];
-    const around = 16, rings = 5;
-    for (let j = 0; j <= rings; j++) for (let i = 0; i <= around; i++) {
-      const phi = i / around * Math.PI * 2;
-      const front = Math.max(0, Math.sin(phi)), back = Math.max(0, -Math.sin(phi));
-      const fraction = j / rings + .035 * Math.sin(phi * 3) * Math.sin(j / rings * Math.PI);
-      const theta = fraction * (1.88 - front * .84 + back * .28);
-      const facet = 1 + .018 * Math.cos(phi * 5);
-      const rounded = (n: number, exponent: number) => Math.sign(n) * Math.pow(Math.abs(n), exponent);
-      const ring = Math.pow(Math.sin(theta), .55);
-      vertices.push(-rounded(Math.cos(phi),.55) * ring * .535 * facet, .24 + rounded(Math.cos(theta),.65) * .55, -.035 + rounded(Math.sin(phi),.55) * ring * .455 * facet);
-      if (j < rings && i < around) {
-        const a = j * (around + 1) + i, b = a + around + 1;
-        indices.push(a, b, a + 1, b, b + 1, a + 1);
-      }
-    }
-    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3)); g.setIndex(indices); g.computeVertexNormals(); return g;
-  });
-  add(head, scalp, p.hair, 0, 0, 0, true);
-  if (kind === 'explorer') {
-    // Interlocking convex locks have depth and a swept silhouette from every side.
-    hull(head, 'quiff-root', [[-.25,.69,-.25],[.22,.81,-.18],[.35,.80,.06],[.34,.68,.28],[-.04,.57,.36],[-.30,.61,.12]], p.hairLight);
-    lock('quiff-left', [[-.06,.75],[-.37,.66],[-.50,.56],[-.46,.51],[-.12,.56],[.15,.68]], .14, .27, p.hair);
-    lock('quiff-main', [[.30,.86],[.41,.76],[.34,.60],[.12,.53],[-.10,.51],[-.21,.53],[-.05,.62],[.09,.78]], .16, .31, p.hairLight);
-    lock('quiff-tip', [[.36,.83],[.44,.71],[.35,.54],[.26,.49],[.18,.49],[.23,.65]], .11, .36, '#59402f');
-    hull(head, 'temple-right', [[.41,.63,.03],[.53,.52,.10],[.56,.23,.14],[.43,.14,.23],[.35,.47,.28]], p.hair);
-    hull(head, 'temple-left', [[-.44,.52,-.03],[-.54,.31,.00],[-.46,.12,.18],[-.36,.13,.21],[-.33,.43,.26]], p.hair);
-    // Back plates prevent the rear silhouette from becoming a single blank cuboid.
-    hull(head, 'hair-back-left', [[-.45,.42,-.38],[-.30,.66,-.36],[.0,.65,-.46],[.04,.26,-.57],[-.24,-.10,-.47],[-.46,.03,-.31]], '#493125');
-    hull(head, 'hair-back-right', [[.03,.66,-.43],[.39,.55,-.36],[.48,.16,-.30],[.24,-.10,-.47],[.02,.26,-.58]], p.hair);
-  } else if (kind === 'nara' || kind === 'sari') {
-    hull(head, 'teacher-sweep', [[.39,.79,-.06],[.47,.64,.18],[.29,.52,.45],[-.40,.52,.41],[-.38,.65,.13],[.0,.77,.06]], p.hairLight);
-    oval(head, [.42, .37, .36], p.hair, .10, .54, -.49);
-    if (kind === 'sari') {
-      box(head,[1.04,.22,.88],'#c0a05e',0,.77,-.04,.08);
-      box(head,[1.25,.08,1.12],'#e3c585',0,.65,.04,.035);
-    }
-    // Wire frames leave the new oval eyes unobscured.
-    if (kind === 'nara') for (const side of [-1, 1]) line(head, `glasses/${side}`, [[side*.20-.12,.23,.477],[side*.20-.10,.365,.477],[side*.20+.10,.365,.477],[side*.20+.12,.23,.477],[side*.20+.10,.10,.477],[side*.20-.10,.10,.477],[side*.20-.12,.23,.477]], .012, '#5f5354');
-    if (kind === 'nara') line(head, 'glasses-bridge', [[-.07,.26,.480],[0,.28,.49],[.07,.26,.480]], .012, '#5f5354');
-  } else {
-    box(head, [1.04, .21, .86], '#657c59', 0, .75, -.035, .085);
-    box(head, [1.10, .075, .98], '#8d9d6c', 0, .64, .045, .035);
-    line(head, 'moustache', [[-.10,.004,.423],[0,.018,.446],[.10,.004,.423]], .018, p.hair);
+  const coat=drawing(`coat/${kind}`,c=> {
+    c.fillStyle=p.coat;c.fillRect(0,0,512,512);c.fillStyle=p.shirt;c.fillRect(186,0,140,512);
+    // Shirt collar, jacket opening and vest pockets remain flat markings.
+    c.strokeStyle=kind==='wira'?'#8e7f64':p.coat;c.lineWidth=6;
+    c.beginPath();c.moveTo(187,0);c.lineTo(218,62);c.lineTo(256,24);c.lineTo(295,62);c.lineTo(325,0);c.stroke();
+    if(student) {c.fillStyle=p.bag;for(const x of [72,400]){c.fillRect(x,0,33,372);c.fillStyle='#604b2a';c.fillRect(x-4,147,41,39);c.fillStyle=p.bag;c.fillRect(x+5,156,22,21);} }
+    if(kind==='wira') {c.strokeStyle='#8b7858';c.lineWidth=8;for(const x of [37,359])for(const y of [160,340]){c.strokeRect(x,y,114,116);c.beginPath();c.moveTo(x,y+28);c.lineTo(x+114,y+28);c.stroke();} }
+    if(kind==='nara') {c.fillStyle='#b39970';for(const y of [164,266,368]){c.beginPath();c.arc(256,y,6,0,Math.PI*2);c.fill();}}
+    if(kind==='sari') {c.fillStyle=p.bag;c.fillRect(75,100,362,412);c.strokeStyle='#9b814b';c.lineWidth=8;c.strokeRect(152,278,208,130);c.fillRect(96,0,25,128);c.fillRect(391,0,25,128);}
+  },p.coat);
+  texturedBox(torso,[1.32,1.30,.65],p.coat,coat,0,0,0,'torso-block');
+  if(student) {box(torso,[.85,.94,.32],p.bag,0,-.04,-.50).name='backpack';box(torso,[.57,.33,.10],'#dbab48',0,-.25,-.70).name='backpack-pocket';}
+  if(kind==='nara') {
+    const skirt=geometry('nara-skirt',()=> {
+      const g=new THREE.BoxGeometry(1.42,.91,.84),positions=g.getAttribute('position');
+      for(let i=0;i<positions.count;i++)if(positions.getY(i)>0) positions.setX(i,positions.getX(i)*.82);
+      g.computeVertexNormals();return g;
+    });mesh(torso,skirt,color(p.pants),0,-.91,0,true,'one-trapezoid-skirt');
   }
-
-  const jacket = cached(`jacket/${broad}`, () => {
-    const g = new RoundedBoxGeometry(.79 + broad, .79, .48, 2, .075);
-    const positions = g.getAttribute('position');
-    for (let i = 0; i < positions.count; i++) {
-      const y = positions.getY(i); const waist = 1 - .10 * (1 - Math.min(1, Math.abs(y) / .38));
-      positions.setX(i, positions.getX(i) * waist);
-    }
-    return g;
-  });
-  add(torso, jacket, p.coat, 0, .15, 0);
-  box(torso, [.46, .67, .10], p.shirt, 0, .18, .249, .035);
-  box(torso, [.61 + broad, .24, .44], p.pants, 0, -.32, 0, .04);
-  for (const side of [-1, 1]) {
-    box(torso, [.175, .75, .12], p.coat, side * .307, .15, .258, .025, side * -.025);
-    hull(torso, `collar/${side}`, [[side*.07,.53,.24],[side*.28,.60,.19],[side*.34,.45,.29],[side*.22,.40,.32],[side*.08,.53,.32]], p.coat);
-  }
-  box(torso, [.47, .115, .43], p.coat, 0, .545, -.015, .025);
-  if (kind === 'explorer') {
-    box(torso, [.67, .75, .35], p.bag, 0, .11, -.43, .125);
-    box(torso, [.61, .19, .35], '#e9b65e', 0, .42, -.438, .065);
-    box(torso, [.47, .30, .145], '#e4ac50', 0, -.075, -.658, .06);
-    for (const side of [-1, 1]) {
-      // Solid flat ribbon, curved over the shoulder rather than painted on the shirt.
-      const strap = cached(`strap/${side}`, () => {
-        const centers = [[side*.33,-.17,.345],[side*.35,.25,.35],[side*.35,.51,.27],[side*.34,.55,-.04],[side*.28,.45,-.32],[side*.25,.20,-.42]];
-        const vertices: number[] = [], indices: number[] = [];
-        for (let i = 0; i < centers.length; i++) {
-          const c = new THREE.Vector3(...centers[i] as [number, number, number]);
-          const tangent = new THREE.Vector3(...centers[Math.min(centers.length-1,i+1)] as [number, number, number]).sub(new THREE.Vector3(...centers[Math.max(0,i-1)] as [number, number, number])).normalize();
-          const normal = new THREE.Vector3().crossVectors(tangent, new THREE.Vector3(1,0,0)).normalize();
-          for (const [dx, thickness] of [[-.055,-.023],[.055,-.023],[.055,.023],[-.055,.023]]) vertices.push(c.x+dx, c.y+normal.y*thickness, c.z+normal.z*thickness);
-          if (i < centers.length-1) for (let s = 0; s < 4; s++) {
-            const a = i*4+s,b = i*4+(s+1)%4; indices.push(a,b,a+4,b,b+4,a+4);
-          }
-        }
-        indices.push(0,2,1,0,3,2,20,21,22,20,22,23);
-        const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3)); g.setIndex(indices); g.computeVertexNormals(); return g;
-      });
-      add(torso, strap, '#c59550', 0, 0, 0);
-    }
-  } else if (kind === 'sari') {
-    box(torso,[.58,.61,.08],'#cfb77d',0,-.02,.36,.025);
-    box(torso,[.38,.20,.05],'#b79c61',0,-.10,.41,.015);
-  } else if (kind === 'nara') {
-    box(torso, [.81, .34, .50], p.coat, 0, -.27, 0, .06);
-    box(torso, [.65, .34, .43], p.pants, 0, -.48, 0, .04);
-  } else {
-    box(torso, [.26, .12, .06], p.cuff, -.25, .32, .328, .02);
-  }
-  const arm = (side: number): ArmRig => {
-    const shoulder = group(side < 0 ? 'left-shoulder' : 'right-shoulder', torso, side * (.51 + broad / 2), .50);
-    const elbow = group('elbow', shoulder, 0, -.40), hand = group('hand', elbow, 0, -.40);
-    const toolSocket = group('tool-socket', hand, 0, -.04, .06);
-    const sleeve = kind === 'wira' ? p.shirt : p.coat;
-    box(shoulder, [.33, .44, .37], sleeve, 0, -.19, 0, .080);
-    box(elbow, [.29, .35, .33], sleeve, 0, -.15, 0, .065);
-    box(elbow, [.355, .145, .375], p.cuff, 0, -.285, .005, .035);
-    box(hand, [.265, .285, .28], p.skin, 0, -.062, .012, .075);
-    oval(hand, [.105, .18, .14], p.skin, -side*.116, -.012, .115);
-    return { shoulder, elbow, hand, toolSocket };
+  const sleeve=kind==='wira'?p.shirt:p.coat;
+  const armMaterial=drawing(`arm/${kind}`,c=> {c.fillStyle=sleeve;c.fillRect(0,0,512,512);c.fillStyle=p.skin;c.fillRect(0,388,512,124);},sleeve);
+  const arm=(side:number):ArmRig=> {
+    const shoulder=group(side<0?'left-shoulder':'right-shoulder',torso,side*.925,.61);
+    shoulder.rotation.z=side*.035;
+    const elbow=group('elbow-socket',shoulder,0,-.65),hand=group('hand-socket',elbow,0,-.50),toolSocket=group('tool-socket',hand,0,-.04,.04);
+    const m=mesh(shoulder,boxGeometry(.46,1.30,.62),[armMaterial,armMaterial,color(sleeve),color(p.skin),armMaterial,armMaterial],0,-.65,0,true,side<0?'left-arm-block':'right-arm-block');core.push(m);
+    return {shoulder,elbow,hand,toolSocket};
   };
-  const leg = (side: number): LegRig => {
-    const hip = group(side < 0 ? 'left-hip' : 'right-hip', visual, side*.23, 1.08);
-    const knee = group('knee', hip, 0, -.48), ankle = group('ankle', knee, 0, -.47);
-    ankle.rotation.y = side * .04;
-    box(hip, [.32, .49, .37], p.pants, 0, -.22, 0, .045);
-    box(knee, [.30, .48, .34], p.pants, 0, -.215, .004, .04);
-    box(ankle, [.325, .27, .35], p.boots, 0, .11, .025, .035);
-    box(ankle, [.38, .205, .48], p.boots, 0, -.015, .15, .06);
-    box(ankle, [.395, .067, .59], '#403c3a', 0, -.105, .10, .018);
-    return { hip, knee, ankle };
+  const legMaterial=drawing(`leg/${kind}`,c=>{c.fillStyle=kind==='nara'?p.skin:p.pants;c.fillRect(0,0,512,512);c.fillStyle=p.boots;c.fillRect(0,420,512,92);},p.pants);
+  const leg=(side:number):LegRig=> {
+    const hip=group(side<0?'left-hip':'right-hip',visual,side*.335,1.35),knee=group('knee-socket',hip,0,-.68),ankle=group('ankle-socket',knee,0,-.67);
+    const m=mesh(hip,boxGeometry(.62,1.35,.60),[legMaterial,legMaterial,color(p.pants),color(p.boots),legMaterial,legMaterial],0,-.675,0,true,side<0?'left-leg-block':'right-leg-block');core.push(m);
+    return {hip,knee,ankle};
   };
-  const leftArm = arm(-1), rightArm = arm(1), leftLeg = leg(-1), rightLeg = leg(1);
-  const notebook = group('notebook', leftArm.toolSocket);
-  box(notebook, [.38,.48,.075], '#426f65', 0,-.10,.10,.015); box(notebook, [.32,.40,.04], '#f8edd4', 0,-.10,.15,.008);
-  const meter = group('meter', rightArm.toolSocket);
-  box(meter, [.25,.38,.19], '#e9b451', 0,-.02,.12,.035); box(meter, [.17,.14,.03], '#35595b', 0,.03,.23,.008);
-  const sample = group('sample', rightArm.toolSocket);
-  box(sample, [.22,.35,.22], '#7ca9ad', 0,-.04,.12,.03); box(sample, [.17,.07,.17], '#f0dfac', 0,.17,.12,.015); box(sample, [.15,.12,.025], '#f6ecd8', 0,-.02,.241,.005);
-  const wateringCan = group('watering-can', rightArm.toolSocket);
-  box(wateringCan,[.32,.30,.27],'#659ea1',0,-.09,.17,.055);
-  hull(wateringCan,'can-spout',[[.11,-.15,.20],[.11,-.04,.20],[.33,.09,.34],[.37,.06,.38]],'#8eb9b9');
-  line(wateringCan,'can-handle',[[-.10,.02,.17],[-.17,.20,.17],[.10,.20,.17],[.13,.02,.17]],.025,'#b9d4cb');
-  const ruler = group('ruler', rightArm.toolSocket);
-  box(ruler,[.09,.73,.045],'#e8c77a',0,.18,.08,.008);
-  for(let i=0;i<10;i++) box(ruler,[i%5===0?.065:.04,.012,.01],'#6b5d43',-.01,-.12+i*.064,.108,.002);
-  notebook.visible = meter.visible = sample.visible = wateringCan.visible = ruler.visible = false;
-  for (const [parent, colors] of batches) for (const b of colors.values()) {
-    const mesh = new THREE.Mesh(mergeGeometries(b.geometries), surface(b.color,b.flat)); mesh.name = `${parent.name}-geometry`;
-    parent.add(mesh); b.geometries.forEach(g => g.dispose());
-  }
-  const shadow = new THREE.Mesh(cached('shadow', () => new THREE.CircleGeometry(.67,24)), new THREE.MeshBasicMaterial({color:'#344b36',transparent:true,opacity:.17,depthWrite:false}));
-  shadow.userData.sharedGeometry = true;
-  shadow.rotation.x=-Math.PI/2; shadow.position.y=.092; shadow.scale.y=.72; root.add(shadow);
-  const labelSocket = group('label-socket', root, 0, 3.60);
-  if (placeId) root.traverse(child => { child.userData.place = placeId; });
-  return { kind, root, visual, torso, head, eyes, leftArm, rightArm, leftLeg, rightLeg, labelSocket, tools: { notebook, meter, sample, wateringCan, ruler } };
+  const leftArm=arm(-1),rightArm=arm(1),leftLeg=leg(-1),rightLeg=leg(1);
+  // Tool meshes inherit exactly the same visual scale as the body, once.
+  const notebook=group('notebook',leftArm.toolSocket);box(notebook,[.38,.48,.075],'#426f65',0,-.10,.10,false);box(notebook,[.32,.40,.04],'#f8edd4',0,-.10,.15,false);
+  const meter=group('meter',rightArm.toolSocket);box(meter,[.25,.38,.19],'#e9b451',0,-.02,.12,false);box(meter,[.17,.14,.03],'#35595b',0,.03,.23,false);
+  const sample=group('sample',rightArm.toolSocket);box(sample,[.22,.35,.22],'#7ca9ad',0,-.04,.12,false);box(sample,[.17,.07,.17],'#f0dfac',0,.17,.12,false);
+  const wateringCan=group('watering-can',rightArm.toolSocket);box(wateringCan,[.38,.33,.30],'#659ea1',0,-.08,.18,false);
+  const spout=box(wateringCan,[.11,.13,.34],'#9bc4c0',.17,.03,.36,false);spout.rotation.x=-.45;
+  const handle=mesh(wateringCan,geometry('can-handle',()=>new THREE.TorusGeometry(.15,.025,5,10)),color('#bad5ce'),0,.12,.16,false);handle.rotation.y=Math.PI/2;
+  const ruler=group('ruler',rightArm.toolSocket);box(ruler,[.09,.73,.045],'#e8c77a',0,.18,.08,false);
+  for(let i=0;i<10;i++)box(ruler,[i%5===0?.065:.04,.012,.01],'#6b5d43',-.01,-.12+i*.064,.108,false,.002);
+  const tools={notebook,meter,sample,wateringCan,ruler};Object.values(tools).forEach(t=>t.visible=false);
+  // Measure only neutral body geometry; neither attachments nor a label can alter height.
+  root.updateMatrixWorld(true);
+  const bounds=new THREE.Box3();for(const body of bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));
+  const baseHeight=bounds.max.y-bounds.min.y, height=characterConfig.heights[kind], scale=height/baseHeight;
+  visual.scale.setScalar(scale);visual.position.y=characterConfig.groundY-bounds.min.y*scale;
+  const labelSocket=group('label-socket',root,0,characterConfig.groundY+height+characterConfig.labelGap);
+  const shadowMaterial=colorShadow();
+  const shadow=mesh(root,geometry('contact-shadow',()=>new THREE.CircleGeometry(.36,24)),shadowMaterial,0,characterConfig.groundY-.006,0,false,'contact-shadow');shadow.rotation.x=-Math.PI/2;shadow.scale.y=.72;
+  root.updateMatrixWorld(true);
+  const headBounds=new THREE.Box3().setFromObject(headBox);
+  const dimensions={baseHeight,height,scale,groundY:characterConfig.groundY,visualY:visual.position.y,headCenter:headBounds.getCenter(new THREE.Vector3()).y,headHeight:headBounds.max.y-headBounds.min.y};
+  if(placeId)root.traverse(node=>{node.userData.place=placeId;});
+  return {kind,root,visual,torso,head,eyes,leftArm,rightArm,leftLeg,rightLeg,labelSocket,tools,bodyMeshes,core,dimensions};
+}
+function colorShadow() {
+  if(!materials.has('contact-shadow')) {const m=new THREE.MeshBasicMaterial({color:'#344b36',transparent:true,opacity:.17,depthWrite:false});m.userData.shared=true;materials.set('contact-shadow',m);}
+  return materials.get('contact-shadow')!;
+}
+/** Geometry-based world bounds, excluding tools, labels and contact shadow even if visible. */
+export function characterBodyBounds(rig: CharacterRig) {
+  rig.root.updateMatrixWorld(true);const bounds=new THREE.Box3();
+  for(const body of rig.bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));return bounds;
 }

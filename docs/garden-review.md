@@ -1,5 +1,7 @@
 # W02 Kebun Kehidupan · M14 Kebun Percobaan
 
+> Bentuk karakter pada laporan ini adalah rekaman tahap sebelumnya. Model terbaru dan ukuran terkalibrasi tersedia di [laporan patch avatar balok](block-avatar-review.md).
+
 Tahap ini menambahkan satu wilayah dan satu percobaan utuh. Kota/M01, bentuk karakter, animator dasar, galeri, kamera, serta kontrol perangkat tetap menjadi fondasinya. M14 tidak memerlukan penyelesaian misi bernomor sebelumnya.
 
 ## Tempat dan perjalanan

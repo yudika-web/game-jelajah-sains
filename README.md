@@ -1,12 +1,16 @@
 # Jelajah Sains
 
+Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
+
 Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Dua wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota** dan **W02 Kebun Kehidupan / M14 Kebun Percobaan**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
-Penyempurnaan karakter dan kamera: jaket berlapis, ransel, rambut geometris, tangan/sepatu bervolume, sendi siku/lutut, animasi berdasarkan perpindahan nyata, serta NPC dengan identitas dan gestur berbeda. Lihat [perbandingan visual dan rekaman gerak](docs/character-camera-review.md).
+Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
-Pembentukan ulang berdasarkan acuan tiga sisi: kepala lebih lebar dengan rahang membulat, mata oval dan alis yang terbaca, rambut menyapu berlapis, jaket teal di atas kaus krem, ransel keemasan, serta sepatu cokelat. Lihat [pemeriksaan model terbaru](docs/reference-model-review.md).
+Model acuan tiga sisi terdahulu dan perbandingannya tersedia pada [arsip pemeriksaan model](docs/reference-model-review.md). Gambar tersebut mendokumentasikan tahap sebelum penyederhanaan avatar balok terbaru.
 
-Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan pemain/Bu Nara/Pak Wira/Bu Sari. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
+Varian siswi dapat dimainkan dengan menambahkan `?avatar=siswi` pada alamat server (misalnya path `/?avatar=siswi`). Pilihan ini tidak mengubah progres; hilangkan parameter untuk memakai siswa. Tautan galeri mempertahankan varian ketika kembali ke permainan. Tidak ada onboarding avatar tambahan.
+
+Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
 
 ## Menjalankan
 
@@ -91,7 +95,8 @@ src/
   engine/world.ts       satu renderer, pertukaran wilayah, avatar dan raycast
   engine/gardenWorld.ts Kebun, pot/tanaman, tandon dan efek penyiraman
   engine/character.ts   model bersendi, penampilan, titik label dan alat
-  engine/characterModel.ts geometri acuan, wajah, rambut, jaket, dan ransel
+  engine/characterModel.ts enam balok, tekstur canvas lokal, rambut dan ransel
+  engine/characterConfig.ts tinggi absolut, target kamera dan dimensi lingkungan
   engine/characterAnimator.ts napas, langkah, gestur dan interpolasi sendi
   engine/cameraController.ts kamera mengikuti, jarak, framing, jarak aman tembok
   engine/input.ts       keyboard, multi-pointer, analog, pemulihan input
@@ -112,6 +117,7 @@ docs/evidence/         gambar pembanding dan rekaman WebGL
 scripts/capture-character-evidence.mjs  pengambilan bukti visual yang dapat diulang
 scripts/capture-reference-model.mjs    gambar model terbaru dan tampilan perangkat
 scripts/capture-garden-evidence.mjs     bukti tambahan Kebun pada build produksi
+scripts/capture-block-avatar.mjs        bukti karakter/proporsi pada kamera pembanding
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.

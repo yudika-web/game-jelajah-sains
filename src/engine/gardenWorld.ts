@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { environmentDimensions } from './characterConfig';
 import { gardenPlaces } from '../data/regions';
 import { heightsAt, type GardenProgress, type Group } from '../game/gardenMission';
 import type { PlaceId } from '../data/content';
@@ -30,7 +31,7 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   // Farmer's lodge and an open-looking nursery, with a clear walking lane between them.
   for (const [x,z,w,d,h,color] of [[-10,9,6,5,3.6,'#e6c899'],[-10,-9,6,5,3.4,'#bbd3b2'],[10,10,5,4,3,'#ddb88c']] as const) {
     b(w,h,d,color,x,h/2,z); b(w+.6,.48,d+.6,'#67846a',x,h+.1,z);
-    b(1.3,2,.1,'#79694b',x,1,z+d/2+.06);
+    b(environmentDimensions.door.width,environmentDimensions.door.height,.1,'#79694b',x,environmentDimensions.door.height/2,z+d/2+.06);
     for (const dx of [-w*.3,w*.3]) { b(1.1,1.3,.12,'#eee5bc',x+dx,2,z+d/2+.08); b(.87,1.07,.14,'#8bbaa9',x+dx,2,z+d/2+.10); }
   }
   label('POS BU SARI',-10,4.7,9,undefined,true);
@@ -50,19 +51,19 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
     b(.4,2.2,.4,'#93724e',x,1,z); b(2.1,2.2,2.1,'#527e53',x,2.8,z); b(1.6,1,1.6,'#7b9b5b',x+.2,4.1,z);
   }
   const plants: { group: Group; index: number; seed: THREE.Mesh; stem: THREE.Mesh; leaves: THREE.Mesh[] }[] = [];
-  const leafGeometry = new THREE.SphereGeometry(1,6,4).scale(.23,.055,.11);
+  const leafGeometry = new THREE.SphereGeometry(1,6,4).scale(.16,.04,.08);
   const stemGeometry = new THREE.CylinderGeometry(.025,.035,1,6);
   const seedGeometry = new THREE.SphereGeometry(.085,6,4).scale(1,.6,.8);
   for (const group of ['A','B'] as const) {
     const x = group==='A' ? -5 : 5, color=group==='A'?'#387d8b':'#ad783b';
-    b(4.5,.38,2.8,'#9e7a50',x,.18,-3); b(4.2,.05,2.5,'#6c5038',x,.40,-3);
-    for(const dx of [-2.2,2.2]) b(.15,.5,2.9,'#bd9561',x+dx,.24,-3);
+    b(4.5,.18,2.8,'#9e7a50',x,.09,-3); b(4.2,.04,2.5,'#6c5038',x,.20,-3);
+    for(const dx of [-2.2,2.2]) b(.15,.23,2.9,'#bd9561',x+dx,.115,-3);
     label(`${group} · ${group==='A'?100:50} mL / tanaman`,x,3.3,-2.4,group==='A'?'plotA':'plotB');
     for(let i=0;i<3;i++) {
       const px=x+(i-1)*1.25, pz=-3;
-      const pot=mesh(new THREE.CylinderGeometry(.44,.32,.50,8),'#ba855b',px,.63,pz); pot.userData.place=group==='A'?'plotA':'plotB';
-      mesh(new THREE.CylinderGeometry(.39,.39,.04,8),'#5b4532',px,.89,pz);
-      const seed=mesh(seedGeometry,'#9daa58',px,.94,pz);
+      const pot=mesh(new THREE.CylinderGeometry(.30,.23,.30,8),'#ba855b',px,.37,pz); pot.userData.place=group==='A'?'plotA':'plotB';
+      mesh(new THREE.CylinderGeometry(.27,.27,.03,8),'#5b4532',px,.535,pz);
+      const seed=mesh(seedGeometry,'#9daa58',px,.56,pz);
       const stem=mesh(stemGeometry,'#5b8e4a',px,1,pz);
       const leaves=Array.from({length:6},(_,j)=> { const leaf=mesh(leafGeometry,j%2?'#8eaf5f':'#629449',px,1,pz); leaf.rotation.z=(j%2?1:-1)*.3; return leaf; });
       plants.push({group,index:i,seed,stem,leaves}); label(`${group}${i+1}`,px,1.2,-1.55,group==='A'?'plotA':'plotB');
@@ -72,9 +73,10 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   mesh(new THREE.CylinderGeometry(1.15,1.15,2.8,12),'#79a8a1',9,1.5,1);
   mesh(new THREE.CylinderGeometry(1.23,1.23,.16,12),'#486e65',9,2.95,1);
   b(.18,.15,.55,'#d3b572',9,.85,2.25); b(.45,.12,.12,'#d3b572',9,1.02,2.15);
-  b(2.5,.18,1.2,'#aa8155',0,1.25,-8);
-  for(const x of [-1,1]) b(.15,1.2,.15,'#886a4b',x,.6,-8);
-  b(.6,.08,.7,'#f3e7bf',-.4,1.39,-8); b(.35,.1,.45,'#6d9270',.6,1.4,-8);
+  const top=environmentDimensions.gardenTableTop;
+  b(2.5,.12,1.2,'#aa8155',0,top-.06,-8);
+  for(const x of [-1,1]) b(.15,top-.12,.15,'#886a4b',x,(top-.12)/2,-8);
+  b(.6,.08,.7,'#f3e7bf',-.4,top+.06,-8); b(.35,.1,.45,'#6d9270',.6,top+.08,-8);
   for(const [x,y,z] of [[4.5,.4,6],[5.4,.4,6],[5,.95,6]]) b(.75,.7,.75,'#b78c58',x,y,z);
   b(.5,.05,.6,'#f5df99',5,1.4,6);
   for(const id of ['gardenBook','fairNotes'] as const) {
@@ -92,19 +94,19 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
     return (['A','B'] as const).map(group=> {
       const fx=new THREE.Group(); root.add(fx); fx.visible=false;
       const dropGeometry=new THREE.SphereGeometry(.045,5,4);
-      for(let i=0;i<12;i++) mesh(dropGeometry,'#8dd4df',(group==='A'?-5:5)+(Math.floor(i/4)-1)*1.25+(i%2)*.12,1.7,-3+(i%3)*.13,fx);
+      for(let i=0;i<12;i++) mesh(dropGeometry,'#8dd4df',(group==='A'?-5:5)+(Math.floor(i/4)-1)*1.25+(i%2)*.12,1.2,-3+(i%3)*.13,fx);
       return {group,fx,time:0};
     });
   }
   return {
     update(p) {
       for(const plant of plants) {
-        const planted=p.planted[plant.group], height=heightsAt(p.day,plant.group)[plant.index]*.15;
+        const planted=p.planted[plant.group], height=heightsAt(p.day,plant.group)[plant.index]*.05;
         plant.seed.visible=planted&&p.day===0; plant.stem.visible=planted&&p.day>0;
-        plant.stem.scale.y=Math.max(.01,height); plant.stem.position.y=.94+height/2;
+        plant.stem.scale.y=Math.max(.01,height); plant.stem.position.y=.56+height/2;
         plant.leaves.forEach((leaf,j)=> {
           leaf.visible=planted&&p.day>0&&j<(p.day<3?2:p.day<5?4:6);
-          leaf.position.y=.97+height*(.45+Math.floor(j/2)*.23); leaf.position.x=(plant.group==='A'?-5:5)+(plant.index-1)*1.25+(j%2?1:-1)*.17;
+          leaf.position.y=.59+height*(.45+Math.floor(j/2)*.23); leaf.position.x=(plant.group==='A'?-5:5)+(plant.index-1)*1.25+(j%2?1:-1)*.12;
         });
       }
       root.userData.day=p.day;

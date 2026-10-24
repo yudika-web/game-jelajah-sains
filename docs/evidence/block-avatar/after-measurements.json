@@ -1,0 +1,100 @@
+{
+  "method": "Neutral body meshes; tools, labels and shadow excluded",
+  "characters": [
+    {
+      "kind": "explorer",
+      "baseHeight": 3.8450000405311586,
+      "height": 1.6,
+      "scale": 0.41612483306475384,
+      "groundY": 0.1,
+      "visualY": 0.10000000496059455,
+      "headCenter": 1.4003901082879504,
+      "headHeight": 0.39531858645092166,
+      "measuredHeight": 1.6,
+      "soleY": 0.10000000000000003,
+      "topY": 1.7000000000000002,
+      "coreBlocks": 6,
+      "rootScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "explorerGirl",
+      "baseHeight": 3.8450000405311586,
+      "height": 1.6,
+      "scale": 0.41612483306475384,
+      "groundY": 0.1,
+      "visualY": 0.10000000496059455,
+      "headCenter": 1.4003901082879504,
+      "headHeight": 0.39531858645092166,
+      "measuredHeight": 1.6,
+      "soleY": 0.10000000000000003,
+      "topY": 1.7000000000000002,
+      "coreBlocks": 6,
+      "rootScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "nara",
+      "baseHeight": 3.8450000405311586,
+      "height": 1.7,
+      "scale": 0.4421326351313009,
+      "groundY": 0.1,
+      "visualY": 0.10000000527063171,
+      "headCenter": 1.481664490055947,
+      "headHeight": 0.4200259981041041,
+      "measuredHeight": 1.6999999999999997,
+      "soleY": 0.09999999999999998,
+      "topY": 1.7999999999999998,
+      "coreBlocks": 6,
+      "rootScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "wira",
+      "baseHeight": 3.9050000083446506,
+      "height": 1.75,
+      "scale": 0.4481434049322407,
+      "groundY": 0.1,
+      "visualY": 0.10000000534228567,
+      "headCenter": 1.5004481457555379,
+      "headHeight": 0.4257362293433431,
+      "measuredHeight": 1.7499999999999998,
+      "soleY": 0.10000000000000003,
+      "topY": 1.8499999999999999,
+      "coreBlocks": 6,
+      "rootScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "sari",
+      "baseHeight": 3.9050000083446506,
+      "height": 1.68,
+      "scale": 0.43021766873495104,
+      "groundY": 0.1,
+      "visualY": 0.10000000512859425,
+      "headCenter": 1.4444302199253163,
+      "headHeight": 0.4087067801696094,
+      "measuredHeight": 1.6799999999999997,
+      "soleY": 0.09999999999999998,
+      "topY": 1.7799999999999998,
+      "coreBlocks": 6,
+      "rootScale": [
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}

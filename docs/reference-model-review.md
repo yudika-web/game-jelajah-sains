@@ -1,5 +1,7 @@
 # Pembentukan ulang karakter dari acuan tiga sisi
 
+> Bentuk karakter pada laporan ini adalah rekaman tahap sebelumnya. Model terbaru dan ukuran terkalibrasi tersedia di [laporan patch avatar balok](block-avatar-review.md).
+
 Tahap ini memprioritaskan proporsi dan siluet pemain dari gambar acuan terbaru: kepala cukup besar, wajah ramah, rambut menyapu berlapis, jaket teal dengan kaus krem, ransel keemasan, celana abu-abu, dan sepatu cokelat. Seluruh bentuk dibuat sebagai geometri 3D lokal yang terhubung ke rig permainan.
 
 ## Urutan pemeriksaan bentuk

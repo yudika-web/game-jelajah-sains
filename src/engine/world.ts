@@ -10,13 +10,14 @@ import type { RegionId } from '../game/gameState';
 import type { GardenProgress, Group } from '../game/gardenMission';
 import { buildGarden, type GardenView } from './gardenWorld';
 import { visibleForPicking } from './picking';
+import { characterConfig, environmentDimensions, playerVariant } from './characterConfig';
 
 export type InputMode = 'laptop' | 'hp' | 'ifp';
 export class World {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(48, 1, 0.1, 110);
   readonly renderer: THREE.WebGLRenderer;
-  readonly playerRig = createCharacter('explorer');
+  readonly playerRig = createCharacter(playerVariant(new URLSearchParams(location.search).get('avatar')));
   readonly player = this.playerRig.root;
   readonly playerAnimator = new CharacterAnimator(this.playerRig);
   readonly position = new THREE.Vector3(-1, 0, 6);
@@ -118,7 +119,8 @@ export class World {
     ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); sprite.scale.set(plantLabel?.65:3.5,plantLabel?.325:.66,1);
+    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari';
+    sprite.scale.set(plantLabel?.65:npcLabel?2:3.5,plantLabel?.325:npcLabel?.375:.66,1);
     sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
   }
@@ -149,7 +151,7 @@ export class World {
       b(house.w, house.h, house.d, house.color, house.x, house.h / 2, house.z);
       b(house.w + 0.55, 0.5, house.d + 0.55, house.roof, house.x, house.h + 0.12, house.z);
       b(house.w + 0.15, 0.2, house.d + 0.15, '#f7eed4', house.x, house.h - 0.4, house.z);
-      b(1.1, 2.1, 0.12, '#5b6b5e', house.x, 1.05, house.z + house.d / 2 + 0.08);
+      b(environmentDimensions.door.width, environmentDimensions.door.height, 0.12, '#5b6b5e', house.x, environmentDimensions.door.height/2, house.z + house.d / 2 + 0.08);
       for (const dx of [-house.w * 0.3, house.w * 0.3]) {
         b(1.15, 1.25, 0.16, '#f7f1dd', house.x + dx, 2.1, house.z + house.d / 2 + 0.1);
         b(0.89, 0.99, 0.18, '#739da4', house.x + dx, 2.1, house.z + house.d / 2 + 0.12);
@@ -166,9 +168,9 @@ export class World {
     }
     // Planters and benches decorate the edges, leaving main navigation open.
     for (const [x, z] of [[-6, 7], [4, 1], [-3, -3]]) {
-      b(1.8, 0.3, 0.7, '#a97b4f', x, 0.65, z);
-      b(1.8, 0.8, 0.18, '#a97b4f', x, 1.0, z - 0.35);
-      for (const dx of [-0.65, 0.65]) b(0.14, 0.6, 0.55, '#525c4f', x + dx, 0.3, z);
+      b(1.8, .16, .7, '#a97b4f', x, environmentDimensions.benchSeat-.08, z);
+      b(1.8, .65, .18, '#a97b4f', x, .86, z - 0.35);
+      for (const dx of [-0.65, 0.65]) b(.14,.42,.55,'#525c4f',x+dx,.21, z);
     }
     for (const place of places) {
       if (place.id === 'nara' || place.id === 'warga') {
@@ -228,7 +230,7 @@ export class World {
       this.gardenView = buildGarden({ root: this.regionRoot, box: b, label: (...args) => { this.label(...args); }, npc: (id,x,z) => {
         const rig = createCharacter('sari', id); rig.root.position.set(x,0,z); this.regionRoot.add(rig.root);
         this.npcs.push({id,rig,animator:new CharacterAnimator(rig,2.4),timer:0});
-        this.npcLabels.set(id,this.label('Bu Sari',x,3.6,z,id));
+        this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
       this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
     }
@@ -274,7 +276,7 @@ export class World {
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
-    let nearest: PlaceId | null = null, distance = 2.6;
+    let nearest: PlaceId | null = null, distance: number = characterConfig.interactionRadius;
     for (const p of this.places) {
       const d = Math.hypot(p.x - this.position.x, p.z - this.position.z);
       if (d < distance) { nearest = p.id; distance = d; }
@@ -355,11 +357,14 @@ export class World {
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
       label.visible=distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
-      const width=Math.min(plant?.65:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      const width=Math.min(plant?.65:label.userData.place==='sari'?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     this.gardenView?.frame(dt, this.reducedMotion);
     this.canvas.dataset.region = this.region;
+    this.canvas.dataset.playerHeight = this.playerRig.dimensions.height.toFixed(3);
+    this.canvas.dataset.playerScale = this.playerRig.visual.scale.y.toFixed(6);
+    this.canvas.dataset.avatar = this.playerRig.kind;
     this.renderer.render(this.scene, this.camera);
   }
 }

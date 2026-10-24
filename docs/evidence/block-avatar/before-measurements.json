@@ -1,0 +1,70 @@
+{
+  "commit": "9f8c7a3",
+  "method": "Neutral body meshes under visual, excluding all tool attachment groups; root labels and shadow excluded",
+  "characters": [
+    {
+      "kind": "explorer",
+      "height": 3.0273297727108,
+      "soleY": 0.09149999499321004,
+      "topY": 3.1188297677040104,
+      "visualScale": [
+        1,
+        1,
+        1
+      ],
+      "navigationScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "nara",
+      "height": 2.9285000264644623,
+      "soleY": 0.09149999499321004,
+      "topY": 3.0200000214576725,
+      "visualScale": [
+        1,
+        1,
+        1
+      ],
+      "navigationScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "wira",
+      "height": 2.9935000240802765,
+      "soleY": 0.09149999499321004,
+      "topY": 3.0850000190734868,
+      "visualScale": [
+        1,
+        1,
+        1
+      ],
+      "navigationScale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "kind": "sari",
+      "height": 3.0185000002384186,
+      "soleY": 0.09149999499321004,
+      "topY": 3.109999995231629,
+      "visualScale": [
+        1,
+        1,
+        1
+      ],
+      "navigationScale": [
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}
