@@ -1,3 +1,4 @@
+import { movementConfig } from './movement';
 import type { CharacterRig } from './character';
 
 export type InteractionPose = 'none' | 'greet' | 'read' | 'measure' | 'sample' | 'water' | 'ruler' | 'plant';
@@ -11,6 +12,8 @@ export function turnToward(current: number, target: number, dt: number, response
 export class CharacterAnimator {
   pose: InteractionPose = 'none';
   speed = 0;
+  state: 'idle' | 'walk' | 'run' | 'interact' = 'idle';
+  private runBlend = 0;
   stride = 0;
   private time = 0;
   private blend = 0;
@@ -33,7 +36,7 @@ export class CharacterAnimator {
   lookAt(relativeYaw: number) { this.requestedLook = Math.max(-.65, Math.min(.65, relativeYaw)); }
   /** distance is the *actual* navigation displacement after collision resolution. */
   update(dt: number, distance: number, reducedMotion = false) {
-    dt = Math.min(Math.max(dt, 0), .1);
+    dt = Math.min(Math.max(dt, 0), movementConfig.maxFrameTime);
     const r = this.rig;
     for (let i = 0; i < this.armJoints.length; i++) {
       const rotation = this.armJoints[i].rotation;
@@ -42,7 +45,9 @@ export class CharacterAnimator {
     this.time += dt;
     this.speed = dt > 0 ? distance / dt : 0;
     const walking = this.pose === 'none' && this.speed > .025;
-    this.blend = damp(this.blend, walking ? Math.min(1, this.speed / 4.6) : 0, walking ? 12 : 19, dt);
+    this.state = this.pose !== 'none' ? 'interact' : !walking ? 'idle' : this.speed > movementConfig.walkSpeed + .35 ? 'run' : 'walk';
+    this.blend = damp(this.blend, walking ? Math.min(1, this.speed / movementConfig.walkSpeed) : 0, walking ? 18 : 24, dt);
+    this.runBlend = damp(this.runBlend, walking ? Math.max(0, Math.min(1, (this.speed - movementConfig.walkSpeed) / (movementConfig.runSpeed - movementConfig.walkSpeed))) : 0, 14, dt);
     // Stop advancing the cycle at a wall: only a short settling transition remains.
     this.stride += reducedMotion || !walking ? 0 : distance * 3.3;
     const wave = reducedMotion ? 0 : Math.sin(this.stride);
@@ -56,7 +61,7 @@ export class CharacterAnimator {
     const breathe = reducedMotion ? 0 : sway * .0015;
     r.torso.scale.y = 1 + breathe;
     r.torso.rotation.z = sway * .008 * (1 - moving) + wave * moving * .025;
-    r.torso.rotation.x = moving * .035;
+    r.torso.rotation.x = moving * (.035 + this.runBlend * .09);
     r.visual.position.y = r.dimensions.visualY; // feet remain on the ground; no root bobbing
     this.lookYaw = damp(this.lookYaw, this.requestedLook, 5, dt);
     r.head.rotation.y = this.lookYaw + (reducedMotion ? 0 : Math.sin(this.time * .55 + this.phase) * .035);
@@ -66,10 +71,10 @@ export class CharacterAnimator {
     for (let i = 0; i < 2; i++) {
       const side = i === 0 ? -1 : 1, step = wave * (i === 0 ? 1 : -1);
       const a = this.arms[i], l = this.legs[i];
-      a.shoulder.rotation.set(step * moving * .43, 0, side * .035);
+      a.shoulder.rotation.set(step * moving * (.43 + this.runBlend * .25), 0, side * .035);
       a.elbow.rotation.set(0,0,0);
       a.hand.rotation.set(0, 0, 0);
-      const angle = -step * moving * (r.kind==='nara' ? .055 : .38);
+      const angle = -step * moving * (r.kind==='nara' ? .055 : .38 + this.runBlend * .20);
       l.hip.rotation.x = angle;
       // Rigid feet: compensate only the tiny low corner of a swung block, in base units.
       l.hip.position.y = 1.35 + Math.max(0,.30*Math.abs(Math.sin(angle))-1.35*(1-Math.cos(angle)));

@@ -1,0 +1,50 @@
+{
+  "description": "Controlled integrator comparison from rest on an unobstructed straight track. These intervals are simulation inputs, not measured device FPS.",
+  "config": {
+    "walkSpeed": 5.2,
+    "runSpeed": 8,
+    "acceleration": 60,
+    "deceleration": 90,
+    "analogDeadZone": 0.06,
+    "simulationStep": 0.008333333333333333,
+    "maxFrameTime": 0.25
+  },
+  "rows": [
+    {
+      "intervalHz": 10,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    },
+    {
+      "intervalHz": 15,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    },
+    {
+      "intervalHz": 20,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    },
+    {
+      "intervalHz": 30,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    },
+    {
+      "intervalHz": 60,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    },
+    {
+      "intervalHz": 120,
+      "seconds": 2,
+      "walkDistance": 10.174666667,
+      "runDistance": 15.466666667
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Catatan pengembangan prototipe 0.1
 
-Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
 ## Sumber dan keputusan implementasi
 
@@ -75,3 +75,16 @@ Lihat [laporan patch](block-avatar-review.md). `characterConfig.ts` menjadi sumb
 Siswa dan siswi sama-sama 1,60 unit. `?avatar=siswi` memilih varian pada awal konstruksi dunia; query dipertahankan saat membuka/menutup galeri dan tidak masuk format misi/cadangan. Galeri memakai factory yang sama, tanpa skala tambahan. Mode biasa membingkai model sesuai tinggi aktual untuk inspeksi; `?framing=compare` memakai frustum lama yang tetap agar perubahan ukuran terlihat. Kamera permainan tetap memakai 8,5/10,8/14 unit dan sudut kontrol lama, dengan tinggi sasaran 1,02 unit.
 
 Pintu 2,10 unit dan tapak bangunan dipertahankan. Bangku diturunkan ke 0,50 dan permukaan meja kebun ke 0,84. Pot/bed serta tanaman disesuaikan secara visual; tinggi pertumbuhan ditampilkan 5× (`0,05 unit/cm`) dan panel menjelaskannya, sementara data cm dan aturan M14 tidak berubah. Penghalang tidak memerlukan perubahan tapak. Jangkauan interaksi 2,6, pendekatan 1,4, dan radius navigasi 0,45 dipertahankan.
+
+
+## Patch respons gerak dan lari
+
+Lihat [laporan pemeriksaan](running-review.md). `src/engine/movement.ts` menjadi konfigurasi dan integrator gerak bersama keyboard, analog, serta navigasi otomatis. Target Jalan 5,2 / Lari 8,0 unit per detik; akselerasi 60 dan perlambatan 90 unit/detik². Skala karakter tidak terlibat. Integrasi ramp kecepatan memakai luas trapesium dengan koreksi waktu saat mencapai target, dan substep maksimal 1/120 detik (perpindahan maksimal 0,067 unit). Pergerakan manual memakai sapuan per sumbu sampai batas dinding pertama (`sweepAxis`), lalu dapat bergeser sepanjang dinding; tidak ada rayapan dari penolakan endpoint. Navigasi tetap di segmen waypoint dan membatasi jarak terhadap sisa segmen. Arrival dikonsumsi sekali; jalur terhalang tidak melaporkan sukses.
+
+Batas delta lama 0,05 menyebabkan kecepatan dunia turun saat frame lebih lambat dari 20 Hz. Kini interval hingga 0,25 detik diproses seluruhnya; lonjakan lebih besar dibuang. Blur/tab tersembunyi membersihkan input/inersia serta mengabaikan delta pertama setelah reset. Tidak ada catch-up terhadap waktu nyata. Uji numerik 10/15/20/30/60/120 Hz serta interval bervariasi membandingkan jarak yang sama; ini bukan benchmark FPS perangkat.
+
+Analog memiliki area mati radial 0,06 dengan rentang sisanya dinormalisasi kembali ke 0–1. Arah gabungan dinormalisasi hanya jika panjangnya >1. Shift kiri/kanan dilacak terpisah. Input pada input/select/textarea dan konten editable diabaikan; fokus masuk ke editor membersihkan input lama. Tombol yang masih ditahan sesudah jeda tidak diterima melalui key-repeat; pemain perlu menekan ulang. Pembukaan panel, perubahan mode/wilayah, kembali ke pos, blur, dan visibilitychange memakai clear yang sama. Pointer cancel/lost capture menghentikan perpindahan langsung sambil mempertahankan pilihan mode; pelepasan normal memakai pengereman singkat. Input manual membatalkan jalur saat event diterima, termasuk pulsa tombol yang seluruhnya berada di antara dua frame. Toggle Jalan/Lari bersifat sementara, bukan preferensi atau data misi. Peta menghentikan gerak saat terbuka; memilih tujuan mengembalikan mode sebelumnya khusus untuk rute baru itu. Menutup Peta tanpa memilih tujuan tetap Jalan.
+
+Animator membaca jarak aktual setelah tabrakan, mengklasifikasikan idle/walk/run/interact, lalu membaurkan amplitudo dan kemiringan tubuh. Irama langkah tetap berdasarkan jarak sehingga otomatis lebih cepat saat berlari. Lengan/kaki tetap balok utuh; NPC tanpa perpindahan tetap diam. Pengurangan gerakan menekan ayunan/condong dekoratif tanpa mengubah integrator. Kamera, FOV, skala, penghalang, radius interaksi, misi, dan format simpan tidak diubah.
+
+Reproduksi bukti video setelah build: `node scripts/capture-running-evidence.mjs` (server preview 4173; dapat diganti lewat `EVIDENCE_ORIGIN`). Memerlukan Chromium sistem dan ffmpeg. Tangkapan HP/IFP diperbarui dengan `CAPTURE_RUNNING_EVIDENCE=1 npm run test:e2e -- tests/running.spec.ts`.

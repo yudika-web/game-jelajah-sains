@@ -10,6 +10,7 @@ import type { RegionId } from '../game/gameState';
 import type { GardenProgress, Group } from '../game/gardenMission';
 import { buildGarden, type GardenView } from './gardenWorld';
 import { visibleForPicking } from './picking';
+import { MovementController, movementDelta } from './movement';
 import { characterConfig, environmentDimensions, playerVariant } from './characterConfig';
 
 export type InputMode = 'laptop' | 'hp' | 'ifp';
@@ -26,6 +27,13 @@ export class World {
   paused = true;
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   move = { x: 0, z: 0 };
+  private runMode = false;
+  onRunModeChange: (running: boolean) => void = () => {};
+  get running() { return this.runMode; }
+  set running(value: boolean) { this.runMode = value; this.onRunModeChange(value); }
+  private movement = new MovementController();
+  private resetFrameTime = false;
+  suspendMotion() { this.stop(); this.resetFrameTime = true; }
   readonly followCamera: FollowCamera;
   get yaw() { return this.followCamera.yaw; }
   set yaw(value: number) { this.followCamera.yaw = value; }
@@ -54,7 +62,6 @@ export class World {
   private interacting: PlaceId | null = null;
   private npcLabelPosition = new THREE.Vector3();
   private metricsTimer = 0;
-  private movementPoint = { x: 0, z: 0 };
   private npcLabels = new Map<PlaceId, THREE.Sprite>();
   private projectedLabel = new THREE.Vector3();
   private regionLabels: THREE.Sprite[] = [];
@@ -252,7 +259,11 @@ export class World {
     this.marker.position.set(p.x, 0.15, p.z); this.marker.visible = true;
     return true;
   }
-  stop() { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; }
+  setMovementInput(input: Point) {
+    this.move = input;
+    if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
+  }
+  stop(resetRun = true) { this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
   resetPosition() { this.stop(); this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
@@ -288,30 +299,22 @@ export class World {
     this.renderer.setSize(innerWidth, innerHeight);
   }
   private frame() {
-    const dt = Math.min(this.clock.getDelta(), 0.05); this.elapsed += dt;
-    const oldX = this.position.x, oldZ = this.position.z;
-    let dx = 0, dz = 0;
+    const elapsed = this.clock.getDelta();
+    const dt = this.resetFrameTime ? 0 : movementDelta(elapsed);
+    this.resetFrameTime = false; this.elapsed += dt;
+    let travelled = 0, dx = 0, dz = 0;
     if (!this.paused) {
-      if (Math.hypot(this.move.x, this.move.z) > 0.05) {
-        this.path = []; this.onArrive = null; this.marker.visible = false;
-        dx = this.move.x * Math.cos(this.yaw) + this.move.z * Math.sin(this.yaw);
-        dz = -this.move.x * Math.sin(this.yaw) + this.move.z * Math.cos(this.yaw);
-      } else if (this.path.length) {
-        const next = this.path[0]; const distance = Math.hypot(next.x - this.position.x, next.z - this.position.z);
-        if (distance < 0.16) this.path.shift();
-        else { dx = (next.x - this.position.x) / distance; dz = (next.z - this.position.z) / distance; }
-        if (!this.path.length) { this.marker.visible = false; const arrive = this.onArrive; this.onArrive = null; arrive?.(); }
+      if (Math.hypot(this.move.x, this.move.z) > 0) {
+        this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
-      const magnitude = Math.hypot(dx, dz);
-      if (magnitude > 1) { dx /= magnitude; dz /= magnitude; }
-      const speed = 4.6 * dt;
-      this.movementPoint.x = this.position.x + dx * speed; this.movementPoint.z = this.position.z;
-      if (walkable(this.movementPoint, this.navigation)) this.position.x += dx * speed;
-      this.movementPoint.x = this.position.x; this.movementPoint.z = this.position.z + dz * speed;
-      if (walkable(this.movementPoint, this.navigation)) this.position.z += dz * speed;
+      const result = this.movement.step(this.position, this.move, this.yaw, this.running, this.path, dt, this.navigation);
+      travelled = result.distance; dx = result.dx; dz = result.dz;
+      if (result.arrived || result.blocked && !this.path.length) {
+        this.marker.visible = false; const arrive = this.onArrive; this.onArrive = null;
+        if (result.arrived) arrive?.();
+      }
     }
-    const travelled = Math.hypot(this.position.x - oldX, this.position.z - oldZ);
-    if (travelled > .00001) this.facing = Math.atan2(this.position.x - oldX, this.position.z - oldZ);
+    if (travelled > .00001 && !this.interacting) this.facing = Math.atan2(dx, dz);
     this.player.rotation.y = turnToward(this.player.rotation.y, this.facing, dt);
     this.player.position.copy(this.position);
     this.playerAnimator.update(dt, travelled, this.reducedMotion);
@@ -332,6 +335,8 @@ export class World {
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
     this.canvas.dataset.x = this.position.x.toFixed(2); this.canvas.dataset.z = this.position.z.toFixed(2);
+    this.canvas.dataset.runMode = this.running ? 'run' : 'walk';
+    this.canvas.dataset.locomotion = this.playerAnimator.state;
     this.canvas.dataset.near = nearest ?? ''; this.canvas.dataset.moving = String(this.path.length > 0);
     // Throttled diagnostics make motion/collision assertions possible without a production debug API.
     this.metricsTimer += dt;

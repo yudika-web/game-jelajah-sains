@@ -357,3 +357,20 @@ textarea { font: inherit; width: 100%; border: 1px solid #cdd8c0; padding: 12px;
   .mission-card.compact h1 { display: none; }
   .mission-card.compact .mission-picker { font-size: 0; gap: 0; margin-top: 7px; }
 }
+
+/* Toggle needs no third finger while analog and camera pointers are held. */
+.run-toggle { display: none; position: absolute; left: 39px; bottom: 202px; min-width: 116px; min-height: 52px; padding: 9px 14px; border: 1px solid #54765b; border-radius: 13px; background: #fffbed; color: #244b42; touch-action: manipulation; }
+.run-toggle span, .run-toggle small { display: block; }
+.run-toggle span { font-weight: 700; font-size: 15px; }
+.run-toggle small { font-size: 9px; margin-top: 3px; }
+.run-toggle[aria-pressed='true'] { background: #285d4e; color: #fffbed; border-color: #d4ab55; box-shadow: 0 0 0 2px #e5be6855; }
+body[data-mode='hp'] .run-toggle, body[data-mode='ifp'] .run-toggle { display: block; }
+body[data-mode='ifp'] .run-toggle { left: 44px; bottom: 251px; min-width: 134px; min-height: 64px; }
+@media (max-width: 700px) {
+  .run-toggle { left: 20px; bottom: 241px; min-width: 112px; }
+  body[data-mode='ifp'] .run-toggle { left: 15px; bottom: 283px; min-width: 130px; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .run-toggle { left: auto; right: 20px; top: 84px; bottom: auto; min-width: 100px; min-height: 52px; padding: 6px 10px; }
+  body[data-mode='ifp'] .run-toggle { left: auto; right: 16px; top: 84px; bottom: auto; min-width: 100px; }
+}

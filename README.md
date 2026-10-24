@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, atau pilih Jalan/Lari pada HP dan IFP. Lihat [laporan gerak, konfigurasi, dan cuplikan browser](docs/running-review.md).
+
 Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
 Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Dua wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota** dan **W02 Kebun Kehidupan / M14 Kebun Percobaan**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
@@ -41,12 +43,15 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Mi
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
 | Berjalan | WASD / panah | Analog kiri | Ketuk tanah, pilih lokasi di Peta, atau analog besar |
+| Berlari | Tahan Shift kiri/kanan sambil bergerak | Toggle **Jalan / Lari**, lalu analog | Toggle **Jalan / Lari**, lalu ketuk tujuan / pilih Peta |
 | Kamera | Seret dunia; R mengembalikan arah | Seret dunia, terpisah dari jari analog | Tombol putar kiri/kanan; mengikuti otomatis |
 | Interaksi | E / tombol aksi | Tombol aksi / ketuk label | Ketuk label atau Peta lalu Aksi; panel terbuka saat tiba |
 | Jurnal / Tas / Peta | J / I / M | Tombol bawah | Tombol besar bawah |
 | Jeda | Esc / Pengaturan | Pengaturan | Pengaturan |
 
-Membuka dialog atau jurnal menghentikan gerakan. Pergantian tab, kehilangan fokus, pointer cancel, dan pelepasan analog menghentikan input. **Kembali ke Pos** tersedia di Pengaturan tanpa menghapus bukti. Layar penuh opsional; bila ditolak browser, permainan tetap berjalan.
+Jalan **5,2 unit/detik**, lari **8,0 unit/detik**, tanpa stamina. Dorongan analog kecil memberi kecepatan proporsional. Shift/toggle sendiri tidak menggerakkan pemain. **Berhenti** atau input manual membatalkan perjalanan otomatis. Saat memilih tujuan dari Peta, mode sebelum membuka peta dipakai untuk rute itu.
+
+Membuka dialog, jurnal, menu jeda, mengganti kontrol/wilayah, atau kembali ke pos menghentikan gerakan dan mengembalikan mode Jalan. Sesudah ditutup, diperlukan input baru. Mode lari tidak disimpan dalam progres. Melepas analog hanya menghentikan gerakan; pilihan Jalan/Lari tetap berlaku sampai salah satu jeda tersebut. Pergantian tab, kehilangan fokus, pointer cancel, dan pelepasan analog menghentikan input. **Kembali ke Pos** tersedia di Pengaturan tanpa menghapus bukti. Layar penuh opsional; bila ditolak browser, permainan tetap berjalan.
 
 **Pengaturan → Jarak kamera** menyediakan Dekat (8,5 unit), Normal (10,8), dan Jauh (14). Pilihan jarak, pengurangan gerakan, serta resolusi rendah disimpan terpisah dari penyelidikan, melalui preferensi lokal browser. R mengembalikan sudut pandang yang nyaman tanpa mengganti pilihan jarak. Kamera manual tetap dipertahankan ketika karakter berbelok. Panel misi awalnya menampilkan langkah aktif; tombol **+** atau **Lihat semua langkah** membuka seluruh daftar.
 

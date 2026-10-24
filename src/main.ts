@@ -47,7 +47,8 @@ app.innerHTML = `
     </aside>
     <div class="world-note"><span class="north">N</span>${icon('compass')}<span>ALUN-ALUN KOTA</span></div>
     <button class="minimap" id="mini-map" aria-label="Buka peta Kota Sains"><svg viewBox="0 0 160 120" aria-hidden="true"><rect width="160" height="120" rx="12" fill="#dce4cb"/><path d="M121 0v120" stroke="#80b5bd" stroke-width="20"/><path d="M65 0v120M0 65h115" stroke="#f9f0d7" stroke-width="14"/><path d="M12 13h34v25H12Zm0 67h24v22H12Zm62-69h20v20H74Z" fill="#b5c5af"/><circle cx="65" cy="68" r="6" fill="#225e50" stroke="#fff" stroke-width="3"/><circle cx="106" cy="46" r="4" fill="#d6a558"/><circle cx="106" cy="96" r="4" fill="#589caf"/></svg><span>${icon('map')} Peta wilayah <kbd>M</kbd></span></button>
-    <div class="bottom-left"><div class="save-status" id="save-status" role="status">● Progres lokal</div><div class="keyboard-hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> berjalan <span>·</span> seret untuk melihat</div></div>
+    <div class="bottom-left"><div class="save-status" id="save-status" role="status">● Progres lokal</div><div class="keyboard-hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> bergerak <span>·</span> Shift berlari</div></div>
+    <button id="run-toggle" class="run-toggle" aria-pressed="false" aria-label="Mode Jalan; ketuk untuk Lari"><span>Jalan</span><small>Ketuk untuk Lari</small></button>
     <div class="joystick" id="joystick" aria-label="Analog gerak sentuh"><span class="stick-ring"></span><span class="stick-knob">${icon('compass')}</span></div>
     <nav class="dock" aria-label="Peralatan penjelajah">
       <button id="journal">${icon('book')}<span>Jurnal</span><kbd>J</kbd></button>
@@ -155,10 +156,11 @@ function openPanel(title: string, html: string, kicker = 'CATATAN PENJELAJAH') {
   if (!panel.open) panel.showModal();
   $('close-panel').focus();
 }
-function navigate(id: PlaceId) {
+function navigate(id: PlaceId, running?: boolean) {
   if (!world || !started) { toast('Mulai menjelajah terlebih dahulu.'); return; }
   if(regionOf(id) !== world.region) { toast(`Gunakan gerbang menuju ${regions[regionOf(id)].name} dahulu.`); id = regions[world.region].gate; }
-  closePanel(); const place = world.places.find(p => p.id === id);
+  closePanel(); if (running !== undefined) world.running = running;
+  const place = world.places.find(p => p.id === id);
   if(!place) return;
   // Stop in front of the object instead of overlapping the NPC or sample bottle.
   const approach = { x: place.x, z: place.z + 1.4 };
@@ -257,9 +259,10 @@ function regionMapSvg() {
   return `<svg id="town-map" viewBox="-20 -19 40 38" role="img" aria-label="Peta ${r.name}"><rect x="-20" y="-19" width="40" height="38" rx="1" fill="#dce4cb"/>${isTown?'<path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/>':''}<path d="M0-17v34M-17 4h33" stroke="#f6e5bc" stroke-width="3"/>${r.navigation.obstacles.map(o=>`<rect x="${o.x-o.width/2}" y="${o.z-o.depth/2}" width="${o.width}" height="${o.depth}" fill="#a7b99e"/>`).join('')}${r.places.map(p=>`<circle cx="${p.x}" cy="${p.z}" r=".7" fill="${p.color}" stroke="#fff" stroke-width=".25"/><text x="${p.x-1}" y="${p.z-1}" font-size="1" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x??0}" cy="${world?.position.z??6}" r=".6" fill="#163d34" stroke="#fff" stroke-width=".3"/></svg>`;
 }
 function map() {
+  const running = world?.running ?? false;
   world?.endInteraction(); const r=regions[travel.region];
   openPanel(`Peta ${r.name}`, `<p>Pilih tujuan. Pemain berjalan di jalur wilayah ini dan berinteraksi saat tiba. Gerbang menghubungkan Kota dan Kebun.</p><div class="map-layout">${regionMapSvg()}<div class="destination-list">${r.places.map(p=>`<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${icon('arrow')}</button>`).join('')}</div></div>`, `${r.code} · JELAJAH WILAYAH`);
-  document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b=>{b.onclick=()=>navigate(b.dataset.destination as PlaceId);});
+  document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b=>{b.onclick=()=>navigate(b.dataset.destination as PlaceId, running);});
 }
 function updateRegionUI() {
   const r=regions[travel.region];
@@ -292,7 +295,7 @@ function dispatchGarden(event: GardenEvent, place?: PlaceId) {
 const gardenUI=createGardenUI({get:()=>garden,open:openPanel,close:closePanel,send:dispatchGarden,navigate,pose:pose=>world?.setInteractionPose(pose),water:group=>world?.waterGarden(group)});
 function settings() {
   world?.endInteraction();
-  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD / panah: berjalan · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: analog kiri dan seret dunia di kanan dapat dipakai bersamaan. IFP: ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan M01</button><button class="danger" id="reset-garden">Ulangi Percobaan M14</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
+  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Resolusi rendah untuk perangkat ringan</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>WASD bergerak · Shift berlari (tahan kiri atau kanan) · Panah: bergerak · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: pilih Jalan/Lari, lalu gunakan analog kiri dan seret kamera di kanan bersamaan. IFP: pilih Jalan/Lari, lalu ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan.</p></div><div class="settings-actions"><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan M01</button><button class="danger" id="reset-garden">Ulangi Percobaan M14</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
   $<HTMLSelectElement>('settings-mode').value = world?.mode ?? modeSelect.value;
   $('settings-mode').onchange = e => setMode((e.target as HTMLSelectElement).value as InputMode);
   $<HTMLSelectElement>('camera-distance').value = world?.cameraDistance ?? preferences.cameraDistance;
@@ -373,6 +376,7 @@ $('settings').onclick = settings;
 $('active-mission').onchange=e=>{travel.activeMission=(e.target as HTMLSelectElement).value as 'M01'|'M14';updateMission();persist();};
 $('journal').onclick = journal; $('inventory').onclick = inventory;
 $('map').onclick = map; $('mini-map').onclick = map;
+$('run-toggle').onclick = () => { if (world && !world.paused) world.running = !world.running; };
 $('camera-reset').onclick = () => world?.resetCamera();
 $('rotate-left').onclick = () => { if (world) world.yaw += Math.PI / 4; };
 $('rotate-right').onclick = () => { if (world) world.yaw -= Math.PI / 4; };
@@ -404,6 +408,11 @@ async function initialize() {
     world = new World($<HTMLCanvasElement>('world')); world.setRegion(travel.region);refreshWorld();updateRegionUI();
     world.cameraDistance = preferences.cameraDistance; world.reducedMotion = preferences.reducedMotion;
     world.renderer.setPixelRatio(preferences.lowQuality ? 1 : Math.min(devicePixelRatio, 1.5));
+    world.onRunModeChange = running => {
+      $('run-toggle').setAttribute('aria-pressed', String(running));
+      $('run-toggle').setAttribute('aria-label', `Mode ${running ? 'Lari' : 'Jalan'}; ketuk untuk ${running ? 'Jalan' : 'Lari'}`);
+      $('run-toggle').innerHTML = `<span>${running ? 'Lari' : 'Jalan'}</span><small>Ketuk untuk ${running ? 'Jalan' : 'Lari'}</small>`;
+    };
     world.onUpdate = near => {
       const place = world!.places.find(p => p.id === near);
       $('near-name').textContent = place?.name ?? 'Dekati warga atau penanda';

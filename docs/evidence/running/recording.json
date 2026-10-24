@@ -1,0 +1,86 @@
+{
+  "origin": "http://127.0.0.1:4173",
+  "browser": "154.0.8037.57",
+  "renderer": "Chromium SwiftShader",
+  "viewport": [
+    1280,
+    900
+  ],
+  "camera": "near (8.5); yaw .25, then -PI/4 for an unobstructed wall view through manual controls",
+  "frames": 144,
+  "seconds": 12.68,
+  "samples": [
+    {
+      "name": "walk",
+      "time": 0.265,
+      "x": "-1.71",
+      "z": "3.24",
+      "speed": "5.200",
+      "state": "walk",
+      "mode": "walk",
+      "yaw": "0.250"
+    },
+    {
+      "name": "run",
+      "time": 0.871,
+      "x": "-2.94",
+      "z": "-1.59",
+      "speed": "8.000",
+      "state": "run",
+      "mode": "run",
+      "yaw": "0.250"
+    },
+    {
+      "name": "walk-again",
+      "time": 1.283,
+      "x": "-3.41",
+      "z": "-3.43",
+      "speed": "5.200",
+      "state": "walk",
+      "mode": "walk",
+      "yaw": "0.250"
+    },
+    {
+      "name": "stop",
+      "time": 1.988,
+      "x": "-3.44",
+      "z": "-3.57",
+      "speed": "0.000",
+      "state": "idle",
+      "mode": "walk",
+      "yaw": "0.250"
+    },
+    {
+      "name": "wall",
+      "time": 7.664,
+      "x": "-8.00",
+      "z": "-5.55",
+      "speed": "0.000",
+      "state": "idle",
+      "mode": "run",
+      "yaw": "-0.785"
+    },
+    {
+      "name": "automatic-run",
+      "time": 9.968,
+      "x": "-5.87",
+      "z": "-5.00",
+      "speed": "7.718",
+      "state": "run",
+      "mode": "run",
+      "yaw": "-0.785"
+    },
+    {
+      "name": "arrived",
+      "time": 12.755,
+      "x": "-4.00",
+      "z": "4.40",
+      "speed": "0.000",
+      "state": "interact",
+      "mode": "walk",
+      "yaw": "-0.785"
+    }
+  ],
+  "errors": [],
+  "note": "Real browser input and WebGL frames. Recording cadence is not a physical-device FPS benchmark."
+}

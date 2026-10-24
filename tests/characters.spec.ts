@@ -81,7 +81,7 @@ test('actual displacement drives gait at a wall; blur cancels input; manual came
   await expect.poll(async () => Math.abs(Number(await page.locator('#world').getAttribute('data-camera-yaw')))).toBeLessThan(.01);
   const yaw = Number(await page.locator('#world').getAttribute('data-camera-yaw'));
   await page.keyboard.down('w');
-  // Collision can stop up to one 4.6 * .05 movement step before the -5.55 boundary.
+  // Swept movement stops at -5.55; allow the brief gait settling transition.
   await expect.poll(async () => Number(await page.locator('#world').getAttribute('data-z')), { timeout: 12_000 }).toBeLessThan(-5.25);
   await page.waitForTimeout(600);
   const stride = Number(await page.locator('#world').getAttribute('data-stride'));

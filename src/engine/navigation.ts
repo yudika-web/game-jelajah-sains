@@ -16,6 +16,22 @@ export function walkable(p: Point, area: NavigationArea = townNavigation) {
   return p.x >= bounds.minX && p.x <= bounds.maxX && p.z >= bounds.minZ && p.z <= bounds.maxZ &&
     !obstacles.some(o => Math.abs(p.x - o.x) < o.width / 2 + characterConfig.navigationRadius && Math.abs(p.z - o.z) < o.depth / 2 + characterConfig.navigationRadius);
 }
+/** Sweep one axis to the first expanded wall, including very thin blockers. */
+export function sweepAxis(p: Point, axis: 'x' | 'z', delta: number, area: NavigationArea) {
+  const horizontal = axis === 'x', start = p[axis], other = horizontal ? p.z : p.x;
+  let target = Math.max(horizontal ? area.bounds.minX : area.bounds.minZ,
+    Math.min(horizontal ? area.bounds.maxX : area.bounds.maxZ, start + delta));
+  for (const o of area.obstacles) {
+    const center = horizontal ? o.x : o.z, otherCenter = horizontal ? o.z : o.x;
+    const half = (horizontal ? o.width : o.depth) / 2 + characterConfig.navigationRadius;
+    const otherHalf = (horizontal ? o.depth : o.width) / 2 + characterConfig.navigationRadius;
+    if (Math.abs(other - otherCenter) >= otherHalf) continue;
+    // A tiny outward epsilon keeps floating point rounding on the walkable side.
+    if (delta > 0 && start <= center - half) target = Math.min(target, center - half - 1e-8);
+    if (delta < 0 && start >= center + half) target = Math.max(target, center + half + 1e-8);
+  }
+  return target;
+}
 export function findPath(start: Point, end: Point, area: NavigationArea = townNavigation): Point[] {
   const allowed = (p: Point) => walkable(p, area);
   if (!allowed(start) || !allowed(end)) return [];

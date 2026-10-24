@@ -1,0 +1,23 @@
+{
+  "commands": [
+    {
+      "command": "npm test",
+      "result": "passed",
+      "tests": 60
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "note": "Existing shared Three.js chunk size warning remains."
+    },
+    {
+      "command": "CAPTURE_RUNNING_EVIDENCE=1 npm run test:e2e",
+      "result": "passed",
+      "tests": 19,
+      "durationMinutes": 5.9
+    }
+  ],
+  "browser": "Chromium 154.0.8037.57 / SwiftShader",
+  "physicalDevicesTested": false,
+  "note": "Final full run after collision, cancellation and between-frame manual input fixes. Both M01 and M14 completed in browser."
+}
