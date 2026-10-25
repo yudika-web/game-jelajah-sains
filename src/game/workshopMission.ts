@@ -49,7 +49,7 @@ export function workshopTransition(p:WorkshopProgress,e:WorkshopEvent,now=()=>ne
  case'reconnect':if(!p.repaired||!readyToRepair(p)||p.sourceConnected||p.switchClosed)return fail('Pasang kabel sah dahulu dan pertahankan sakelar terbuka sebelum menyambungkan sumber.');n.sourceConnected=true;break;
  case'switch':if(typeof e.closed!=='boolean'||p.switchClosed===e.closed||!p.repaired||!p.sourceConnected)return fail('Perbaiki kabel dan sambungkan sumber dahulu.');n.switchClosed=e.closed;message=e.closed?'Sakelar tertutup; amati lampu dari dunia 3D.':'Sakelar terbuka; lampu mati. Bukti uji yang sudah dicatat tetap ada.';break;
  case'observe':if(!p.tests.after||!evaluateCircuit(p).lampOn||p.observed)return fail('Jalankan uji sesudah lalu amati lampu yang sedang menyala.');n.observed=true;break;
- case'conclude':if(!p.observed||!p.tests.after||!p.repaired||!readyToRepair(p)||p.completed||!knownAnswers(e.answers))return fail('Lengkapi bukti pemeriksaan, perbaikan, uji sesudah, dan pengamatan lampu.');ok=validCircuitAnswers(e.answers);n.attempts.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M17-E1 selesai · 50 XP pertama. Bab M17 tetap Dalam pengembangan.':'Periksa bukti jalur terputus dan uji sebelum/sesudah. Sumber 3 V tetap berfungsi; batasi kesimpulan pada model ini. Upaya awal disimpan.';break;
+ case'conclude':if(!p.observed||!p.tests.after||!p.repaired||!readyToRepair(p)||p.completed||!knownAnswers(e.answers))return fail('Lengkapi bukti pemeriksaan, perbaikan, uji sesudah, dan pengamatan lampu.');ok=validCircuitAnswers(e.answers);n.attempts.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M17-E1 selesai · 50 XP pertama.':'Periksa bukti jalur terputus dan uji sebelum/sesudah. Sumber 3 V tetap berfungsi; batasi kesimpulan pada model ini. Upaya awal disimpan.';break;
  case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
  default:return fail('Tindakan tidak dikenal.');
  }
@@ -77,7 +77,7 @@ export function parseWorkshop(raw:unknown):WorkshopProgress {
  } catch {return bad();}
 }
 export const workshopSteps=(p:WorkshopProgress)=>[
- {title:'Terima episode M17-E1',detail:'Temui Kak Bima. Bab M17 masih dikembangkan.',place:'bima',done:p.accepted},
+ {title:'Terima episode M17-E1',detail:'Temui Kak Bima untuk episode rangkaian.',place:'bima',done:p.accepted},
  {title:'Baca buku dan catatan gangguan',detail:'Kenali lintasan pergi dan kembali.',place:p.sources.loop?'faultNotes':'circuitBook',done:p.sources.loop&&p.sources.notes},
  {title:'Catat dugaan awal',detail:'Dugaan belum menjadi bukti.',place:'bima',done:p.hypotheses.length>0},
  {title:'Periksa dan catat uji awal',detail:'Periksa sumber, sakelar, kabel; catat lampu sebelum perbaikan.',place:!p.inspected.source?'circuitSource':!p.inspected.switch?'circuitSwitch':!p.inspected.wire?'circuitWire':'researchLamp',done:!!p.tests.before&&p.inspected.source&&p.inspected.switch&&p.inspected.wire},

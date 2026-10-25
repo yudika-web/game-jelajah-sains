@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v8**, dengan delapan misi/episode; rincian mutakhir ada pada bagian W06/M17-E1.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v9**, dengan sembilan misi/episode; rincian mutakhir ada pada bagian M17-E3.
 
 ## Sumber dan keputusan implementasi
 
@@ -163,7 +163,7 @@ Tiga BAT di akar repository memanggil `scripts/local/prepare.mjs`, `launch.mjs`,
 
 `workshopMission.ts` memisahkan aturan dari renderer: uji awal dan pemeriksaan visual mendahului isolasi; kontinuitas dan alat uji lampu hanya tersedia sesudah sumber dilepas. Lampu diuji memakai tester virtual terpisah, bukan menyambungkan ulang rangkaian utama. Kabel hanya terpasang pada slot yang dibuktikan putus, sementara pilihan salah disimpan tanpa mengubah koneksi. Revision menolak event lama/klik ganda. Uji sesudah dan pengamatan nyala wajib sebelum kesimpulan. Membuka sakelar setelah selesai tidak menghapus bukti historis.
 
-Parser memutar ulang riwayat tindakan lalu mencocokkan status, pemeriksaan, sambungan, uji, kesimpulan, dan hadiah. Reset memiliki epoch baru dan mempertahankan hadiah pertama. Cadangan v7 menambah key M17-E1 di store saves yang tetap berskema IndexedDB 1. Impor v1–v6 mempertahankan episode yang tidak tercakup; impor trial v7 lebih lama tetap menggabungkan riwayat hadiah secara monoton. Bab M17 tidak memiliki flag completed dari episode ini: UI selalu menampilkan Dalam pengembangan.
+Parser memutar ulang riwayat tindakan lalu mencocokkan status, pemeriksaan, sambungan, uji, kesimpulan, dan hadiah. Reset memiliki epoch baru dan mempertahankan hadiah pertama. Cadangan v7 menambah key M17-E1 di store saves yang tetap berskema IndexedDB 1. Impor v1–v6 mempertahankan episode yang tidak tercakup; impor trial v7 lebih lama tetap menggabungkan riwayat hadiah secara monoton. Bab M17 tidak memiliki flag completed dari episode ini: pada tahap E1 UI masih menampilkan Dalam pengembangan. Kini status dihitung dari ketiga episode.
 
 Panel `workshopUI.ts` mengikuti dialog samping/bawah lama. Perakitan dapat memakai dua terminal berurutan atau daftar pasangan, tanpa presisi drag. Keyboard, sentuh, dan ukuran IFP memakai kontrol proyek. Lihat [laporan pemeriksaan W06](workshop-circuit-review.md). Setelah kode final, gunakan jalur persiapan untuk memperbarui dist secara aman agar launcher klik ganda membuka build terbaru.
 
@@ -174,6 +174,15 @@ Panel `workshopUI.ts` mengikuti dialog samping/bawah lama. Perakitan dapat memak
 
 Batas W06 diperluas hingga x=33, titik pendekatan dan footprint sesuai meja/derek diuji antarsemua stasiun. Bay derek merupakan penghalang navigasi terbuka; kamera hanya memperhitungkan tiangnya, bukan kotak udara penuh. Saat panel derek terbuka, kamera yang sama membidik bay dengan sudut pengguna dan bingkai yang memuat lebar alat pada layar potret; preferensi jarak tetap, saat ditutup, kembali membidik pemain.
 
-IndexedDB tetap skema 1, store saves menambah key `M17-E2`. Cadangan **v8** menerima format **1–7**, mempertahankan episode yang tidak dicakup dan hadiah yang sudah diperoleh. Reload/import/keluar wilayah mengembalikan klip dibawa ke baki, mematikan sumber, dan menjaga yang sudah terkirim. Reset hanya episode ini. Status M17 tetap Dalam pengembangan; S11 tidak diselesaikan.
+IndexedDB tetap skema 1, store saves menambah key `M17-E2`. Cadangan **v8** menerima format **1–7**, mempertahankan episode yang tidak dicakup dan hadiah yang sudah diperoleh. Reload/import/keluar wilayah mengembalikan klip dibawa ke baki, mematikan sumber, dan menjaga yang sudah terkirim. Reset hanya episode ini. Pada tahap E2 status M17 masih Dalam pengembangan; kini dihitung dari ketiga episode. S11 tidak diselesaikan.
 
 Pemeriksaan dan bukti mutakhir: [workshop-electromagnet-review.md](workshop-electromagnet-review.md). Rekaman produksi dapat diulang dengan `node scripts/capture-electromagnet-evidence.mjs` setelah build dan pengambilan fixture browser. Peluncur harian tetap server statis localhost:5173; jalur persiapan mempromosikan build baru hanya setelah berhasil.
+
+
+## M17-E3 dan status bab M17
+
+`energyModel` memisahkan daya tersedia dari energi integer mWh dan transaksi interval. `energyMission` memegang prediksi, catatan, percobaan rencana, parser replay dan bukti hadiah. `energySession` memakai loop World yang sama; pembatalan tidak mengubah energi permanen. `energyWorld` dan `energyUI` memakai model yang sama untuk objek, pratinjau, tabel dan grafik. `m17ChapterStatus` hanya membaca completed ketiga episode, tanpa hadiah atau flag bab tersimpan.
+
+W06 diperluas ke utara hingga z=-32; semua titik pendekatan lama/baru diuji antarstasiun. Konektor DC berpasangan mencakup jalur pergi/kembali dan pengatur yang cocok, sehingga episode berfokus pada sumber/penyimpan, bukan mengulang puzzle kabel panjang E1. Model E1/E2 dan catatan historisnya dipertahankan.
+
+Rekaman M17-E3 ditambahkan pada IndexedDB skema 1; cadangan v9 menerima v1–v8 dan mempertahankan episode yang tidak tercakup. Runtime dibatalkan saat reload, suplai dimatikan, tetapi energi dan interval sah tetap ada. Retry uji rencana memulai percobaan baru dari 2 Wh tanpa menghapus hasil awal. Rincian dan bukti: [workshop-energy-review.md](workshop-energy-review.md).

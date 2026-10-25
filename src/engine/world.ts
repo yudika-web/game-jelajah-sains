@@ -1,3 +1,5 @@
+import {buildEnergy,type EnergyView} from './energyWorld';
+import {initialEnergy,type EnergyProgress} from '../game/energyMission';
 import {buildElectromagnet,type ElectromagnetView} from './electromagnetWorld';
 import {initialElectromagnet,type ElectromagnetProgress} from '../game/electromagnetMission';
 import {buildWorkshop,type WorkshopView} from './workshopWorld';
@@ -82,6 +84,10 @@ export class World {
   exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions.river.navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
   recoverBoat(){this.stop();this.boat.recover();this.running=false;this.playerAnimator.boating=false;this.boatAppearance(false);this.flowSampling=null;if(this.region==='river')this.position.set(docks.research.land.x,0,docks.research.land.z);this.endInteraction();}
   sailTo(dock:DockId,arrive?:()=>void){return this.boat.aboard&&this.goTo(docks[dock].water,arrive);}
+  private energyView:EnergyView|null=null;private energyProgress=initialEnergy();
+  energyFraction=0;energyFocus:'solar'|'wind'|'service'|'battery'|null=null;private energyCameraPoint=new THREE.Vector3();
+  onEnergyFrame:(dt:number,active:boolean)=>void=()=>{};
+  setEnergy(p:EnergyProgress){this.energyProgress=p;this.energyView?.update(p);this.canvas.dataset.energyBattery=String(p.batteryMWh);this.canvas.dataset.energyTrial=p.trial?.phase??'idle';this.canvas.dataset.energySupply=String(p.supplyOn);this.canvas.dataset.energyPreview=String(this.regionRoot.userData.energyPreviewMWh??'');this.canvas.dataset.energyService=String(this.regionRoot.userData.energyServiceOn??false);this.canvas.dataset.energyIntervals=String(p.attempts.at(-1)?.records.length??0);}
   private electromagnetView:ElectromagnetView|null=null;
   private electromagnetProgress=initialElectromagnet();
   electromagnetFraction=0;electromagnetCamera=false;private electromagnetCameraPoint=new THREE.Vector3(26,1,-8);
@@ -294,7 +300,7 @@ export class World {
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
-    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.region = region; this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
@@ -308,6 +314,7 @@ export class World {
     }
     else if(region==='workshop'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.energyView=buildEnergy({root:this.regionRoot,box:b,label:(...args)=>this.label(...args)});
       this.electromagnetView=buildElectromagnet({root:this.regionRoot,box:b,label:(...args)=>this.label(...args)});
       this.workshopView=buildWorkshop({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{
         const rig=createCharacter('bima','bima');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);
@@ -315,7 +322,8 @@ export class World {
         this.npcLabels.set('bima',this.label('Kak Bima',x,rig.labelSocket.position.y,z,'bima'));
       }});
       // The protected navigation bay is open air; only the crane posts block the camera.
-      this.collisionBoxes=this.navigation.obstacles.filter(o=>!(o.x===26&&o.z===-8)).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width>=7?4:1.2,o.z+o.depth/2)));
+      this.collisionBoxes=this.navigation.obstacles.filter(o=>!(o.x===26&&o.z===-8)&&!(o.x===-4&&o.z===-26.7)).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width>=7?4:1.2,o.z+o.depth/2)));
+      this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-4.11,0,-26.81),new THREE.Vector3(-3.89,4.4,-26.59)));
       for(const x of [21.9,30.1])this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(x-.15,0,-8.4),new THREE.Vector3(x+.15,3.8,-8)));
     }
     else if(region==='river'){
@@ -456,6 +464,7 @@ export class World {
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
       this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
+    this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(document.hidden?0:dt,this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
     this.onElectromagnetFrame(dt,this.region==='workshop'&&!document.hidden);
     this.electromagnetView?.frame(this.electromagnetProgress,this.electromagnetFraction);
     this.riverView?.pool.frame(this.buoyancyTrial);this.canvas.dataset.swimming=String(this.swimming);
@@ -465,8 +474,9 @@ export class World {
     this.canvas.dataset.rodVisible=String(this.playerRig.tools.rod.visible);
     this.rimbaView?.frame(this.position,this.player.rotation.y,travelled,this.pushing,this.reducedMotion);
     this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
-    this.followCamera.inspectionWidth=this.electromagnetCamera&&this.region==='workshop'?10:0;
-    this.followCamera.update(this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(this.energyFocus==='solar')this.energyCameraPoint.set(-12,.7,-25.2);else if(this.energyFocus==='wind')this.energyCameraPoint.set(-4,1.7,-25.7);else if(this.energyFocus==='battery')this.energyCameraPoint.set(4,.6,-25.7);else this.energyCameraPoint.set(29,.6,-25.7);
+    this.followCamera.inspectionWidth=this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
+    this.followCamera.update(this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
     this.canvas.dataset.x = this.position.x.toFixed(2); this.canvas.dataset.z = this.position.z.toFixed(2);

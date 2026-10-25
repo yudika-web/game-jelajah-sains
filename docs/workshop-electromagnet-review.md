@@ -1,6 +1,6 @@
 # W06 — M17-E2 Derek Elektromagnet
 
-M17-E2 memperluas Bengkel dengan halaman daur ulang yang dapat dikunjungi dari Kota tanpa menyelesaikan M17-E1. Empat pengamatan bahan, tiga pengujian kumparan, pengangkutan nyata enam klip, jurnal, kesimpulan, penyimpanan, dan hadiah pertama menjadi satu alur. **M17 tetap Dalam pengembangan** karena episode energi alternatif belum tersedia. S11 tidak diberi status selesai. Sumber dan lampu M17-E1 memakai model terpisah.
+M17-E2 memperluas Bengkel dengan halaman daur ulang yang dapat dikunjungi dari Kota tanpa menyelesaikan M17-E1. Empat pengamatan bahan, tiga pengujian kumparan, pengangkutan nyata enam klip, jurnal, kesimpulan, penyimpanan, dan hadiah pertama menjadi satu alur. **Catatan tahap E2:** saat itu M17 masih Dalam pengembangan. Kini [M17-E3](workshop-energy-review.md) tersedia; status bab dihitung dari completed ketiga episode saat ini. S11 tidak diberi status selesai. Sumber dan lampu M17-E1 memakai model terpisah.
 
 ## Cara memainkan
 

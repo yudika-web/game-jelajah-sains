@@ -1,0 +1,3 @@
+import type {EnergyProgress,EnergyEvent} from './energyMission';
+/** Existing World's delta loop owns this clock; no wall-clock battery drain. */
+export class EnergySession {private key=-1;elapsed=0;fraction=0;tick(p:EnergyProgress,dt:number,active:boolean):EnergyEvent|null{if(p.trial?.phase!=='running'){this.reset();return null;}if(this.key!==p.revision){this.key=p.revision;this.elapsed=0;}if(active&&Number.isFinite(dt)&&dt>0)this.elapsed+=Math.min(dt,.25);this.fraction=Math.min(1,this.elapsed/(p.trial.kind==='interval'?1.8:1.2));return active&&this.fraction>=1?{type:'finishTrial',revision:p.revision}:null;}reset(){this.key=-1;this.elapsed=0;this.fraction=0;}}

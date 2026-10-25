@@ -62,7 +62,7 @@ export function electromagnetTransition(p:ElectromagnetProgress,e:MagnetEvent,no
  case'recover':{
   const dirty=p.trial||p.crane.motion||p.sourceOn||p.switchClosed||p.crane.position!==0||p.crane.elevation!==1||clipsAt(p.crane,'head').length||clipsAt(p.crane,'recovery').length;
   if(!dirty)return fail('Derek sudah aman.');n.trial=null;n.sourceOn=false;n.switchClosed=false;recoverCrane(n.crane);message='Derek dipulihkan. Muatan belum terkirim kembali ke baki; bukti dan klip dalam penampung tetap ada.';break;}
- case'conclude':if(!materialsComplete(p)||!coilsComplete(p)||clipsAt(p.crane,'bin').length!==6||!idle||p.completed||!e.answers||!Object.keys(correctMagnetAnswers).every(k=>typeof e.answers[k as keyof MagnetAnswers]==='string'&&e.answers[k as keyof MagnetAnswers].length<=60))return fail('Lengkapi empat pengamatan, tiga uji, dan kirim keenam klip sebelum menyimpulkan.');ok=magnetAnswersValid(e.answers);n.attempts.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M17-E2 selesai · 50 XP pertama. M17 masih Dalam pengembangan.':'Gunakan hasil model, kendali arus, dan batas bukti. Energi belum diukur. Upaya awal disimpan.';break;
+ case'conclude':if(!materialsComplete(p)||!coilsComplete(p)||clipsAt(p.crane,'bin').length!==6||!idle||p.completed||!e.answers||!Object.keys(correctMagnetAnswers).every(k=>typeof e.answers[k as keyof MagnetAnswers]==='string'&&e.answers[k as keyof MagnetAnswers].length<=60))return fail('Lengkapi empat pengamatan, tiga uji, dan kirim keenam klip sebelum menyimpulkan.');ok=magnetAnswersValid(e.answers);n.attempts.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M17-E2 selesai · 50 XP pertama.':'Gunakan hasil model, kendali arus, dan batas bukti. Energi belum diukur. Upaya awal disimpan.';break;
  case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
  default:return fail('Tindakan tidak dikenal.');
  }
@@ -90,5 +90,5 @@ export const electromagnetSteps=(p:ElectromagnetProgress)=>[
  {title:'Rencanakan dan rakit alat',detail:'Sumber mati; inti, modul, terminal, lalu periksa.',place:'magnetRack',done:p.plan&&p.core&&p.connections.length===3},
  {title:'Uji 20, 40, dan 60 lilitan',detail:`${p.coilRecords.length}/3 hasil; arus dijaga tetap.`,place:'coilStation',done:coilsComplete(p)},
  {title:'Pindahkan enam klip',detail:`${clipsAt(p.crane,'bin').length}/6 terkirim; ${p.crane.deliveries.length} pengangkutan berhasil.`,place:'miniCrane',done:clipsAt(p.crane,'bin').length===6},
- {title:'Simpulkan berdasarkan bukti',detail:'M17 tetap Dalam pengembangan; tidak menilai energi.',place:'bima',done:p.completed},
+ {title:'Simpulkan berdasarkan bukti',detail:'Uji elektromagnet ini tidak menilai energi.',place:'bima',done:p.completed},
 ];

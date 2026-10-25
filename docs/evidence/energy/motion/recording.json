@@ -1,0 +1,35 @@
+{
+  "browser": "154.0.8037.57",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL 2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "clips": [
+    {
+      "name": "solar-conditions",
+      "frames": 154,
+      "seconds": 9.441427946090698
+    },
+    {
+      "name": "wind-conditions",
+      "frames": 154,
+      "seconds": 9.608390092849731
+    },
+    {
+      "name": "three-intervals",
+      "frames": 240,
+      "seconds": 14.126997947692871
+    }
+  ],
+  "sequence": [
+    "solar bright/cloudy/night: fixed panel changes indication",
+    "wind enough/weak/calm: rotor responds",
+    "battery preview and confirmed 4/2/3 Wh",
+    "new service lamp on"
+  ],
+  "note": "Source tests use actual UI from a fresh E3. Interval recording starts from the browser-tested six-source checkpoint; all interval transactions use UI controls. Travel between clips is omitted. This is not a physical-device FPS benchmark.",
+  "errors": []
+}

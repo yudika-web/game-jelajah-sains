@@ -1,0 +1,94 @@
+{
+  "checkedAtUTC": "2026-10-25T09:04:16.120585+00:00",
+  "baseCommit": "1f01622d5a0523b2e1d07bc694e09ca01d4d9214",
+  "unit": {
+    "passed": 314,
+    "files": 13,
+    "newEpisodeTests": 57
+  },
+  "launcher": {
+    "passed": 14,
+    "platform": "Linux Node; BAT not executed on Windows"
+  },
+  "fullBrowser": {
+    "passed": 51,
+    "minutes": 25.2,
+    "beforeFinalE1GuideCopyOnly": true
+  },
+  "finalProduction": {
+    "passed": 4,
+    "scope": [
+      "1280x900",
+      "390x844",
+      "844x390",
+      "1920x1080"
+    ],
+    "offlineAssets": true,
+    "savedMissionCount": 9,
+    "chapterResetChecked": true
+  },
+  "build": {
+    "command": "node scripts/local/prepare.mjs",
+    "promotedSafely": true,
+    "assetsSha256": {
+      "character.html": "27b9197b8989a0f026f59338dad92a0b647c5602682a500b00f302b22911d039",
+      "index.html": "13b6af5b36abcd365ec91395b8c93cb0bf28154a5e24c75f61e1ac5586b776b8",
+      "favicon.svg": "094d7ae4d2b40a2f3ab49d6cd02a7acd20f39086a3e540660642cf047f1c1c2f",
+      "assets/character-DkgOJJG_.js": "fe128088eed52ea0a754477ea33cbc9fdb6729e5b518b8d16aff33cc710682b0",
+      "assets/character-DsxQkyDf.css": "572d7927a41fc3d92559ec8e1ee5de81c0b93a10ebe701276bd79a8c8233968d",
+      "assets/game-CNCvYC1E.css": "730df6f67fa4e5c2665a99a2d68338375b52ce0666dae810b0cf83530fbfd5ab",
+      "assets/character-DraEpOXn.js": "74ba2b7f668a8a6522d66fdfc1ceb9b9a1a8a41403e26538fb7e64c36371f8f7",
+      "assets/game-4MPaJtvx.js": "c0812d131aacc8442f61e7c3ffb4bd0f96d4b017d1ac8f4f42944631c7315825"
+    }
+  },
+  "evidence": {
+    "E1Unchanged": true,
+    "E2EvidenceUnchanged": true,
+    "E2ExistingLoadRecoveryOnly": true,
+    "sourceWatts": [
+      6,
+      2,
+      0,
+      5,
+      1,
+      0
+    ],
+    "firstAttemptUnmetMWh": 2000,
+    "successfulBatteryMWh": [
+      4000,
+      2000,
+      3000
+    ],
+    "allBalancesValid": true,
+    "episodeReward": 50,
+    "chapter": "Tuntas from three current completed flags; no chapter reward"
+  },
+  "video": {
+    "productionBuild": true,
+    "physicalDevice": false,
+    "clips": [
+      {
+        "name": "solar-conditions",
+        "frames": 154,
+        "seconds": 9.441427946090698
+      },
+      {
+        "name": "wind-conditions",
+        "frames": 154,
+        "seconds": 9.608390092849731
+      },
+      {
+        "name": "three-intervals",
+        "frames": 240,
+        "seconds": 14.126997947692871
+      }
+    ],
+    "errors": []
+  },
+  "physicalTests": {
+    "Windows": false,
+    "HP": false,
+    "IFP": false,
+    "LANFromOtherDevice": false
+  }
+}
