@@ -1,7 +1,9 @@
+import {pressurePlaces} from './pressureRegion';
 import type {Place} from './content';
 import type {NavigationArea} from '../engine/navigation';
 import {boatConfig,type BoatDocks} from './boatRegion';
 export const coastalPlaces:Place[]=[
+ ...pressurePlaces,
  {id:'coastReturn',name:'Dermaga keberangkatan ke Sungai',short:'Ke Sungai',action:'Berangkat',x:-3,z:14,color:'#5b99a3'},
  {id:'coastLestari',name:'Kak Lestari · pos pesisir',short:'Kak Lestari',action:'Bicara',x:-7,z:8,color:'#518f94'},
  {id:'coastBook',name:'Buku Energi dalam Ekosistem',short:'Buku ekosistem',action:'Baca',x:-11,z:3,color:'#638b61'},
@@ -19,6 +21,7 @@ export const coastalNavigation:NavigationArea={bounds:{minX:-18,maxX:25,minZ:-17
  {x:-11,z:10,width:5,depth:4},
  {x:-7,z:8,width:.6,depth:.6},
  ...coastalPlaces.filter(p=>['coastBook','coastNotes','coastLimits','planktonScope','underwaterWindow','coastFishPoint','foodwebBoard'].includes(p.id)).map(p=>({x:p.x,z:p.z-.7,width:1.4,depth:.6})),
+ ...pressurePlaces.map(p=>({x:p.x,z:p.z-.7,width:1.4,depth:.6})),
  ...[[-15,-2],[-16,-13],[-5,-14]].map(([x,z])=>({x,z,width:.7,depth:.7})),
 ]};
 export const coastalBoatNavigation:NavigationArea={radius:boatConfig.radius,bounds:{minX:3.8,maxX:16.2,minZ:-13,maxZ:14},obstacles:[{x:10,z:2,width:.6,depth:.6}]};

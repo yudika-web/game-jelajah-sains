@@ -1,0 +1,3527 @@
+{
+  "M01": {
+    "version": 1,
+    "accepted": true,
+    "hypothesis": true,
+    "sources": {
+      "book": true,
+      "rain": true
+    },
+    "plan": true,
+    "samples": {
+      "A": {
+        "value": 70,
+        "session": "hujan-0900"
+      },
+      "B": {
+        "value": 20,
+        "session": "hujan-0900"
+      }
+    },
+    "trial": null,
+    "attempts": [],
+    "completed": false,
+    "reward": 0,
+    "savedAt": "2026-10-25T20:39:35.264Z"
+  },
+  "M14": {
+    "version": 1,
+    "accepted": true,
+    "sources": {
+      "needs": true,
+      "fair": true
+    },
+    "plan": true,
+    "supplies": true,
+    "planted": {
+      "A": true,
+      "B": true
+    },
+    "day": 4,
+    "can": 100,
+    "tank": 3100,
+    "watered": [
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": true,
+        "B": true
+      },
+      {
+        "A": false,
+        "B": false
+      },
+      {
+        "A": false,
+        "B": false
+      }
+    ],
+    "measurements": [
+      {
+        "day": 0,
+        "group": "A",
+        "heights": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "day": 0,
+        "group": "B",
+        "heights": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "day": 2,
+        "group": "A",
+        "heights": [
+          2,
+          2,
+          2
+        ]
+      },
+      {
+        "day": 2,
+        "group": "B",
+        "heights": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "day": 4,
+        "group": "A",
+        "heights": [
+          5,
+          4,
+          6
+        ]
+      },
+      {
+        "day": 4,
+        "group": "B",
+        "heights": [
+          3,
+          2,
+          4
+        ]
+      }
+    ],
+    "attempts": [],
+    "reflection": "",
+    "completed": false,
+    "reward": 0,
+    "firstCompletedAt": null
+  },
+  "W03-LOG01": {
+    "version": 1,
+    "episode": "W03-LOG01",
+    "revision": 0,
+    "accepted": false,
+    "sources": {
+      "map": false,
+      "capacity": false,
+      "supply": false,
+      "habitat": false
+    },
+    "inspected": {
+      "A": false,
+      "B": false,
+      "C": false
+    },
+    "total": null,
+    "bucketTaken": false,
+    "parts": false,
+    "repaired": false,
+    "cOpen": false,
+    "activeTool": null,
+    "armed": null,
+    "source": 40000,
+    "bucket": 0,
+    "cart": 0,
+    "targets": {
+      "A": 0,
+      "B": 0,
+      "C": 0
+    },
+    "transfers": [],
+    "trips": [],
+    "attempts": [],
+    "concluded": false,
+    "report": false,
+    "restoration": null,
+    "completed": false,
+    "reflection": "",
+    "reward": 0,
+    "firstCompletedAt": null
+  },
+  "S13": {
+    "version": 1,
+    "mission": "S13",
+    "revision": 17,
+    "accepted": true,
+    "sources": {
+      "observation": true,
+      "procedure": true,
+      "limits": true
+    },
+    "rod": true,
+    "plan": true,
+    "plans": [
+      {
+        "tool": "same-rod",
+        "bait": "different",
+        "trials": "three",
+        "duration": "same-duration",
+        "session": "same-session",
+        "factor": "location",
+        "correct": false
+      },
+      {
+        "tool": "same-rod",
+        "bait": "standard",
+        "trials": "three",
+        "duration": "same-duration",
+        "session": "same-session",
+        "factor": "location",
+        "correct": true
+      }
+    ],
+    "records": [
+      {
+        "id": "A-1",
+        "site": "A",
+        "index": 0,
+        "group": "flat",
+        "feature": "flat",
+        "note": "Badan lebar terlihat.",
+        "released": true
+      },
+      {
+        "id": "B-1",
+        "site": "B",
+        "index": 0,
+        "group": "whiskered",
+        "feature": "whiskered",
+        "note": "B-1: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "A-2",
+        "site": "A",
+        "index": 1,
+        "group": "flat",
+        "feature": "flat",
+        "note": "A-2: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "B-2",
+        "site": "B",
+        "index": 1,
+        "group": "long",
+        "feature": "long",
+        "note": "B-2: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "A-3",
+        "site": "A",
+        "index": 2,
+        "group": "long",
+        "feature": "long",
+        "note": "A-3: ciri terlihat pada model",
+        "released": true
+      },
+      {
+        "id": "B-3",
+        "site": "B",
+        "index": 2,
+        "group": "whiskered",
+        "feature": "whiskered",
+        "note": "B-3: ciri terlihat pada model",
+        "released": true
+      }
+    ],
+    "fishAttempts": [
+      {
+        "site": "A",
+        "index": 0,
+        "feature": "whiskered",
+        "correct": false
+      },
+      {
+        "site": "A",
+        "index": 0,
+        "feature": "flat",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 0,
+        "feature": "whiskered",
+        "correct": true
+      },
+      {
+        "site": "A",
+        "index": 1,
+        "feature": "flat",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 1,
+        "feature": "long",
+        "correct": true
+      },
+      {
+        "site": "A",
+        "index": 2,
+        "feature": "long",
+        "correct": true
+      },
+      {
+        "site": "B",
+        "index": 2,
+        "feature": "whiskered",
+        "correct": true
+      }
+    ],
+    "conclusions": [
+      {
+        "flatA": "A",
+        "whiskeredB": "B",
+        "longBoth": "both",
+        "sampleLimit": "small",
+        "causeLimit": "clean",
+        "correct": false
+      },
+      {
+        "flatA": "A",
+        "whiskeredB": "B",
+        "longBoth": "both",
+        "sampleLimit": "small",
+        "causeLimit": "unproven",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T12:48:09.445Z",
+    "reflection": "Data sampel kecil belum menunjukkan populasi seluruh sungai."
+  },
+  "S14": {
+    "version": 1,
+    "mission": "S14",
+    "revision": 11,
+    "accepted": true,
+    "source": true,
+    "practice": true,
+    "predictions": [
+      {
+        "id": "A",
+        "result": "sink"
+      },
+      {
+        "id": "B",
+        "result": "sink"
+      },
+      {
+        "id": "C",
+        "result": "sink"
+      }
+    ],
+    "records": [
+      {
+        "id": "A",
+        "massG": 100,
+        "volumeCm3": 200,
+        "density": 0.5,
+        "result": "float",
+        "prediction": "sink"
+      },
+      {
+        "id": "B",
+        "massG": 100,
+        "volumeCm3": 50,
+        "density": 2,
+        "result": "sink",
+        "prediction": "sink"
+      },
+      {
+        "id": "C",
+        "massG": 200,
+        "volumeCm3": 400,
+        "density": 0.5,
+        "result": "float",
+        "prediction": "sink"
+      }
+    ],
+    "attempts": [
+      {
+        "rule": "mass",
+        "compare": "A-C",
+        "limits": "model",
+        "correct": false
+      },
+      {
+        "rule": "density",
+        "compare": "A-C",
+        "limits": "model",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T13:23:44.565Z"
+  },
+  "S15": {
+    "version": 1,
+    "mission": "S15",
+    "revision": 20,
+    "accepted": true,
+    "sources": {
+      "flow": true,
+      "duration": false,
+      "barrier": false,
+      "notes": true
+    },
+    "tutorial": {
+      "boarded": true,
+      "arrived": true,
+      "landed": true,
+      "distanceMm": 18000
+    },
+    "inspected": true,
+    "records": [
+      {
+        "id": "blocked-P1",
+        "point": "P1",
+        "condition": "blocked",
+        "volumeMl": 10000,
+        "seconds": 30,
+        "order": 1
+      },
+      {
+        "id": "blocked-P2",
+        "point": "P2",
+        "condition": "blocked",
+        "volumeMl": 2000,
+        "seconds": 30,
+        "order": 2
+      },
+      {
+        "id": "blocked-P3",
+        "point": "P3",
+        "condition": "blocked",
+        "volumeMl": 2000,
+        "seconds": 30,
+        "order": 3
+      },
+      {
+        "id": "clear-P1",
+        "point": "P1",
+        "condition": "clear",
+        "volumeMl": 10000,
+        "seconds": 30,
+        "order": 4
+      },
+      {
+        "id": "clear-P2",
+        "point": "P2",
+        "condition": "clear",
+        "volumeMl": 6000,
+        "seconds": 30,
+        "order": 5
+      },
+      {
+        "id": "clear-P3",
+        "point": "P3",
+        "condition": "clear",
+        "volumeMl": 6000,
+        "seconds": 30,
+        "order": 6
+      }
+    ],
+    "hypotheses": [
+      {
+        "choice": "loss",
+        "correct": false
+      },
+      {
+        "choice": "obstruction",
+        "correct": true
+      }
+    ],
+    "hypothesis": true,
+    "tools": true,
+    "cleaned": true,
+    "cleanAfterOrder": 3,
+    "attempts": [
+      {
+        "supply": "same",
+        "branch": "increased",
+        "cause": "obstruction",
+        "limits": "all",
+        "correct": false
+      },
+      {
+        "supply": "same",
+        "branch": "increased",
+        "cause": "obstruction",
+        "limits": "model-only",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Pasokan tetap; volume cabang meningkat pada durasi sama.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T13:50:03.624Z"
+  },
+  "M17-E1": {
+    "version": 1,
+    "mission": "M17-E1",
+    "epoch": 0,
+    "revision": 23,
+    "accepted": true,
+    "sources": {
+      "loop": true,
+      "switch": false,
+      "inspect": false,
+      "notes": true
+    },
+    "hypotheses": [
+      "battery"
+    ],
+    "inspected": {
+      "source": true,
+      "switch": true,
+      "wire": true,
+      "lamp": true
+    },
+    "continuity": true,
+    "spareWire": false,
+    "sourceConnected": true,
+    "switchClosed": true,
+    "repaired": true,
+    "tests": {
+      "before": {
+        "lampOn": false,
+        "voltage": 3
+      },
+      "after": {
+        "lampOn": true,
+        "voltage": 3
+      }
+    },
+    "observed": true,
+    "connections": [
+      [
+        "S2",
+        "L1"
+      ]
+    ],
+    "wiringAttempts": [
+      {
+        "a": "B+",
+        "b": "B-",
+        "result": "short"
+      },
+      {
+        "a": "S2",
+        "b": "L1",
+        "result": "correct"
+      }
+    ],
+    "attempts": [
+      {
+        "cause": "empty-battery",
+        "evidence": "before-after",
+        "limit": "virtual-3v",
+        "correct": false
+      },
+      {
+        "cause": "broken-path",
+        "evidence": "before-after",
+        "limit": "virtual-3v",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-24T22:37:30.263Z",
+    "rewardProof": {
+      "at": "2026-10-24T22:37:30.263Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "source": "loop"
+        },
+        {
+          "type": "read",
+          "source": "notes"
+        },
+        {
+          "type": "hypothesis",
+          "choice": "battery"
+        },
+        {
+          "type": "inspect",
+          "component": "source"
+        },
+        {
+          "type": "inspect",
+          "component": "switch"
+        },
+        {
+          "type": "inspect",
+          "component": "wire"
+        },
+        {
+          "type": "test",
+          "stage": "before"
+        },
+        {
+          "type": "isolate"
+        },
+        {
+          "type": "continuity"
+        },
+        {
+          "type": "inspect",
+          "component": "lamp"
+        },
+        {
+          "type": "takeWire"
+        },
+        {
+          "type": "repair",
+          "a": "B+",
+          "b": "B-"
+        },
+        {
+          "type": "repair",
+          "a": "S2",
+          "b": "L1"
+        },
+        {
+          "type": "reconnect"
+        },
+        {
+          "type": "switch",
+          "closed": true
+        },
+        {
+          "type": "test",
+          "stage": "after"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "reflect",
+          "text": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas."
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "cause": "empty-battery",
+            "evidence": "before-after",
+            "limit": "virtual-3v"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "cause": "broken-path",
+            "evidence": "before-after",
+            "limit": "virtual-3v"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "source": "loop"
+      },
+      {
+        "type": "read",
+        "source": "notes"
+      },
+      {
+        "type": "hypothesis",
+        "choice": "battery"
+      },
+      {
+        "type": "inspect",
+        "component": "source"
+      },
+      {
+        "type": "inspect",
+        "component": "switch"
+      },
+      {
+        "type": "inspect",
+        "component": "wire"
+      },
+      {
+        "type": "test",
+        "stage": "before"
+      },
+      {
+        "type": "isolate"
+      },
+      {
+        "type": "continuity"
+      },
+      {
+        "type": "inspect",
+        "component": "lamp"
+      },
+      {
+        "type": "takeWire"
+      },
+      {
+        "type": "repair",
+        "a": "B+",
+        "b": "B-"
+      },
+      {
+        "type": "repair",
+        "a": "S2",
+        "b": "L1"
+      },
+      {
+        "type": "reconnect"
+      },
+      {
+        "type": "switch",
+        "closed": true
+      },
+      {
+        "type": "test",
+        "stage": "after"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "reflect",
+        "text": "Dugaan sumber habis berubah setelah uji 3 V dan kontinuitas."
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "cause": "empty-battery",
+          "evidence": "before-after",
+          "limit": "virtual-3v"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "cause": "broken-path",
+          "evidence": "before-after",
+          "limit": "virtual-3v"
+        }
+      },
+      {
+        "type": "switch",
+        "closed": false
+      },
+      {
+        "type": "switch",
+        "closed": true
+      }
+    ]
+  },
+  "M17-E2": {
+    "version": 1,
+    "mission": "M17-E2",
+    "epoch": 0,
+    "revision": 104,
+    "accepted": true,
+    "sources": {
+      "magnet": true,
+      "bima": true,
+      "current": false
+    },
+    "predictions": [
+      {
+        "id": "plastic",
+        "lifted": true
+      },
+      {
+        "id": "aluminium",
+        "lifted": true
+      },
+      {
+        "id": "copper",
+        "lifted": true
+      },
+      {
+        "id": "steel",
+        "lifted": true
+      }
+    ],
+    "observations": [
+      {
+        "id": "plastic",
+        "prediction": true,
+        "lifted": false
+      },
+      {
+        "id": "aluminium",
+        "prediction": true,
+        "lifted": false
+      },
+      {
+        "id": "copper",
+        "prediction": true,
+        "lifted": false
+      },
+      {
+        "id": "steel",
+        "prediction": true,
+        "lifted": true
+      }
+    ],
+    "observationAttempts": [
+      {
+        "id": "plastic",
+        "lifted": false,
+        "correct": true
+      },
+      {
+        "id": "aluminium",
+        "lifted": false,
+        "correct": true
+      },
+      {
+        "id": "copper",
+        "lifted": true,
+        "correct": false
+      },
+      {
+        "id": "copper",
+        "lifted": false,
+        "correct": true
+      },
+      {
+        "id": "steel",
+        "lifted": true,
+        "correct": true
+      }
+    ],
+    "plans": [
+      {
+        "variable": "turns",
+        "current": "battery",
+        "controls": "same",
+        "correct": false
+      },
+      {
+        "variable": "turns",
+        "current": "controlled",
+        "controls": "same",
+        "correct": true
+      }
+    ],
+    "plan": true,
+    "core": true,
+    "coil": 40,
+    "connections": [
+      [
+        "I+",
+        "S1"
+      ],
+      [
+        "S2",
+        "C1"
+      ],
+      [
+        "C2",
+        "I-"
+      ]
+    ],
+    "checked": true,
+    "sourceOn": false,
+    "switchClosed": false,
+    "wiringAttempts": [
+      {
+        "a": "I+",
+        "b": "I-",
+        "result": "short"
+      },
+      {
+        "a": "I+",
+        "b": "S1",
+        "result": "valid"
+      },
+      {
+        "a": "S2",
+        "b": "C1",
+        "result": "valid"
+      },
+      {
+        "a": "C2",
+        "b": "I-",
+        "result": "valid"
+      }
+    ],
+    "trial": null,
+    "coilRecords": [
+      {
+        "module": 20,
+        "clips": 2,
+        "currentA": 0.2
+      },
+      {
+        "module": 40,
+        "clips": 4,
+        "currentA": 0.2
+      },
+      {
+        "module": 60,
+        "clips": 6,
+        "currentA": 0.2
+      }
+    ],
+    "transportModule": 40,
+    "crane": {
+      "position": 0,
+      "elevation": 1,
+      "motion": null,
+      "clips": {
+        "K1": "bin",
+        "K2": "bin",
+        "K3": "bin",
+        "K4": "bin",
+        "K5": "bin",
+        "K6": "bin"
+      },
+      "lifts": [
+        {
+          "module": 40,
+          "ids": [
+            "K1",
+            "K2",
+            "K3",
+            "K4"
+          ],
+          "from": "tray"
+        },
+        {
+          "module": 40,
+          "ids": [
+            "K5",
+            "K6"
+          ],
+          "from": "tray"
+        }
+      ],
+      "deliveries": [
+        {
+          "module": 40,
+          "ids": [
+            "K1",
+            "K2",
+            "K3",
+            "K4"
+          ]
+        },
+        {
+          "module": 40,
+          "ids": [
+            "K5",
+            "K6"
+          ]
+        }
+      ]
+    },
+    "attempts": [
+      {
+        "materials": "not-all",
+        "control": "current-switch",
+        "turns": "controlled-model",
+        "limit": "best-energy",
+        "correct": false
+      },
+      {
+        "materials": "not-all",
+        "control": "current-switch",
+        "turns": "controlled-model",
+        "limit": "no-energy-claim",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Modul 40 memakai dua pengangkutan. Saya belum mengukur energi.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-25T07:22:51.034Z",
+    "rewardProof": {
+      "at": "2026-10-25T07:22:51.034Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "source": "magnet"
+        },
+        {
+          "type": "read",
+          "source": "bima"
+        },
+        {
+          "type": "predict",
+          "id": "plastic",
+          "lifted": true
+        },
+        {
+          "type": "startMaterial",
+          "id": "plastic"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordMaterial",
+          "lifted": false
+        },
+        {
+          "type": "predict",
+          "id": "aluminium",
+          "lifted": true
+        },
+        {
+          "type": "startMaterial",
+          "id": "aluminium"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordMaterial",
+          "lifted": false
+        },
+        {
+          "type": "predict",
+          "id": "copper",
+          "lifted": true
+        },
+        {
+          "type": "startMaterial",
+          "id": "copper"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordMaterial",
+          "lifted": true
+        },
+        {
+          "type": "recordMaterial",
+          "lifted": false
+        },
+        {
+          "type": "predict",
+          "id": "steel",
+          "lifted": true
+        },
+        {
+          "type": "startMaterial",
+          "id": "steel"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordMaterial",
+          "lifted": true
+        },
+        {
+          "type": "plan",
+          "variable": "turns",
+          "current": "battery",
+          "controls": "same"
+        },
+        {
+          "type": "plan",
+          "variable": "turns",
+          "current": "controlled",
+          "controls": "same"
+        },
+        {
+          "type": "core"
+        },
+        {
+          "type": "coil",
+          "module": 20
+        },
+        {
+          "type": "connect",
+          "a": "I+",
+          "b": "I-"
+        },
+        {
+          "type": "connect",
+          "a": "I+",
+          "b": "S1"
+        },
+        {
+          "type": "connect",
+          "a": "S2",
+          "b": "C1"
+        },
+        {
+          "type": "connect",
+          "a": "C2",
+          "b": "I-"
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "startCoil"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "energizeTrial"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "recover"
+        },
+        {
+          "type": "startCoil"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "energizeTrial"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordCoil"
+        },
+        {
+          "type": "powerOff"
+        },
+        {
+          "type": "cleanupTrial"
+        },
+        {
+          "type": "coil",
+          "module": 40
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "startCoil"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "energizeTrial"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordCoil"
+        },
+        {
+          "type": "powerOff"
+        },
+        {
+          "type": "cleanupTrial"
+        },
+        {
+          "type": "coil",
+          "module": 60
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "startCoil"
+        },
+        {
+          "type": "trialArrive"
+        },
+        {
+          "type": "energizeTrial"
+        },
+        {
+          "type": "trialResult"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordCoil"
+        },
+        {
+          "type": "powerOff"
+        },
+        {
+          "type": "cleanupTrial"
+        },
+        {
+          "type": "transport",
+          "module": 40
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 0
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "magnet",
+          "on": true
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "position",
+          "target": 1
+        },
+        {
+          "type": "motionHold",
+          "fraction": 0.5465882352871054
+        },
+        {
+          "type": "motion",
+          "axis": "position",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 0
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "magnet",
+          "on": false
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "position",
+          "target": 0
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 0
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "magnet",
+          "on": true
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "position",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 0
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "magnet",
+          "on": false
+        },
+        {
+          "type": "motion",
+          "axis": "elevation",
+          "target": 1
+        },
+        {
+          "type": "motionDone"
+        },
+        {
+          "type": "reflect",
+          "text": "Modul 40 memakai dua pengangkutan. Saya belum mengukur energi."
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "materials": "not-all",
+            "control": "current-switch",
+            "turns": "controlled-model",
+            "limit": "best-energy"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "materials": "not-all",
+            "control": "current-switch",
+            "turns": "controlled-model",
+            "limit": "no-energy-claim"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "source": "magnet"
+      },
+      {
+        "type": "read",
+        "source": "bima"
+      },
+      {
+        "type": "predict",
+        "id": "plastic",
+        "lifted": true
+      },
+      {
+        "type": "startMaterial",
+        "id": "plastic"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordMaterial",
+        "lifted": false
+      },
+      {
+        "type": "predict",
+        "id": "aluminium",
+        "lifted": true
+      },
+      {
+        "type": "startMaterial",
+        "id": "aluminium"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordMaterial",
+        "lifted": false
+      },
+      {
+        "type": "predict",
+        "id": "copper",
+        "lifted": true
+      },
+      {
+        "type": "startMaterial",
+        "id": "copper"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordMaterial",
+        "lifted": true
+      },
+      {
+        "type": "recordMaterial",
+        "lifted": false
+      },
+      {
+        "type": "predict",
+        "id": "steel",
+        "lifted": true
+      },
+      {
+        "type": "startMaterial",
+        "id": "steel"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordMaterial",
+        "lifted": true
+      },
+      {
+        "type": "plan",
+        "variable": "turns",
+        "current": "battery",
+        "controls": "same"
+      },
+      {
+        "type": "plan",
+        "variable": "turns",
+        "current": "controlled",
+        "controls": "same"
+      },
+      {
+        "type": "core"
+      },
+      {
+        "type": "coil",
+        "module": 20
+      },
+      {
+        "type": "connect",
+        "a": "I+",
+        "b": "I-"
+      },
+      {
+        "type": "connect",
+        "a": "I+",
+        "b": "S1"
+      },
+      {
+        "type": "connect",
+        "a": "S2",
+        "b": "C1"
+      },
+      {
+        "type": "connect",
+        "a": "C2",
+        "b": "I-"
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "startCoil"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "energizeTrial"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "recover"
+      },
+      {
+        "type": "startCoil"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "energizeTrial"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordCoil"
+      },
+      {
+        "type": "powerOff"
+      },
+      {
+        "type": "cleanupTrial"
+      },
+      {
+        "type": "coil",
+        "module": 40
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "startCoil"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "energizeTrial"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordCoil"
+      },
+      {
+        "type": "powerOff"
+      },
+      {
+        "type": "cleanupTrial"
+      },
+      {
+        "type": "coil",
+        "module": 60
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "startCoil"
+      },
+      {
+        "type": "trialArrive"
+      },
+      {
+        "type": "energizeTrial"
+      },
+      {
+        "type": "trialResult"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordCoil"
+      },
+      {
+        "type": "powerOff"
+      },
+      {
+        "type": "cleanupTrial"
+      },
+      {
+        "type": "transport",
+        "module": 40
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 0
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "magnet",
+        "on": true
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "position",
+        "target": 1
+      },
+      {
+        "type": "motionHold",
+        "fraction": 0.5465882352871054
+      },
+      {
+        "type": "motion",
+        "axis": "position",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 0
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "magnet",
+        "on": false
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "position",
+        "target": 0
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 0
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "magnet",
+        "on": true
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "position",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 0
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "magnet",
+        "on": false
+      },
+      {
+        "type": "motion",
+        "axis": "elevation",
+        "target": 1
+      },
+      {
+        "type": "motionDone"
+      },
+      {
+        "type": "reflect",
+        "text": "Modul 40 memakai dua pengangkutan. Saya belum mengukur energi."
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "materials": "not-all",
+          "control": "current-switch",
+          "turns": "controlled-model",
+          "limit": "best-energy"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "materials": "not-all",
+          "control": "current-switch",
+          "turns": "controlled-model",
+          "limit": "no-energy-claim"
+        }
+      },
+      {
+        "type": "recover"
+      }
+    ]
+  },
+  "M17-E3": {
+    "version": 1,
+    "mission": "M17-E3",
+    "epoch": 0,
+    "revision": 79,
+    "accepted": true,
+    "sources": {
+      "power": true,
+      "solar": true,
+      "wind": true,
+      "battery": true,
+      "needs": true
+    },
+    "predictions": [
+      {
+        "source": "solar",
+        "condition": "bright",
+        "watts": 4
+      },
+      {
+        "source": "solar",
+        "condition": "cloudy",
+        "watts": 4
+      },
+      {
+        "source": "solar",
+        "condition": "night",
+        "watts": 4
+      },
+      {
+        "source": "wind",
+        "condition": "enough",
+        "watts": 4
+      },
+      {
+        "source": "wind",
+        "condition": "weak",
+        "watts": 4
+      },
+      {
+        "source": "wind",
+        "condition": "calm",
+        "watts": 4
+      }
+    ],
+    "records": [
+      {
+        "source": "solar",
+        "condition": "bright",
+        "watts": 6,
+        "predictionW": 4
+      },
+      {
+        "source": "solar",
+        "condition": "cloudy",
+        "watts": 2,
+        "predictionW": 4
+      },
+      {
+        "source": "solar",
+        "condition": "night",
+        "watts": 0,
+        "predictionW": 4
+      },
+      {
+        "source": "wind",
+        "condition": "enough",
+        "watts": 5,
+        "predictionW": 4
+      },
+      {
+        "source": "wind",
+        "condition": "weak",
+        "watts": 1,
+        "predictionW": 4
+      },
+      {
+        "source": "wind",
+        "condition": "calm",
+        "watts": 0,
+        "predictionW": 4
+      }
+    ],
+    "connections": [
+      "solar",
+      "wind",
+      "battery",
+      "load"
+    ],
+    "checked": true,
+    "supplyOn": false,
+    "trial": null,
+    "batteryMWh": 3000,
+    "attempts": [
+      {
+        "plan": [
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          }
+        ],
+        "records": [
+          {
+            "interval": 1,
+            "minutes": 60,
+            "solarW": 0,
+            "windW": 0,
+            "demandW": 4,
+            "sourceMWh": 0,
+            "initialMWh": 2000,
+            "servedMWh": 2000,
+            "finalMWh": 0,
+            "surplusMWh": 0,
+            "unmetMWh": 2000
+          }
+        ]
+      },
+      {
+        "plan": [
+          {
+            "solar": true,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": true,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": true,
+            "battery": true
+          }
+        ],
+        "records": [
+          {
+            "interval": 1,
+            "minutes": 60,
+            "solarW": 6,
+            "windW": 0,
+            "demandW": 4,
+            "sourceMWh": 6000,
+            "initialMWh": 2000,
+            "servedMWh": 4000,
+            "finalMWh": 4000,
+            "surplusMWh": 0,
+            "unmetMWh": 0
+          },
+          {
+            "interval": 2,
+            "minutes": 60,
+            "solarW": 2,
+            "windW": 0,
+            "demandW": 4,
+            "sourceMWh": 2000,
+            "initialMWh": 4000,
+            "servedMWh": 4000,
+            "finalMWh": 2000,
+            "surplusMWh": 0,
+            "unmetMWh": 0
+          },
+          {
+            "interval": 3,
+            "minutes": 60,
+            "solarW": 0,
+            "windW": 5,
+            "demandW": 4,
+            "sourceMWh": 5000,
+            "initialMWh": 2000,
+            "servedMWh": 4000,
+            "finalMWh": 3000,
+            "surplusMWh": 0,
+            "unmetMWh": 0
+          }
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "conditions": "depends",
+        "battery": "creates",
+        "combination": "scenario",
+        "limit": "not-universal",
+        "correct": false
+      },
+      {
+        "conditions": "depends",
+        "battery": "stores",
+        "combination": "scenario",
+        "limit": "not-universal",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Sumber berubah menurut kondisi. Baterai menyimpan energi dari kelebihan, bukan menciptakannya.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-25T08:46:10.836Z",
+    "rewardProof": {
+      "at": "2026-10-25T08:46:10.836Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "card": "power"
+        },
+        {
+          "type": "read",
+          "card": "solar"
+        },
+        {
+          "type": "read",
+          "card": "wind"
+        },
+        {
+          "type": "read",
+          "card": "battery"
+        },
+        {
+          "type": "read",
+          "card": "needs"
+        },
+        {
+          "type": "predict",
+          "source": "solar",
+          "condition": "bright",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "solar",
+          "condition": "bright"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "startSource",
+          "source": "solar",
+          "condition": "bright"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "predict",
+          "source": "solar",
+          "condition": "cloudy",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "solar",
+          "condition": "cloudy"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "predict",
+          "source": "solar",
+          "condition": "night",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "solar",
+          "condition": "night"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "predict",
+          "source": "wind",
+          "condition": "enough",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "wind",
+          "condition": "enough"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "predict",
+          "source": "wind",
+          "condition": "weak",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "wind",
+          "condition": "weak"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "predict",
+          "source": "wind",
+          "condition": "calm",
+          "watts": 4
+        },
+        {
+          "type": "startSource",
+          "source": "wind",
+          "condition": "calm"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordSource"
+        },
+        {
+          "type": "plan",
+          "rows": [
+            {
+              "solar": false,
+              "wind": false,
+              "battery": true
+            },
+            {
+              "solar": false,
+              "wind": false,
+              "battery": true
+            },
+            {
+              "solar": false,
+              "wind": false,
+              "battery": true
+            }
+          ]
+        },
+        {
+          "type": "connect",
+          "a": "PV",
+          "b": "BUS"
+        },
+        {
+          "type": "connect",
+          "a": "WT",
+          "b": "BUS"
+        },
+        {
+          "type": "connect",
+          "a": "BAT",
+          "b": "BUS"
+        },
+        {
+          "type": "connect",
+          "a": "BUS",
+          "b": "POS"
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "supply",
+          "on": true
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordInterval"
+        },
+        {
+          "type": "supply",
+          "on": false
+        },
+        {
+          "type": "retry"
+        },
+        {
+          "type": "plan",
+          "rows": [
+            {
+              "solar": true,
+              "wind": false,
+              "battery": true
+            },
+            {
+              "solar": true,
+              "wind": false,
+              "battery": true
+            },
+            {
+              "solar": false,
+              "wind": true,
+              "battery": true
+            }
+          ]
+        },
+        {
+          "type": "check"
+        },
+        {
+          "type": "supply",
+          "on": true
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "supply",
+          "on": false
+        },
+        {
+          "type": "supply",
+          "on": true
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordInterval"
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordInterval"
+        },
+        {
+          "type": "startInterval"
+        },
+        {
+          "type": "finishTrial"
+        },
+        {
+          "type": "observe"
+        },
+        {
+          "type": "recordInterval"
+        },
+        {
+          "type": "reflect",
+          "text": "Sumber berubah menurut kondisi. Baterai menyimpan energi dari kelebihan, bukan menciptakannya."
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "conditions": "depends",
+            "battery": "creates",
+            "combination": "scenario",
+            "limit": "not-universal"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "conditions": "depends",
+            "battery": "stores",
+            "combination": "scenario",
+            "limit": "not-universal"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "card": "power"
+      },
+      {
+        "type": "read",
+        "card": "solar"
+      },
+      {
+        "type": "read",
+        "card": "wind"
+      },
+      {
+        "type": "read",
+        "card": "battery"
+      },
+      {
+        "type": "read",
+        "card": "needs"
+      },
+      {
+        "type": "predict",
+        "source": "solar",
+        "condition": "bright",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "solar",
+        "condition": "bright"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "cancel"
+      },
+      {
+        "type": "startSource",
+        "source": "solar",
+        "condition": "bright"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "predict",
+        "source": "solar",
+        "condition": "cloudy",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "solar",
+        "condition": "cloudy"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "predict",
+        "source": "solar",
+        "condition": "night",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "solar",
+        "condition": "night"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "predict",
+        "source": "wind",
+        "condition": "enough",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "wind",
+        "condition": "enough"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "predict",
+        "source": "wind",
+        "condition": "weak",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "wind",
+        "condition": "weak"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "predict",
+        "source": "wind",
+        "condition": "calm",
+        "watts": 4
+      },
+      {
+        "type": "startSource",
+        "source": "wind",
+        "condition": "calm"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordSource"
+      },
+      {
+        "type": "plan",
+        "rows": [
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": false,
+            "battery": true
+          }
+        ]
+      },
+      {
+        "type": "connect",
+        "a": "PV",
+        "b": "BUS"
+      },
+      {
+        "type": "connect",
+        "a": "WT",
+        "b": "BUS"
+      },
+      {
+        "type": "connect",
+        "a": "BAT",
+        "b": "BUS"
+      },
+      {
+        "type": "connect",
+        "a": "BUS",
+        "b": "POS"
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "supply",
+        "on": true
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "cancel"
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordInterval"
+      },
+      {
+        "type": "supply",
+        "on": false
+      },
+      {
+        "type": "retry"
+      },
+      {
+        "type": "plan",
+        "rows": [
+          {
+            "solar": true,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": true,
+            "wind": false,
+            "battery": true
+          },
+          {
+            "solar": false,
+            "wind": true,
+            "battery": true
+          }
+        ]
+      },
+      {
+        "type": "check"
+      },
+      {
+        "type": "supply",
+        "on": true
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "cancel"
+      },
+      {
+        "type": "supply",
+        "on": false
+      },
+      {
+        "type": "supply",
+        "on": true
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordInterval"
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordInterval"
+      },
+      {
+        "type": "startInterval"
+      },
+      {
+        "type": "finishTrial"
+      },
+      {
+        "type": "observe"
+      },
+      {
+        "type": "recordInterval"
+      },
+      {
+        "type": "reflect",
+        "text": "Sumber berubah menurut kondisi. Baterai menyimpan energi dari kelebihan, bukan menciptakannya."
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "conditions": "depends",
+          "battery": "creates",
+          "combination": "scenario",
+          "limit": "not-universal"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "conditions": "depends",
+          "battery": "stores",
+          "combination": "scenario",
+          "limit": "not-universal"
+        }
+      },
+      {
+        "type": "supply",
+        "on": false
+      }
+    ]
+  },
+  "S16": {
+    "version": 1,
+    "mission": "S16",
+    "epoch": 0,
+    "revision": 20,
+    "accepted": true,
+    "sources": {
+      "energy": true,
+      "food": true,
+      "limits": true
+    },
+    "records": [
+      {
+        "id": "phyto",
+        "role": "producer",
+        "feature": "Bintik hijau pada pembesaran",
+        "food": "Memanfaatkan cahaya untuk menghasilkan bahan organik; bukan memakan Matahari."
+      },
+      {
+        "id": "zoo",
+        "role": "consumer",
+        "feature": "Bentuk kecil bening dengan antena pada pembesaran",
+        "food": "Memakan fitoplankton dalam model."
+      },
+      {
+        "id": "grazer",
+        "role": "consumer",
+        "feature": "Ikan pipih berwarna kuning",
+        "food": "Memakan fitoplankton dalam model."
+      },
+      {
+        "id": "hunter",
+        "role": "consumer",
+        "feature": "Ikan kecil memanjang berwarna biru",
+        "food": "Memakan zooplankton dalam model."
+      },
+      {
+        "id": "predator",
+        "role": "consumer",
+        "feature": "Ikan lebih besar dengan ekor bercabang",
+        "food": "Memakan ikan F dan ikan Z dalam model."
+      }
+    ],
+    "observationAttempts": [
+      {
+        "id": "phyto",
+        "role": "consumer",
+        "feature": "zoo",
+        "correct": false
+      },
+      {
+        "id": "phyto",
+        "role": "producer",
+        "feature": "phyto",
+        "correct": true
+      },
+      {
+        "id": "zoo",
+        "role": "consumer",
+        "feature": "zoo",
+        "correct": true
+      },
+      {
+        "id": "grazer",
+        "role": "consumer",
+        "feature": "grazer",
+        "correct": true
+      },
+      {
+        "id": "hunter",
+        "role": "consumer",
+        "feature": "hunter",
+        "correct": true
+      },
+      {
+        "id": "predator",
+        "role": "consumer",
+        "feature": "predator",
+        "correct": true
+      }
+    ],
+    "links": [
+      {
+        "from": "phyto",
+        "to": "zoo"
+      },
+      {
+        "from": "phyto",
+        "to": "grazer"
+      },
+      {
+        "from": "zoo",
+        "to": "hunter"
+      },
+      {
+        "from": "grazer",
+        "to": "predator"
+      },
+      {
+        "from": "hunter",
+        "to": "predator"
+      }
+    ],
+    "linkAttempts": [
+      {
+        "from": "predator",
+        "to": "grazer",
+        "correct": false
+      },
+      {
+        "from": "phyto",
+        "to": "zoo",
+        "correct": true
+      },
+      {
+        "from": "phyto",
+        "to": "grazer",
+        "correct": true
+      },
+      {
+        "from": "zoo",
+        "to": "hunter",
+        "correct": true
+      },
+      {
+        "from": "grazer",
+        "to": "predator",
+        "correct": true
+      },
+      {
+        "from": "hunter",
+        "to": "predator",
+        "correct": true
+      }
+    ],
+    "scenario": true,
+    "answers": [
+      {
+        "food": "one-less",
+        "alternative": "still-available",
+        "population": "extinct",
+        "energy": "food-to-eater",
+        "limit": "partial-model",
+        "correct": false
+      },
+      {
+        "food": "one-less",
+        "alternative": "still-available",
+        "population": "not-enough",
+        "energy": "food-to-eater",
+        "limit": "partial-model",
+        "correct": true
+      }
+    ],
+    "reflection": "Satu jalur melemah; sumber makanan lain masih tersedia. Besarnya perubahan populasi belum diketahui.",
+    "completed": true,
+    "reward": 50,
+    "firstCompletedAt": "2026-10-25T13:55:24.068Z",
+    "rewardProof": {
+      "at": "2026-10-25T13:55:24.068Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "source": "energy"
+        },
+        {
+          "type": "read",
+          "source": "food"
+        },
+        {
+          "type": "read",
+          "source": "limits"
+        },
+        {
+          "type": "observe",
+          "id": "phyto",
+          "role": "consumer",
+          "feature": "zoo"
+        },
+        {
+          "type": "observe",
+          "id": "phyto",
+          "role": "producer",
+          "feature": "phyto"
+        },
+        {
+          "type": "observe",
+          "id": "zoo",
+          "role": "consumer",
+          "feature": "zoo"
+        },
+        {
+          "type": "observe",
+          "id": "grazer",
+          "role": "consumer",
+          "feature": "grazer"
+        },
+        {
+          "type": "observe",
+          "id": "hunter",
+          "role": "consumer",
+          "feature": "hunter"
+        },
+        {
+          "type": "observe",
+          "id": "predator",
+          "role": "consumer",
+          "feature": "predator"
+        },
+        {
+          "type": "link",
+          "from": "predator",
+          "to": "grazer"
+        },
+        {
+          "type": "link",
+          "from": "phyto",
+          "to": "zoo"
+        },
+        {
+          "type": "link",
+          "from": "phyto",
+          "to": "grazer"
+        },
+        {
+          "type": "link",
+          "from": "zoo",
+          "to": "hunter"
+        },
+        {
+          "type": "link",
+          "from": "grazer",
+          "to": "predator"
+        },
+        {
+          "type": "link",
+          "from": "hunter",
+          "to": "predator"
+        },
+        {
+          "type": "scenario"
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "food": "one-less",
+            "alternative": "still-available",
+            "population": "extinct",
+            "energy": "food-to-eater",
+            "limit": "partial-model"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "food": "one-less",
+            "alternative": "still-available",
+            "population": "not-enough",
+            "energy": "food-to-eater",
+            "limit": "partial-model"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "source": "energy"
+      },
+      {
+        "type": "read",
+        "source": "food"
+      },
+      {
+        "type": "read",
+        "source": "limits"
+      },
+      {
+        "type": "observe",
+        "id": "phyto",
+        "role": "consumer",
+        "feature": "zoo"
+      },
+      {
+        "type": "observe",
+        "id": "phyto",
+        "role": "producer",
+        "feature": "phyto"
+      },
+      {
+        "type": "observe",
+        "id": "zoo",
+        "role": "consumer",
+        "feature": "zoo"
+      },
+      {
+        "type": "observe",
+        "id": "grazer",
+        "role": "consumer",
+        "feature": "grazer"
+      },
+      {
+        "type": "observe",
+        "id": "hunter",
+        "role": "consumer",
+        "feature": "hunter"
+      },
+      {
+        "type": "observe",
+        "id": "predator",
+        "role": "consumer",
+        "feature": "predator"
+      },
+      {
+        "type": "link",
+        "from": "predator",
+        "to": "grazer"
+      },
+      {
+        "type": "link",
+        "from": "phyto",
+        "to": "zoo"
+      },
+      {
+        "type": "link",
+        "from": "phyto",
+        "to": "grazer"
+      },
+      {
+        "type": "link",
+        "from": "zoo",
+        "to": "hunter"
+      },
+      {
+        "type": "link",
+        "from": "grazer",
+        "to": "predator"
+      },
+      {
+        "type": "link",
+        "from": "hunter",
+        "to": "predator"
+      },
+      {
+        "type": "scenario"
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "food": "one-less",
+          "alternative": "still-available",
+          "population": "extinct",
+          "energy": "food-to-eater",
+          "limit": "partial-model"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "food": "one-less",
+          "alternative": "still-available",
+          "population": "not-enough",
+          "energy": "food-to-eater",
+          "limit": "partial-model"
+        }
+      },
+      {
+        "type": "reflect",
+        "text": "Satu jalur melemah; sumber makanan lain masih tersedia. Besarnya perubahan populasi belum diketahui."
+      }
+    ]
+  },
+  "M16-E1": {
+    "version": 1,
+    "mission": "M16-E1",
+    "epoch": 0,
+    "revision": 39,
+    "accepted": true,
+    "sources": {
+      "water": true,
+      "plan": true
+    },
+    "sensor": true,
+    "sensorChecked": true,
+    "zero": true,
+    "plans": [
+      {
+        "variable": "horizontal",
+        "correct": false
+      },
+      {
+        "variable": "depth",
+        "correct": true
+      }
+    ],
+    "plan": true,
+    "tutorial": {
+      "move": true,
+      "depth": true,
+      "stable": true,
+      "recover": true
+    },
+    "deployed": false,
+    "returned": true,
+    "predictions": [
+      {
+        "point": "A8",
+        "choice": "lower"
+      },
+      {
+        "point": "B4",
+        "choice": "lower"
+      },
+      {
+        "point": "A2",
+        "choice": "lower"
+      },
+      {
+        "point": "A4",
+        "choice": "lower"
+      }
+    ],
+    "records": [
+      {
+        "point": "A8",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 8000,
+        "pressurePa": 82000
+      },
+      {
+        "point": "B4",
+        "xMm": 13000,
+        "zMm": -7500,
+        "depthMm": 4000,
+        "pressurePa": 41000
+      },
+      {
+        "point": "A2",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 2000,
+        "pressurePa": 20500
+      },
+      {
+        "point": "A4",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 4000,
+        "pressurePa": 41000
+      }
+    ],
+    "trial": null,
+    "answers": [
+      {
+        "depth": "increases",
+        "double": "twice",
+        "same": "coast",
+        "horizontal": "not-alone",
+        "assumption": "fixed-still",
+        "correct": false
+      },
+      {
+        "depth": "increases",
+        "double": "twice",
+        "same": "equal-depth",
+        "horizontal": "not-alone",
+        "assumption": "fixed-still",
+        "correct": true
+      }
+    ],
+    "completed": true,
+    "reflection": "Tekanan tambahan bertambah dengan kedalaman. A4 dan B4 sama pada asumsi massa jenis tetap.",
+    "reward": 50,
+    "firstCompletedAt": "2026-10-25T20:39:33.294Z",
+    "rewardProof": {
+      "at": "2026-10-25T20:39:33.294Z",
+      "history": [
+        {
+          "type": "accept"
+        },
+        {
+          "type": "read",
+          "source": "water"
+        },
+        {
+          "type": "read",
+          "source": "plan"
+        },
+        {
+          "type": "sensor"
+        },
+        {
+          "type": "checkSensor"
+        },
+        {
+          "type": "launch"
+        },
+        {
+          "type": "startRead",
+          "point": "zero",
+          "snapshot": {
+            "xMm": 5000,
+            "zMm": 3500,
+            "depthMm": 0,
+            "pressurePa": 0
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "record"
+        },
+        {
+          "type": "plan",
+          "variable": "horizontal"
+        },
+        {
+          "type": "plan",
+          "variable": "depth"
+        },
+        {
+          "type": "practice",
+          "kind": "stable"
+        },
+        {
+          "type": "practice",
+          "kind": "move"
+        },
+        {
+          "type": "practice",
+          "kind": "depth"
+        },
+        {
+          "type": "return",
+          "reason": "command"
+        },
+        {
+          "type": "launch"
+        },
+        {
+          "type": "predict",
+          "point": "A8",
+          "choice": "lower"
+        },
+        {
+          "type": "startRead",
+          "point": "A8",
+          "snapshot": {
+            "xMm": 7000,
+            "zMm": -5500,
+            "depthMm": 8000,
+            "pressurePa": 82000
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "cancel"
+        },
+        {
+          "type": "startRead",
+          "point": "A8",
+          "snapshot": {
+            "xMm": 7000,
+            "zMm": -5500,
+            "depthMm": 8000,
+            "pressurePa": 82000
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "record"
+        },
+        {
+          "type": "predict",
+          "point": "B4",
+          "choice": "lower"
+        },
+        {
+          "type": "startRead",
+          "point": "B4",
+          "snapshot": {
+            "xMm": 13000,
+            "zMm": -7500,
+            "depthMm": 4000,
+            "pressurePa": 41000
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "record"
+        },
+        {
+          "type": "predict",
+          "point": "A2",
+          "choice": "lower"
+        },
+        {
+          "type": "startRead",
+          "point": "A2",
+          "snapshot": {
+            "xMm": 7000,
+            "zMm": -5500,
+            "depthMm": 2000,
+            "pressurePa": 20500
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "record"
+        },
+        {
+          "type": "predict",
+          "point": "A4",
+          "choice": "lower"
+        },
+        {
+          "type": "startRead",
+          "point": "A4",
+          "snapshot": {
+            "xMm": 7000,
+            "zMm": -5500,
+            "depthMm": 4000,
+            "pressurePa": 41000
+          }
+        },
+        {
+          "type": "finishRead"
+        },
+        {
+          "type": "record"
+        },
+        {
+          "type": "return",
+          "reason": "command"
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "depth": "increases",
+            "double": "twice",
+            "same": "coast",
+            "horizontal": "not-alone",
+            "assumption": "fixed-still"
+          }
+        },
+        {
+          "type": "conclude",
+          "answers": {
+            "depth": "increases",
+            "double": "twice",
+            "same": "equal-depth",
+            "horizontal": "not-alone",
+            "assumption": "fixed-still"
+          }
+        }
+      ]
+    },
+    "history": [
+      {
+        "type": "accept"
+      },
+      {
+        "type": "read",
+        "source": "water"
+      },
+      {
+        "type": "read",
+        "source": "plan"
+      },
+      {
+        "type": "sensor"
+      },
+      {
+        "type": "checkSensor"
+      },
+      {
+        "type": "launch"
+      },
+      {
+        "type": "startRead",
+        "point": "zero",
+        "snapshot": {
+          "xMm": 5000,
+          "zMm": 3500,
+          "depthMm": 0,
+          "pressurePa": 0
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "record"
+      },
+      {
+        "type": "plan",
+        "variable": "horizontal"
+      },
+      {
+        "type": "plan",
+        "variable": "depth"
+      },
+      {
+        "type": "practice",
+        "kind": "stable"
+      },
+      {
+        "type": "practice",
+        "kind": "move"
+      },
+      {
+        "type": "practice",
+        "kind": "depth"
+      },
+      {
+        "type": "return",
+        "reason": "command"
+      },
+      {
+        "type": "launch"
+      },
+      {
+        "type": "predict",
+        "point": "A8",
+        "choice": "lower"
+      },
+      {
+        "type": "startRead",
+        "point": "A8",
+        "snapshot": {
+          "xMm": 7000,
+          "zMm": -5500,
+          "depthMm": 8000,
+          "pressurePa": 82000
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "cancel"
+      },
+      {
+        "type": "startRead",
+        "point": "A8",
+        "snapshot": {
+          "xMm": 7000,
+          "zMm": -5500,
+          "depthMm": 8000,
+          "pressurePa": 82000
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "record"
+      },
+      {
+        "type": "predict",
+        "point": "B4",
+        "choice": "lower"
+      },
+      {
+        "type": "startRead",
+        "point": "B4",
+        "snapshot": {
+          "xMm": 13000,
+          "zMm": -7500,
+          "depthMm": 4000,
+          "pressurePa": 41000
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "record"
+      },
+      {
+        "type": "predict",
+        "point": "A2",
+        "choice": "lower"
+      },
+      {
+        "type": "startRead",
+        "point": "A2",
+        "snapshot": {
+          "xMm": 7000,
+          "zMm": -5500,
+          "depthMm": 2000,
+          "pressurePa": 20500
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "record"
+      },
+      {
+        "type": "predict",
+        "point": "A4",
+        "choice": "lower"
+      },
+      {
+        "type": "startRead",
+        "point": "A4",
+        "snapshot": {
+          "xMm": 7000,
+          "zMm": -5500,
+          "depthMm": 4000,
+          "pressurePa": 41000
+        }
+      },
+      {
+        "type": "finishRead"
+      },
+      {
+        "type": "record"
+      },
+      {
+        "type": "return",
+        "reason": "command"
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "depth": "increases",
+          "double": "twice",
+          "same": "coast",
+          "horizontal": "not-alone",
+          "assumption": "fixed-still"
+        }
+      },
+      {
+        "type": "conclude",
+        "answers": {
+          "depth": "increases",
+          "double": "twice",
+          "same": "equal-depth",
+          "horizontal": "not-alone",
+          "assumption": "fixed-still"
+        }
+      },
+      {
+        "type": "reflect",
+        "text": "Tekanan tambahan bertambah dengan kedalaman. A4 dan B4 sama pada asumsi massa jenis tetap."
+      }
+    ]
+  },
+  "world": {
+    "region": "coast",
+    "activeMission": "M16-E1"
+  }
+}

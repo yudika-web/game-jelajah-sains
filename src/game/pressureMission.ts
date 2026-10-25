@@ -1,0 +1,55 @@
+import {pressureConfig,pressureCards,pressurePointIds,pressurePoints,rovDock,correctPressureAnswers,type PressurePoint,type PressureSource,type PressureAnswers} from '../data/pressureContent';
+import {waterPressurePa} from './pressureModel';
+export interface SensorSnapshot{xMm:number;zMm:number;depthMm:number;pressurePa:number;}
+type Action={type:'accept'}|{type:'read';source:PressureSource}|{type:'sensor'}|{type:'checkSensor'}|{type:'launch'}|{type:'plan';variable:string}|{type:'practice';kind:'move'|'depth'|'stable'}|{type:'return';reason:'command'|'reload'|'leave'|'home'}|{type:'predict';point:PressurePoint;choice:string}|{type:'startRead';point:PressurePoint|'zero';snapshot:SensorSnapshot}|{type:'finishRead'}|{type:'record'}|{type:'cancel'}|{type:'conclude';answers:PressureAnswers}|{type:'reflect';text:string};
+export type PressureEvent=(Action&{revision?:number})|{type:'reset'};
+export interface PressureProgress{version:1;mission:'M16-E1';epoch:number;revision:number;accepted:boolean;sources:Record<PressureSource,boolean>;sensor:boolean;sensorChecked:boolean;zero:boolean;plans:{variable:string;correct:boolean}[];plan:boolean;tutorial:Record<'move'|'depth'|'stable'|'recover',boolean>;deployed:boolean;returned:boolean;predictions:{point:PressurePoint;choice:string}[];records:({point:PressurePoint}&SensorSnapshot)[];trial:{point:PressurePoint|'zero';phase:'reading'|'result';snapshot:SensorSnapshot}|null;answers:(PressureAnswers&{correct:boolean})[];completed:boolean;reflection:string;reward:0|50;firstCompletedAt:string|null;rewardProof:{at:string;history:Action[]}|null;history:Action[];}
+export const initialPressure=():PressureProgress=>({version:1,mission:'M16-E1',epoch:0,revision:0,accepted:false,sources:{water:false,plan:false},sensor:false,sensorChecked:false,zero:false,plans:[],plan:false,tutorial:{move:false,depth:false,stable:false,recover:false},deployed:false,returned:false,predictions:[],records:[],trial:null,answers:[],completed:false,reflection:'',reward:0,firstCompletedAt:null,rewardProof:null,history:[]});
+export const pressureTutorialComplete=(p:PressureProgress)=>Object.values(p.tutorial).every(Boolean);
+export const pressurePrepared=(p:PressureProgress)=>p.accepted&&Object.values(p.sources).every(Boolean)&&p.sensorChecked;
+export function validSnapshot(point:PressurePoint|'zero',s:SensorSnapshot){const target=point==='zero'?rovDock:pressurePoints[point];return !!target&&!!s&&Object.values(s).every(Number.isSafeInteger)&&s.depthMm===target.depth*1000&&Math.hypot(s.xMm-target.x*1000,s.zMm-target.z*1000)<=pressureConfig.radius*1000&&s.pressurePa===waterPressurePa(s.depthMm/1000);}
+export function pressureTransition(p:PressureProgress,e:PressureEvent,now=()=>new Date().toISOString()):{progress:PressureProgress;ok:boolean;message:string}{
+ const fail=(message:string)=>({progress:p,ok:false,message});
+ if(e.type==='reset')return{progress:{...initialPressure(),epoch:p.revision+1,revision:p.revision+1,reward:p.reward,firstCompletedAt:p.firstCompletedAt,rewardProof:structuredClone(p.rewardProof)},ok:true,message:'Hanya M16-E1 diulang; hadiah pertama dan misi lain tetap ada.'};
+ if(e.revision!==undefined&&e.revision!==p.revision)return fail('Tindakan lama diabaikan.');if(p.history.length>=3000)return fail('Cadangkan lalu ulangi episode; riwayat penuh.');if(e.type!=='accept'&&!p.accepted)return fail('Terima M16-E1 dari Kak Lestari dahulu.');
+ const n=structuredClone(p);let ok=true,message='Bukti M16-E1 tersimpan.';
+ switch(e.type){
+ case'accept':if(p.accepted)return fail('Episode sudah diterima.');n.accepted=true;break;
+ case'read':if(!Object.hasOwn(pressureCards,e.source)||p.sources[e.source])return fail('Sumber sudah dicatat atau tidak valid.');n.sources[e.source]=true;break;
+ case'sensor':if(!Object.values(p.sources).every(Boolean)||p.sensor)return fail('Baca buku dan rencana sebelum mengambil sensor.');n.sensor=true;break;
+ case'checkSensor':if(!p.sensor||p.sensorChecked)return fail('Ambil sensor, lalu periksa fungsi model.');n.sensorChecked=true;message='Sensor eksternal merespons pada uji fungsi virtual; lanjutkan pemeriksaan nol relatif di permukaan.';break;
+ case'launch':if(!pressurePrepared(p)||p.deployed||p.trial)return fail('Baca sumber, ambil serta periksa sensor sebelum mengendalikan ROV.');n.deployed=true;n.returned=false;break;
+ case'plan':if(!p.zero||p.plan||typeof e.variable!=='string'||e.variable.length>40)return fail('Periksa nol relatif dahulu.');ok=e.variable==='depth';n.plans.push({variable:e.variable,correct:ok});n.plan=ok;message=ok?'Kedalaman dibandingkan; massa jenis, gravitasi, dan air tenang tetap.':'Bandingkan kedalaman. Jarak horizontal bukan satu-satunya penentu tekanan. Upaya awal disimpan.';break;
+ case'practice':if(!p.deployed||!p.plan||!['move','depth','stable'].includes(e.kind)||p.tutorial[e.kind])return fail('Selesaikan rencana, lalu praktikkan kendali robot.');n.tutorial[e.kind]=true;break;
+ case'return':if(!p.deployed||!['command','reload','leave','home'].includes(e.reason))return fail('ROV sudah di dok.');n.deployed=false;n.trial=null;n.returned=p.records.length===4;if(e.reason==='command'&&p.plan)n.tutorial.recover=true;message='ROV kembali ke dok; pengukuran sah tetap ada.';break;
+ case'predict':if(!pressurePointIds.includes(e.point)||!p.plan||!['higher','same','lower'].includes(e.choice)||p.records.some(r=>r.point===e.point)||p.trial)return fail('Pilih prediksi untuk titik yang belum diukur.');n.predictions.push({point:e.point,choice:e.choice});break;
+ case'startRead':if(!p.deployed||p.trial||(e.point==='zero'?p.zero:!pressurePointIds.includes(e.point)||!p.zero||!p.plan||!pressureTutorialComplete(p)||!p.predictions.some(a=>a.point===e.point)||p.records.some(r=>r.point===e.point))||!validSnapshot(e.point,e.snapshot))return fail('Stabilkan sensor pada titik, lengkapi persiapan/tutorial dan prediksi.');n.trial={point:e.point,phase:'reading',snapshot:structuredClone(e.snapshot)};message='Pembacaan dimulai; belum menjadi bukti.';break;
+ case'finishRead':if(p.trial?.phase!=='reading')return fail('Pembacaan belum berlangsung.');n.trial!.phase='result';break;
+ case'record':if(p.trial?.phase!=='result')return fail('Jalankan dan amati pembacaan dahulu.');if(p.trial.point==='zero')n.zero=true;else n.records.push({point:p.trial.point,...p.trial.snapshot});n.trial=null;message='Satu pembacaan disahkan. Tekanan ini tambahan terhadap permukaan, bukan tekanan total.';break;
+ case'cancel':if(!p.trial)return fail('Tidak ada pembacaan sementara.');n.trial=null;message='Pembacaan belum disahkan dibatalkan.';break;
+ case'conclude':if(p.completed||p.deployed||!p.returned||p.records.length!==4||!p.zero||!p.plan||!pressureTutorialComplete(p)||!e.answers||!Object.keys(correctPressureAnswers).every(k=>typeof e.answers[k as keyof PressureAnswers]==='string'&&e.answers[k as keyof PressureAnswers].length<=60))return fail('Lengkapi empat pengukuran sah, lalu kembalikan ROV ke dok.');ok=Object.entries(correctPressureAnswers).every(([k,v])=>e.answers[k as keyof PressureAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E1 selesai · 50 XP pertama. Bab M16 masih dalam pengembangan; S17 tidak ikut selesai.':'Bandingkan kedalaman dan A4/B4 pada kondisi yang sama. Perbaiki kesimpulan; upaya awal disimpan.';break;
+ case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
+ default:return fail('Tindakan tidak dikenal.');
+ }
+ const a=structuredClone(e) as Action&{revision?:number};delete a.revision;n.history.push(a);n.revision++;if(n.reward===50&&!p.rewardProof)n.rewardProof={at:n.firstCompletedAt!,history:structuredClone(n.history)};return{progress:n,ok,message};
+}
+const canonical=(v:unknown):unknown=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,x])=>[k,canonical(x)])):v;
+export function parsePressure(raw:unknown):PressureProgress{
+ const bad=():never=>{throw Error('Progres M16-E1 tidak valid: sensor, urutan bukti, tekanan, tutorial, atau hadiah tidak sesuai.');};
+ try{if(!raw||typeof raw!=='object')return bad();const p=raw as PressureProgress;if(p.version!==1||p.mission!=='M16-E1'||!Number.isSafeInteger(p.epoch)||p.epoch<0||!Number.isSafeInteger(p.revision)||!Array.isArray(p.history)||p.history.length>3000||p.revision!==p.epoch+p.history.length||![0,50].includes(p.reward))return bad();if(p.reward===50?typeof p.firstCompletedAt!=='string'||!Number.isFinite(Date.parse(p.firstCompletedAt)):p.firstCompletedAt!==null||p.rewardProof!==null)return bad();
+ const replay=(history:Action[],seed:PressureProgress)=>{if(!Array.isArray(history)||history.length>3000)return bad();let n=seed;for(const e of history){if(!e||typeof e!=='object'||(e as {type:string}).type==='reset'||Object.hasOwn(e,'revision'))return bad();const r=pressureTransition(n,e,()=>p.firstCompletedAt??'2000-01-01T00:00:00.000Z');if(r.progress===n)return bad();n=r.progress;}return n;};
+ if(p.reward===50){if(!p.rewardProof||p.rewardProof.at!==p.firstCompletedAt)return bad();const award=replay(p.rewardProof.history,initialPressure());if(!award.completed||award.history.at(-1)?.type!=='conclude')return bad();}
+ const seed=initialPressure();seed.epoch=p.epoch;seed.revision=p.epoch;if(p.epoch>0){seed.reward=p.reward;seed.firstCompletedAt=p.firstCompletedAt;seed.rewardProof=structuredClone(p.rewardProof);}const n=replay(p.history,seed);if(JSON.stringify(canonical(n))!==JSON.stringify(canonical(p)))return bad();return n;
+ }catch{return bad();}
+}
+export function settlePressure(p:PressureProgress,reason:'reload'|'leave'|'home'='reload'){return p.deployed?pressureTransition(p,{type:'return',reason}).progress:p.trial?pressureTransition(p,{type:'cancel'}).progress:p;}
+export const pressureSteps=(p:PressureProgress)=>[
+ {title:'Terima Ekspedisi Tekanan',detail:'M16-E1; episode bab berikutnya belum tersedia.',place:'coastLestari',done:p.accepted},
+ {title:'Baca tekanan dan rencana',detail:'Sensor eksternal dan asumsi model.',place:p.sources.water?'pressureNotes':'pressureBook',done:Object.values(p.sources).every(Boolean)},
+ {title:'Ambil dan periksa sensor',detail:'Uji fungsi sebelum pemeriksaan nol.',place:'pressureRack',done:p.sensorChecked},
+ {title:'Periksa nol relatif di permukaan',detail:'Kendalikan ROV, Stabilkan di dok, baca lalu Catat.',place:'rovControl',done:p.zero},
+ {title:'Pilih variabel dan praktik kendali',detail:'Gerak, ubah kedalaman, Stabilkan, Kembali ke Dok.',place:'rovControl',done:p.plan&&pressureTutorialComplete(p)},
+ {title:`Catat empat titik · ${p.records.length}/4`,detail:'Pilih tujuan, Stabilkan, prediksi, baca, Catat.',place:'rovControl',done:p.records.length===4},
+ {title:'Kembalikan ROV ke dok',detail:'Data sah tetap tersimpan.',place:'rovControl',done:p.returned},
+ {title:'Bandingkan dan simpulkan',detail:'A4 dan B4 terpisah pada nilai yang sama.',place:'coastLestari',done:p.completed},
+];

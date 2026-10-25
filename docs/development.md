@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Wilayah terbaru tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v10**, dengan sepuluh misi/episode; rincian mutakhir ada pada bagian S16.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v11**, dengan sebelas misi/episode; rincian mutakhir ada pada bagian M16-E1.
 
 ## Sumber dan keputusan implementasi
 
@@ -195,3 +195,12 @@ Rekaman M17-E3 ditambahkan pada IndexedDB skema 1; cadangan v9 menerima v1–v8 
 W05 dibagi tepian pantai dan titik predator, dihubungkan hanya dengan perahu. Navigasi darat membatasi laut; navigasi kendaraan memakai radius lambung 1,65 dan sweep gerakan lama. Pengamatan memerlukan jarak di darat, membuka specimen, memilih ciri/peran, lalu Catat. Kamera inspeksi sementara memakai target baru tanpa mengubah preferensi jarak. Pada reload dan transisi, kendaraan diparkir aman; sumber daya region lama dilepas, sementara geometri/material rig bersama tetap dilindungi.
 
 IndexedDB tetap skema 1, key S16 ditambahkan dalam transaksi sepuluh misi. Cadangan v10 menerima v1–v9; versi lama tidak menghapus S16. Validator mengulang riwayat untuk menolak pengamatan/tautan ganda, urutan bukti keliru, klaim selesai/hadiah tanpa bukti. Reset mempertahankan receipt hadiah pertama. Status M17 tetap berasal dari completed E1/E2/E3, terpisah dari S16. Laporan dan bukti: [coastal-foodweb-review.md](coastal-foodweb-review.md).
+
+
+## M16-E1 — ROV dan tekanan relatif
+
+ROV beroperasi di volume terbatas W05, sementara akar pemain tetap di pos. Input horizontal lama dipakai dan Space/Q hanya dialihkan ketika ROV aktif. Target vertikal berubah 1 m; gerak memakai substep dan batas kecepatan 2,5 m/s horizontal, 1,5 m/s vertikal. `rovNavigation.ts` memakai grid 3D enam arah dengan penghalang yang diperluas sesuai radius konservatif 0,9 dan setengah tinggi 0,45 unit. Tiba tidak menandai Stabilkan atau Catat.
+
+`pressureModel.ts` menghitung h dari tinggi sensor eksternal sebenarnya, bukan kamera/dasar. Sensor memiliki offset vertikal 0,12 unit dari akar robot. Permukaan y=-0,175; p=1025×10×h Pa. `pressureMission.ts` memisahkan kalibrasi nol relatif, variabel, tutorial, prediksi, sesi pembacaan, empat rekaman, kembali dok dan kesimpulan. `pressureSampling.ts` memakai delta World aktif; pembacaan tidak memakai jam nyata atau loop kedua.
+
+Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara; preferensi Dekat/Normal/Jauh tetap. Renderer, Scene dan regionRoot tetap satu. Aset dasar laut dimiliki W05 dan dilepas bersama region; update berhenti di wilayah lain. Reload/keluar wilayah memarkir robot serta membatalkan pembacaan belum disahkan. Key M16-E1 ditambahkan pada IndexedDB skema 1, cadangan v11 menerima v1–v10. Bab M16 tetap Dalam pengembangan, status M17 tidak berubah. Bukti lengkap: [underwater-pressure-review.md](underwater-pressure-review.md).

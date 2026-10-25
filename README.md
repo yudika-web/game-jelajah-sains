@@ -1,6 +1,8 @@
 # Jelajah Sains
 
-**W05 / S16 — Jaring Kehidupan Pesisir**: berangkat dari dermaga W04, jelajahi pantai dan mangrove, amati lima kelompok melalui alat pembesaran/jendela, gunakan perahu lokal ke titik predator, susun lima panah energi, dan tinjau gangguan satu jalur. Hadiah 50 XP sekali. [Cara bermain, model, pengujian, gambar dan cuplikan](docs/coastal-foodweb-review.md). Penyelaman bebas dan M16 belum tersedia.
+**W05 / M16-E1 — Ekspedisi Tekanan Bawah Air**: kendalikan ROV dari pos, periksa sensor dan nol relatif, lalu ukur A2/A4/A8/B4, kembali ke dok, dan simpulkan dari tabel/grafik. Hadiah 50 XP sekali. Bab M16 masih dalam pengembangan; S17 tidak otomatis selesai. [Panduan, rumus, hasil pemeriksaan, gambar dan cuplikan](docs/underwater-pressure-review.md).
+
+**W05 / S16 — Jaring Kehidupan Pesisir**: berangkat dari dermaga W04, jelajahi pantai dan mangrove, amati lima kelompok melalui alat pembesaran/jendela, gunakan perahu lokal ke titik predator, susun lima panah energi, dan tinjau gangguan satu jalur. Hadiah 50 XP sekali. [Cara bermain, model, pengujian, gambar dan cuplikan](docs/coastal-foodweb-review.md). Penyelaman manusia bebas belum tersedia; episode ROV M16-E1 kini tersedia.
 
 **W06 / M17-E3 — Energi untuk Pos Riset**: uji enam kondisi panel/turbin, susun suplai tiga interval, hubungkan sumber pada bus DC teratur, lalu catat neraca dan energi baterai. Hadiah 50 XP sekali. **Bab M17 tuntas hanya bila E1, E2, dan E3 semuanya selesai saat ini**, tanpa hadiah bab tambahan. [Cara bermain, model, pemeriksaan, gambar dan cuplikan](docs/workshop-energy-review.md).
 
@@ -20,7 +22,7 @@ Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, at
 
 Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Enam wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15**, **W05 Pesisir dan Laut / S16**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, dan M17-E3**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Enam wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15**, **W05 Pesisir dan Laut / S16, M16-E1**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, dan M17-E3**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
@@ -62,7 +64,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16. Kesepuluhnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1. Kesebelasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -75,6 +77,7 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Mi
 | Memancing W04 | E di titik; Tab/Enter pada Mulai, Tarik, Catat dan lepaskan | Tombol besar tanpa drag atau reaksi cepat | Pilih A/B di Peta, lalu tombol memancing |
 | Berenang (kolam) | WASD / panah; masuk/keluar ramp | Analog dan kamera terpisah | Pilih penanda/ramp di Peta; Kembali ke Tepian |
 | Perahu | Naik → Mulai; WASD/panah, Shift; E di dermaga | Analog, kamera dua jari; Pelan/Jelajah | Pilih dermaga di Peta atau ketuk air sah; Sandar → Turun |
+| ROV M16-E1 | WASD/panah; Space naik, Q turun 1 m; tombol Stabilkan/baca/Catat | Analog + kamera; target Naik/Turun 1 m; Kembali ke Dok | Tujuan 3D melalui peta, Stabilkan, baca/Catat |
 | S16 · jaring makanan | Tab/Enter; asal lalu tujuan atau daftar | Tombol Amati/Catat dan daftar pasangan | Peta lokasi, pengamatan, panah dan kasus dengan sentuhan |
 | Energi M17-E3 | Tab, checkbox, daftar port, Enter | Tombol uji/catat dan kamera objek | Peta stasiun, port dan interval dengan sentuhan |
 | Derek M17-E2 | Tab/Enter; terminal atau daftar; tujuan tetap | Tombol besar dan daftar pasangan | Peta stasiun, lalu tujuan derek tetap |
@@ -88,6 +91,18 @@ Membuka dialog, jurnal, menu jeda, mengganti kontrol/wilayah, atau kembali ke po
 **Pengaturan → Jarak kamera** menyediakan Dekat (8,5 unit), Normal (10,8), dan Jauh (14). Pilihan jarak, pengurangan gerakan, serta resolusi rendah disimpan terpisah dari penyelidikan, melalui preferensi lokal browser. R mengembalikan sudut pandang yang nyaman tanpa mengganti pilihan jarak. Kamera manual tetap dipertahankan ketika karakter berbelok. Panel misi awalnya menampilkan langkah aktif; tombol **+** atau **Lihat semua langkah** membuka seluruh daftar.
 
 Saat berbicara/membaca/mengukur, panel ditempatkan di sisi layar lebar atau bagian bawah layar potret. Karakter tetap terlihat, dengan pose dan alat yang sesuai. Berjalan berhenti selama panel terbuka, tetapi animasi interaksi tetap berjalan; pengurangan gerakan menghentikan ayunan idle, kedipan, dan langkah dekoratif.
+
+## Menuntaskan M16-E1
+
+1. Di Pesisir, pilih M16-E1, temui Kak Lestari dan terima episode. Baca Buku tekanan dan Rencana tekanan. Di Sensor tekanan, Ambil lalu Periksa fungsi.
+2. Dekati **Pos kendali ROV** dan Kendalikan. Karakter tetap di pos; kamera mengikuti robot. Di dok 0 m pilih Stabilkan → Jalankan pembacaan → Catat. Ini pemeriksaan nol relatif, bukan tekanan total nol.
+3. Pilih variabel **kedalaman sensor**. Praktikkan gerak horizontal, perubahan kedalaman, stabilisasi dan Kembali ke Dok. Tujuan otomatis juga dapat dipakai untuk tutorial. Kendalikan kembali setelah tutorial.
+4. Pilih A2, A4, A8 atau B4 pada peta ROV; urutannya bebas. Tiba, pilih prediksi, Stabilkan, Jalankan pembacaan, amati angka, lalu Catat. Navigasi sendiri tidak menghasilkan bukti.
+5. Setelah empat data sah, Kembali ke Dok dan simpulkan bersama Kak Lestari. Simpan refleksi opsional di Jurnal. Hadiah pertama 50 XP; M16 tetap Dalam pengembangan.
+
+Laptop: Space menaikkan robot (target kedalaman berkurang 1 m), Q menurunkan robot (bertambah 1 m). Tombol tidak perlu ditahan. HP/IFP memiliki tombol Naik/Turun, Stabilkan, Berhenti dan Kembali ke Dok. WASD/analog bergerak horizontal relatif kamera. ROV tidak memakai kecepatan lari. Menu/fokus/pointercancel menghentikan gerak dan membatalkan pembacaan sementara. Reload mengembalikan robot ke dok dan pemain ke pos darat; data sah tetap ada.
+
+Tekanan tambahan berasal dari **p = ρgh**, dengan ρ **1.025 kg/m³**, g **10 m/s²**: 2 m → 20,5 kPa; 4 m → 41 kPa; 8 m → 82 kPa. A4 dan B4 sama pada model air tenang ini. Sensor berada di luar robot; kedalaman dihitung dari permukaan dikurangi tinggi sensor yang sebenarnya. Tidak ada penyelam manusia atau sistem oksigen.
 
 ## Menuntaskan S16
 
@@ -191,9 +206,9 @@ Semua tindakan perlu mendekati objek; Peta dan kartu misi menyediakan perjalanan
 
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kesepuluh misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, `M16-E1`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kesebelas misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 10** berisi sepuluh episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 11** berisi sebelas episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Versi **10** memulihkan sampai S16, sedangkan semua versi **1–10** mempertahankan M16-E1 yang tidak tercakup. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -239,13 +254,21 @@ src/
   game/riverMission.ts  aturan sampling, catatan atomik dan validasi S13
   game/fishingSession.ts state memancing sementara, tanpa timer tambahan
   game/riverUI.ts       kegiatan memancing, kartu, jurnal, tabel dan diagram
+  data/pressureContent.ts asumsi, titik ROV dan materi M16-E1
+  engine/rovController.ts gerak horizontal/vertikal dan stabilisasi
+  engine/rovNavigation.ts rute 3D dan envelope robot
+  engine/pressureWorld.ts robot dan dasar laut dalam W05 yang sama
+  game/pressureModel.ts   sensor, rho g h, Pa/kPa
+  game/pressureMission.ts bukti, hadiah, reset dan validator replay
+  game/pressureSampling.ts pembacaan sementara dengan delta aktif
+  game/pressureUI.ts      kendali tiga perangkat, tabel dan grafik
   data/coastalContent.ts organisme, hubungan energi, dan materi S16
   data/coastalRegion.ts  tepian, dermaga, jalur darat/air W05
   engine/coastalWorld.ts model pesisir dan pengamatan dengan kamera sama
   engine/boatModel.ts    lambung bersama W04/W05
   game/coastalMission.ts bukti berurutan, jaring, kasus, hadiah dan validasi
   game/coastalUI.ts      pengamatan, dua cara hubungan, jurnal dan refleksi
-  game/gameState.ts     keadaan wilayah, cadangan v10 dan kompatibilitas v1–v9
+  game/gameState.ts     keadaan wilayah, cadangan v11 dan kompatibilitas v1–v10
   data/electromagnetContent.ts dataset, enam ID klip, materi, terminal
   game/electromagnetModel.ts rangkaian alat terpisah dari M17-E1
   game/electromagnetUI.ts panel perakitan, pengujian dan jurnal
@@ -259,7 +282,7 @@ src/
   game/electromagnetMission.ts  aturan, bukti, parser M17-E2
   game/craneState.ts    transaksi enam klip dan state derek
   engine/electromagnetWorld.ts  model dan animasi lokal
-  game/storage.ts       transaksi IndexedDB atomik sepuluh misi/episode
+  game/storage.ts       transaksi IndexedDB atomik sebelas misi/episode
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -282,4 +305,4 @@ Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustak
 
 ## Batas prototipe
 
-Belum mencakup wilayah di luar lima wilayah ini, lompat/menyelam, berenang di luar kolam, kendaraan selain gerobak/perahu, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.
+Belum mencakup wilayah di luar enam wilayah ini, melompat atau menyelam sebagai manusia, berenang di luar kolam, kendaraan selain gerobak/perahu/ROV latihan, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.

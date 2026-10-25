@@ -1,3 +1,7 @@
+import {RovController} from './rovController';
+import {buildPressureWorld} from './pressureWorld';
+import {pressureConfig,type PressurePoint} from '../data/pressureContent';
+import {waterPressurePa} from '../game/pressureModel';
 import {buildCoastal} from './coastalWorld';
 import {coastalDocks,coastalBoatNavigation} from '../data/coastalRegion';
 import type {OrganismId} from '../data/coastalContent';
@@ -74,7 +78,15 @@ export class World {
   setBuoyancyTrial(t:BuoyancyTrial|null){this.buoyancyTrial=t;}
   private swimAppearance(active:boolean){this.playerAnimator.swimming=active;this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const m=this.player.getObjectByName(name);if(m)m.visible=!active;}}
   returnShore(){this.stop();this.swimming=false;this.swimAppearance(false);this.position.set(poolExit.x,0,poolExit.z);this.endInteraction();}
-  private updateSwimming(distance:number){if(this.region!=='river'||this.boat.aboard)return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
+  private updateSwimming(distance:number){if(this.region!=='river'||this.boat.aboard||this.rov.active)return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
+  readonly rov=new RovController();private pressureView:ReturnType<typeof buildPressureWorld>|null=null;
+  setPressureChecked(checked:boolean){this.pressureView?.update(checked);}
+  onPressureFrame:(dt:number,active:boolean)=>void=()=>{};
+  private rovCameraPoint=new THREE.Vector3();private rovSensorPoint=new THREE.Vector3();private rovSample={xMm:0,zMm:0,depthMm:0,pressurePa:0};
+  rovSnapshot(){if(this.pressureView){this.pressureView.robot.position.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);this.pressureView.sensor.getWorldPosition(this.rovSensorPoint);}else this.rovSensorPoint.set(this.rov.position.x,this.rov.position.y+pressureConfig.sensorOffsetY,this.rov.position.z);const h=Math.max(0,pressureConfig.surfaceY-this.rovSensorPoint.y);this.rovSample.xMm=Math.round(this.rovSensorPoint.x*1000);this.rovSample.zMm=Math.round(this.rovSensorPoint.z*1000);this.rovSample.depthMm=Math.round(h*1000);this.rovSample.pressurePa=Math.round(waterPressurePa(h));return this.rovSample;}
+  launchRov(){if(this.region!=='coast'||this.boat.aboard||this.swimming)return false;this.stop();this.endInteraction();this.rov.launch();this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.setObstacles(this.pressureView?.cameraBoxes??[]);return true;}
+  recoverRov(){const wasActive=this.rov.active;this.rov.recover();this.stop();if(!wasActive)return;this.followCamera.interactionYaw=0;this.followCamera?.setObstacles(this.collisionBoxes);if(this.scene.background)(this.scene.background as THREE.Color).set('#d9e9e3');if(this.scene.fog){const f=this.scene.fog as THREE.Fog;f.color.set('#d9e9e3');f.near=48;f.far=100;}}
+  rovDepth(delta:number){if(!this.paused)this.rov.changeDepth(delta);}
   readonly boat=new BoatController();
   onBoatTutorial:(stage:'board'|'arrive'|'land',distanceMm:number)=>void=()=>{};
   onIrrigationFrame:(dt:number,active:boolean)=>void=()=>{};
@@ -82,7 +94,7 @@ export class World {
   setFlowSampling(s:FlowSampling|null){this.flowSampling=s;}
   setIrrigation(p:IrrigationProgress){this.riverView?.irrigation.update(p);this.canvas.dataset.screenCleaned=String(p.cleaned);}
   private boatAppearance(active:boolean){this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const obj=this.player.getObjectByName(name);if(obj)obj.visible=!active;}}
-  boardBoat(){if(!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
+  boardBoat(){if(this.rov.active||!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
   startBoat(){if(!this.boat.start())return false;this.stop();this.boat.start();return true;}
   moorBoat(){const d=this.boat.moor(this.position);if(!d)return null;this.stop();this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river'&&d==='irrigation'&&this.boat.tripFrom==='research')this.onBoatTutorial('arrive',this.boat.distanceMm);return d;}
   exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions[this.region].navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(this.region==='river'&&dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
@@ -292,7 +304,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
+    this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
     this.regionRoot.traverse(node => {
@@ -308,7 +320,7 @@ export class World {
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
     this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
-    this.coastalView=null;this.coastalFocus=null;this.region = region;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
+    this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
       const b = (w:number,h:number,d:number,c:string,x:number,y:number,z:number) => { this.box(this.regionRoot,w,h,d,c,x,y,z,true); };
@@ -340,6 +352,7 @@ export class World {
         this.npcs.push({id:'coastLestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
         this.npcLabels.set('coastLestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'coastLestari'));
       }});
+      this.pressureView=buildPressureWorld(this.regionRoot);
       this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13.5,0,8),new THREE.Vector3(-8.5,3,12))];
     }
     else if(region==='river'){
@@ -392,6 +405,7 @@ export class World {
   }
   waterGarden(group: Group) { this.gardenView?.water(group); }
   goTo(p: Point, onArrive?: () => void) {
+    if(this.rov.active)return false;
     const path = findPath(this.position, p, this.navigation);
     if (!path.length) return false;
     if(this.boat.aboard)this.boat.start();
@@ -403,8 +417,8 @@ export class World {
     this.move = this.boat.aboard&&!this.boat.enabled?{x:0,z:0}:input;
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
-  stop(resetRun = true) { this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() {this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  stop(resetRun = true) { this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
+  resetPosition() {this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -417,16 +431,18 @@ export class World {
   setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
   endInteraction() { this.coastalFocus=null; this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
   setTrial(done: boolean) { this.barrier.visible = done && this.region === 'town'; }
-  pick(clientX: number, clientY: number): { place?: PlaceId; point?: Point } {
+  pick(clientX: number, clientY: number): { rovPoint?:PressurePoint;place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), this.camera);
     const objects = this.ray.intersectObjects(this.scene.children, true);
+    if(this.rov.active){const target=objects.find(o=>o.object.userData.rovPoint&&visibleForPicking(o.object));return target?{rovPoint:target.object.userData.rovPoint}:{};}
     const hit = objects.find(o => o.object.userData.place && visibleForPicking(o.object));
     if (hit) return { place: hit.object.userData.place as PlaceId };
     const point = this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), new THREE.Vector3());
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
+    if(this.rov.active)return null;
     if(this.boat.aboard){const d=this.boat.nearby(this.position);return d?this.boat.docks[d].place:null;}
     let nearest: PlaceId | null = null, distance: number = this.interactionRadius;
     for (const p of this.places) {
@@ -448,7 +464,8 @@ export class World {
     this.onRiverFrame(dt,!document.hidden&&document.hasFocus());
     if(this.fishingSession?.active){const phase=this.fishingSession.phase;this.playerAnimator.fishingCast=Math.min(1,this.fishingSession.elapsed/.8);this.playerAnimator.setPose(phase==='casting'?'fishCast':phase==='observing'||phase==='released'?'fishPull':'fishWait');}
     let travelled = 0, dx = 0, dz = 0;
-    if (!this.paused) {
+    if(!this.paused&&this.rov.active)this.rov.step(this.move,this.yaw+pressureConfig.cameraYawOffset,dt);
+    if (!this.paused&&!this.rov.active) {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
@@ -495,8 +512,13 @@ export class World {
     this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
     if(this.energyFocus==='solar')this.energyCameraPoint.set(-12,.7,-25.2);else if(this.energyFocus==='wind')this.energyCameraPoint.set(-4,1.7,-25.7);else if(this.energyFocus==='battery')this.energyCameraPoint.set(4,.6,-25.7);else this.energyCameraPoint.set(29,.6,-25.7);
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:1;
     this.followCamera.inspectionWidth=this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    this.followCamera.update(this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    this.followCamera.update(this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    this.onPressureFrame(dt,this.region==='coast'&&!document.hidden&&document.hasFocus());
+    this.pressureView?.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.rov);
+    if(this.rov.active){(this.scene.background as THREE.Color).set('#86b7b6');const f=this.scene.fog as THREE.Fog;f.color.set('#86b7b6');f.near=8;f.far=38;}
+    this.canvas.dataset.rovActive=String(this.rov.active);this.canvas.dataset.rovDepth=this.rov.depth.toFixed(3);this.canvas.dataset.rovTarget=this.rov.targetDepth.toFixed(3);this.canvas.dataset.rovX=this.rov.position.x.toFixed(3);this.canvas.dataset.rovZ=this.rov.position.z.toFixed(3);this.canvas.dataset.rovY=this.rov.position.y.toFixed(3);this.canvas.dataset.rovPressure=String(Math.round(waterPressurePa(Math.max(0,this.rov.depth))));this.canvas.dataset.rovStable=this.rov.stable??'';this.canvas.dataset.rovMoving=String(this.rov.moving);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
     this.canvas.dataset.x = this.position.x.toFixed(2); this.canvas.dataset.z = this.position.z.toFixed(2);
@@ -526,7 +548,7 @@ export class World {
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
-      label.visible=!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
+      label.visible=!this.rov.active&&!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);

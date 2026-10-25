@@ -29,6 +29,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
       return;
     }
     const key = e.key.toLowerCase();
+    if(world.rov.active&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.rovDepth(e.code==='Space'?-1:1);return;}
     if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
       e.preventDefault(); if (!world.paused && (!e.repeat || keys.has(key))) { keys.add(key); refresh(); }
     }
@@ -80,7 +81,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
     cameraPointer = null;
     if (!dragged && !world.paused) tap(e.clientX, e.clientY);
   });
-  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; if(world.boat.aboard)clear(); });
+  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; if(world.boat.aboard||world.rov.active)clear(); });
   world.canvas.addEventListener('lostpointercapture', e => { if (e.pointerId === cameraPointer) cameraPointer = null; });
   return clear;
 }

@@ -7,6 +7,7 @@ export const cameraDistances: Record<CameraDistance, number> = { near: 8.5, norm
 
 export class FollowCamera {
   distance: CameraDistance = 'normal';
+  targetHeight:number=characterConfig.cameraTargetHeight;distanceScale=1;
   yaw = .25;
   pitch = .46;
   safeDistance = cameraDistances.normal;
@@ -56,10 +57,10 @@ export class FollowCamera {
     this.shiftY = reducedMotion || immediate ? shiftY : damp(this.shiftY, shiftY, 8, dt);
     this.camera.setViewOffset(this.width, this.height, this.shiftX, this.shiftY, this.width, this.height);
     // Follow the stable world root, not the animated torso/head.
-    this.target.copy(position); this.target.y += characterConfig.cameraTargetHeight;
+    this.target.copy(position); this.target.y += this.targetHeight;
     const angle = this.yaw + this.interactionYaw;
     this.offset.set(Math.sin(angle) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(angle) * Math.cos(this.pitch));
-    const requested = Math.max(cameraDistances[this.distance], this.inspectionWidth / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.aspect) * (wide ? 1.8 : 1.1));
+    const requested = Math.max(cameraDistances[this.distance]*this.distanceScale, this.inspectionWidth / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.aspect) * (wide ? 1.8 : 1.1));
     this.safeDistance = this.clearance(this.offset, requested);
     this.currentDistance = immediate || this.safeDistance < this.currentDistance ? this.safeDistance : damp(this.currentDistance, this.safeDistance, 5, dt);
     this.desired.copy(this.target).addScaledVector(this.offset, this.currentDistance);

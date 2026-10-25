@@ -1,5 +1,7 @@
 # W05 / S16 — Jaring Kehidupan Pesisir
 
+Catatan pembaruan: ROV dan M16-E1 kini tersedia sebagai episode terpisah; lihat [Ekspedisi Tekanan Bawah Air](underwater-pressure-review.md). Batas fitur dan format cadangan di bawah mencatat serah terima S16 (v10); format mutakhir adalah v11 yang tetap menerima v1–v10.
+
 Implementasi pada branch terbaru sesudah M17-E3 (`1c308f2`), 25 Oktober 2026. Tidak ditemukan AGENTS.md. Acuan: W05, hubungan Sungai–Pesisir, dan S16 pada rancangan. Episode ini tidak membuka penyelaman bebas, M16, M05, atau M06.
 
 ## Cara bermain

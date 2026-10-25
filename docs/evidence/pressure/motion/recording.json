@@ -1,0 +1,24 @@
+{
+  "browser": "154.0.8037.57",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "frames": 543,
+  "seconds": 32.24353289604187,
+  "checkpoint": "ready-v11.json from the actual browser tutorial, with zero and tutorial recorded; no station measurements yet.",
+  "sequence": [
+    "launch from control post",
+    "navigate in 3D to A2/A4/A8/B4",
+    "explicitly stabilize, predict, read and confirm each result",
+    "cancel first preview to correct a prediction; initial attempt retained",
+    "return ROV to dock",
+    "inspect graph and separate A4/B4 readings"
+  ],
+  "note": "Continuous UI recording; no human diver, no second renderer. Not a physical-device FPS test.",
+  "errors": [],
+  "external": []
+}

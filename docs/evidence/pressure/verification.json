@@ -1,0 +1,154 @@
+{
+  "checkedAtUTC": "2026-10-25T20:43:22.769514+00:00",
+  "baseCommit": "9149c0c88f48181687fe8fc689f7f473e9bdb000",
+  "unit": {
+    "passed": 399,
+    "files": 15,
+    "newPressureTests": 46
+  },
+  "launcher": {
+    "passed": 14,
+    "platform": "Node/Linux; Windows BAT not executed"
+  },
+  "fullBrowser": {
+    "passed": 59,
+    "minutes": 30.1,
+    "beforeFinalDockVisibilityAndRovCameraRelativeInput": true
+  },
+  "subsequentRelevantBrowser": {
+    "passed": 8,
+    "minutes": 3.4,
+    "includesFourProductionViewports": true,
+    "beforeFinalRovCameraRelativeInput": true
+  },
+  "finalRovBrowser": {
+    "passed": 4,
+    "minutes": 2.7,
+    "modes": [
+      "IFP",
+      "laptop far camera/reduced motion",
+      "HP 390x844",
+      "HP 844x390"
+    ],
+    "manualDirectionMatchesVisibleCamera": true
+  },
+  "build": {
+    "typecheck": "passed",
+    "npmRunBuild": "passed",
+    "preparation": "passed",
+    "entrySHA256": {
+      "character.html": "499fb9df7bcd20684ecc51398e94984466fdce4719bfd9c60b53966e98add332",
+      "index.html": "b0263fe3237039a2fb09d5e79cdcea6cbeb007144d1d37aaffef779fd83756f0"
+    },
+    "bundleSHA256": {
+      "character-Bg-G2O_J.js": "71855fc660a6aaf50c8b4082c6fbb430b309bf50641781b48245f9286eb7bdd9",
+      "character-CfYXKLuO.js": "ea274c5113942a64302f15facdf8a5a9bc990ff865446c74461d13715efcc6af",
+      "game-tcN8lp6E.js": "98d2256a49ce5366365bf21399fe62e1a8ddf576f32e2853b874b036a2abf704"
+    }
+  },
+  "science": {
+    "densityKgM3": 1025,
+    "gravityMS2": 10,
+    "surfaceY": -0.175,
+    "sensorOffsetY": 0.12,
+    "records": [
+      {
+        "point": "A8",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 8000,
+        "pressurePa": 82000
+      },
+      {
+        "point": "B4",
+        "xMm": 13000,
+        "zMm": -7500,
+        "depthMm": 4000,
+        "pressurePa": 41000
+      },
+      {
+        "point": "A2",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 2000,
+        "pressurePa": 20500
+      },
+      {
+        "point": "A4",
+        "xMm": 7000,
+        "zMm": -5500,
+        "depthMm": 4000,
+        "pressurePa": 41000
+      }
+    ],
+    "relativeZero": true,
+    "absolutePressureNotModeled": true
+  },
+  "backup": {
+    "version": 11,
+    "supportedPreviousVersions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "missionCount": 11,
+    "reward": 50,
+    "answerAttempts": [
+      false,
+      true
+    ],
+    "M17Completed": [
+      true,
+      true,
+      true
+    ],
+    "M16Chapter": "Dalam pengembangan",
+    "S17AutoCompleted": false
+  },
+  "resourceCycles": {
+    "regionRoots": 1,
+    "geometries": [
+      104,
+      104,
+      104
+    ],
+    "physicalDevice": false
+  },
+  "media": {
+    "browser": "154.0.8037.57",
+    "productionBuild": true,
+    "physicalDevice": false,
+    "renderer": "Chromium WebGL2 SwiftShader",
+    "viewport": [
+      1440,
+      960
+    ],
+    "frames": 543,
+    "seconds": 32.24353289604187,
+    "checkpoint": "ready-v11.json from the actual browser tutorial, with zero and tutorial recorded; no station measurements yet.",
+    "sequence": [
+      "launch from control post",
+      "navigate in 3D to A2/A4/A8/B4",
+      "explicitly stabilize, predict, read and confirm each result",
+      "cancel first preview to correct a prediction; initial attempt retained",
+      "return ROV to dock",
+      "inspect graph and separate A4/B4 readings"
+    ],
+    "note": "Continuous UI recording; no human diver, no second renderer. Not a physical-device FPS test.",
+    "errors": [],
+    "external": []
+  },
+  "physicalDevices": {
+    "HP": false,
+    "IFP": false,
+    "WindowsBAT": false,
+    "LAN": false
+  }
+}
