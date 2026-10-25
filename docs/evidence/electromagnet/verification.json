@@ -1,0 +1,70 @@
+{
+  "checkedAtUTC": "2026-10-25T07:26:04.585206+00:00",
+  "baseCommit": "65ae7252577a6273b7d0636f5a9f88fff3d61510",
+  "unit": {
+    "passed": 257,
+    "files": 12,
+    "newEpisodeTests": 43
+  },
+  "launcher": {
+    "passed": 14,
+    "platform": "Linux Node; BAT not executed on Windows"
+  },
+  "fullBrowser": {
+    "passed": 47,
+    "minutes": 21.7,
+    "beforeFinalMaterialSelectionAndCablePresentationPolish": true
+  },
+  "finalBrowser": {
+    "passed": 8,
+    "minutes": 3.9,
+    "scope": [
+      "M17-E2 full IFP",
+      "laptop crane",
+      "HP portrait and landscape",
+      "production offline game/gallery in four viewports"
+    ]
+  },
+  "build": {
+    "command": "node scripts/local/prepare.mjs",
+    "promotedSafely": true,
+    "assetsSha256": {
+      "character.html": "27b9197b8989a0f026f59338dad92a0b647c5602682a500b00f302b22911d039",
+      "index.html": "ca33cd02de62523356070fa7b767bbb0fd0e77bd069018c55530250304aecca0",
+      "favicon.svg": "094d7ae4d2b40a2f3ab49d6cd02a7acd20f39086a3e540660642cf047f1c1c2f",
+      "assets/character-DkgOJJG_.js": "fe128088eed52ea0a754477ea33cbc9fdb6729e5b518b8d16aff33cc710682b0",
+      "assets/game-DxJiAPjj.css": "9fc0f8bfc82b6bdb7e53c2ddc52a9e271b3cf3291c98e96e1856d3160e0ad702",
+      "assets/character-DsxQkyDf.css": "572d7927a41fc3d92559ec8e1ee5de81c0b93a10ebe701276bd79a8c8233968d",
+      "assets/character-DraEpOXn.js": "74ba2b7f668a8a6522d66fdfc1ceb9b9a1a8a41403e26538fb7e64c36371f8f7",
+      "assets/game-Dlx_APWb.js": "fd1cd235ea699d6153e4e3a668488458c74be34a2d22a5fa810f24832811ea2a"
+    }
+  },
+  "finalEvidence": {
+    "E1Unchanged": true,
+    "materialOrder": [
+      "plastic",
+      "aluminium",
+      "copper",
+      "steel"
+    ],
+    "coilClips": [
+      2,
+      4,
+      6
+    ],
+    "delivered": 6,
+    "deliveries": [
+      4,
+      2
+    ],
+    "reward": 50,
+    "chapterM17": "Dalam pengembangan"
+  },
+  "videoSeconds": 12.036842107772827,
+  "physicalTests": {
+    "Windows": false,
+    "HP": false,
+    "IFP": false,
+    "LANFromOtherDevice": false
+  }
+}

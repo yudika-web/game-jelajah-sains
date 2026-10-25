@@ -1,6 +1,6 @@
 # W06 Bengkel dan Energi — M17-E1
 
-**Nyalakan Lampu Pos Riset** adalah episode pertama M17, dengan hadiah pertama **50 XP**. Bab M17 tetap **Dalam pengembangan**. Episode magnet dan sumber energi alternatif belum diimplementasikan.
+**Nyalakan Lampu Pos Riset** adalah episode pertama M17, dengan hadiah pertama **50 XP**. Bab M17 tetap **Dalam pengembangan**. Pada tahap E1, episode magnet belum tersedia. Kini [M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md) tersedia; energi alternatif masih belum tersedia. Angka pengujian dan format v7 di bawah adalah catatan tahap E1.
 
 ## Cara bermain
 
@@ -87,4 +87,4 @@ Tangkapan adalah browser, bukan perangkat fisik. Pengambilan ulang: `CAPTURE_WOR
 
 Belum diuji pada HP/IFP fisik, Windows BAT langsung, atau LAN antarperangkat. Simulasi viewport/multitouch browser bukan pengukuran FPS atau uji jangkauan tangan pada IFP kelas. Build masih memberi peringatan chunk bersama Three.js di atas 500 kB; build berhasil. Lampu memakai emisi/glow ringan, tanpa simulasi pencahayaan/arus fisik atau bayangan dinamis.
 
-Tahap berikutnya adalah telaah materi dan uji perangkat sasaran. Episode magnet dan energi alternatif belum tersedia dan tidak diberi status selesai oleh M17-E1. Tidak ada perluasan wilayah/misi lain pada patch ini.
+Tahap berikutnya adalah telaah materi dan uji perangkat sasaran. M17-E1 tidak menyelesaikan episode lain. Episode elektromagnet kini memiliki progres M17-E2 tersendiri; energi alternatif masih belum tersedia. Tidak ada perluasan wilayah/misi lain pada patch ini.

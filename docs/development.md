@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v6**, dengan enam misi; rincian mutakhir ada pada bagian W06/M17-E1.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v8**, dengan delapan misi/episode; rincian mutakhir ada pada bagian W06/M17-E1.
 
 ## Sumber dan keputusan implementasi
 
@@ -166,3 +166,14 @@ Tiga BAT di akar repository memanggil `scripts/local/prepare.mjs`, `launch.mjs`,
 Parser memutar ulang riwayat tindakan lalu mencocokkan status, pemeriksaan, sambungan, uji, kesimpulan, dan hadiah. Reset memiliki epoch baru dan mempertahankan hadiah pertama. Cadangan v7 menambah key M17-E1 di store saves yang tetap berskema IndexedDB 1. Impor v1–v6 mempertahankan episode yang tidak tercakup; impor trial v7 lebih lama tetap menggabungkan riwayat hadiah secara monoton. Bab M17 tidak memiliki flag completed dari episode ini: UI selalu menampilkan Dalam pengembangan.
 
 Panel `workshopUI.ts` mengikuti dialog samping/bawah lama. Perakitan dapat memakai dua terminal berurutan atau daftar pasangan, tanpa presisi drag. Keyboard, sentuh, dan ukuran IFP memakai kontrol proyek. Lihat [laporan pemeriksaan W06](workshop-circuit-review.md). Setelah kode final, gunakan jalur persiapan untuk memperbarui dist secara aman agar launcher klik ganda membuka build terbaru.
+
+
+## M17-E2 dan halaman daur ulang W06
+
+`electromagnetContent` memisahkan materi, dataset 2/4/6, enam ID, dan terminal. `electromagnetModel` mengevaluasi sumber/sakelar/lintasan tersendiri. `electromagnetMission` memeriksa prosedur dan bukti; parser memutar ulang riwayat, termasuk bukti hadiah pertama. `craneState` memegang transaksi benda, posisi, pengangkatan dan pengiriman. `electromagnetSession` memakai delta dari render loop World yang sama, tanpa listener/renderer baru. `electromagnetWorld` memvisualisasikan state; `electromagnetUI` mengelola panel dan instruksi.
+
+Batas W06 diperluas hingga x=33, titik pendekatan dan footprint sesuai meja/derek diuji antarsemua stasiun. Bay derek merupakan penghalang navigasi terbuka; kamera hanya memperhitungkan tiangnya, bukan kotak udara penuh. Saat panel derek terbuka, kamera yang sama membidik bay dengan sudut pengguna dan bingkai yang memuat lebar alat pada layar potret; preferensi jarak tetap, saat ditutup, kembali membidik pemain.
+
+IndexedDB tetap skema 1, store saves menambah key `M17-E2`. Cadangan **v8** menerima format **1–7**, mempertahankan episode yang tidak dicakup dan hadiah yang sudah diperoleh. Reload/import/keluar wilayah mengembalikan klip dibawa ke baki, mematikan sumber, dan menjaga yang sudah terkirim. Reset hanya episode ini. Status M17 tetap Dalam pengembangan; S11 tidak diselesaikan.
+
+Pemeriksaan dan bukti mutakhir: [workshop-electromagnet-review.md](workshop-electromagnet-review.md). Rekaman produksi dapat diulang dengan `node scripts/capture-electromagnet-evidence.mjs` setelah build dan pengambilan fixture browser. Peluncur harian tetap server statis localhost:5173; jalur persiapan mempromosikan build baru hanya setelah berhasil.

@@ -1,6 +1,8 @@
 # Jelajah Sains
 
-**W06 Bengkel dan Energi / M17-E1 — Nyalakan Lampu Pos Riset**: telusuri gangguan, lepaskan sumber, periksa kontinuitas, pasang kabel melalui terminal atau daftar, lalu uji lampu 3D. Episode ini memberi 50 XP sekali. **Bab M17 tetap Dalam pengembangan**; magnet dan sumber energi alternatif belum tersedia. [Cara bermain dan hasil pemeriksaan](docs/workshop-circuit-review.md).
+**W06 / M17-E2 — Derek Elektromagnet** kini dapat dimainkan: amati empat bahan, rakit alat, uji 20/40/60 lilitan, lalu pindahkan enam klip dengan derek 3D. Semua modul diterima, termasuk beberapa pengangkutan. Hadiah 50 XP sekali; M17 tetap **Dalam pengembangan**, S11 tidak otomatis selesai. [Cara bermain, bukti visual, dan batas model](docs/workshop-electromagnet-review.md).
+
+**W06 Bengkel dan Energi / M17-E1 — Nyalakan Lampu Pos Riset**: telusuri gangguan, lepaskan sumber, periksa kontinuitas, pasang kabel melalui terminal atau daftar, lalu uji lampu 3D. Episode ini memberi 50 XP sekali. **Bab M17 tetap Dalam pengembangan**; episode sumber energi alternatif belum tersedia. [Cara bermain dan hasil pemeriksaan](docs/workshop-circuit-review.md).
 
 **Perahu W04 dan S15 — Misteri Saluran Irigasi** sudah tersedia: kendali nyata tiga perangkat, dua dermaga, enam pengukuran sebelum/sesudah, pembersihan hambatan, jurnal, dan hadiah sekali. [Cara bermain, model aliran, pengujian dan cuplikan](docs/boat-irrigation-review.md).
 
@@ -14,7 +16,7 @@ Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, at
 
 Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Lima wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15**, serta **W06 Bengkel dan Energi / M17-E1**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Lima wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15**, serta **W06 Bengkel dan Energi / M17-E1 dan M17-E2**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
@@ -56,7 +58,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1. Ketujuhnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Keempat wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2. Kedelapannya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Keempat wilayah menyediakan gerbang kembali ke Kota; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -69,6 +71,7 @@ Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Mi
 | Memancing W04 | E di titik; Tab/Enter pada Mulai, Tarik, Catat dan lepaskan | Tombol besar tanpa drag atau reaksi cepat | Pilih A/B di Peta, lalu tombol memancing |
 | Berenang (kolam) | WASD / panah; masuk/keluar ramp | Analog dan kamera terpisah | Pilih penanda/ramp di Peta; Kembali ke Tepian |
 | Perahu | Naik → Mulai; WASD/panah, Shift; E di dermaga | Analog, kamera dua jari; Pelan/Jelajah | Pilih dermaga di Peta atau ketuk air sah; Sandar → Turun |
+| Derek M17-E2 | Tab/Enter; terminal atau daftar; tujuan tetap | Tombol besar dan daftar pasangan | Peta stasiun, lalu tujuan derek tetap |
 | Merakit M17-E1 | Tab/panah/Enter atau pilih dua terminal | Ketuk terminal atau daftar pasangan | Pilih lokasi di Peta lalu terminal/daftar |
 | Jeda | Esc / Pengaturan | Pengaturan | Pengaturan |
 
@@ -137,6 +140,18 @@ Setiap pengukuran **30 detik simulasi dipercepat** dengan alat **12 L**: sebelum
 
 Perahu Pelan **3,5** / Jelajah **5,0 unit/detik**, dengan lambung beradius konservatif 1,65. Ini angka kendali, bukan data eksperimen. Naik dan turun hanya pada titik sandar sah. Berhenti dan Kembali ke Dermaga selalu tersedia saat naik; pemulihan tidak mengurangi bukti/XP. Reload kembali ke pos darat dan perahu di dermaga awal. Renang tetap hanya kolam, bukan seluruh sungai. Reset S15 terpisah dan hadiah pertama 50 XP tidak berulang. [Laporan lengkap](docs/boat-irrigation-review.md).
 
+## Menuntaskan M17-E2 — Derek Elektromagnet
+
+1. Masuk Bengkel dari gerbang Kota. Pilih **M17-E2**, temui Kak Bima, lalu baca Buku magnet dan Catatan elektromagnet di halaman daur ulang.
+2. Di meja bahan, simpan prediksi setiap benda. Jalankan magnet, amati gerakan, lalu catat hasil. Hanya klip baja terangkat pada kondisi model ini.
+3. Di rak komponen, pilih rencana yang mengubah lilitan dengan arus dan kondisi lain tetap. Pasang inti dan modul 20 saat sumber mati. Hubungkan **I+–S1, S2–C1, C2–I−**, melalui dua terminal atau daftar pasangan. Periksa rangkaian.
+4. Di stasiun kumparan, gerakkan kepala, nyalakan sumber, amati, **Catat hasil**, lalu matikan dan kembalikan klip. Ulangi untuk 40 dan 60 lilitan. Modul belum diuji tetap bertuliskan **Belum diuji**.
+5. Di derek, pilih modul dari bukti lalu periksa. **Turunkan → Magnet ON → Angkat → Ke Penampung → Turunkan → Magnet OFF**. Kembali ke baki untuk muatan berikutnya. Modul 20/40/60 memerlukan 3/2/1 pengangkutan pada rute sederhana.
+6. **Berhenti** membekukan gerakan. **Pulihkan Derek** mengembalikan muatan belum terkirim ke baki. Reload mematikan alat dan mempertahankan klip terkirim serta hasil sah.
+7. Baca jurnal dan simpulkan bersama Kak Bima. Kesimpulan memerlukan empat bahan, tiga uji, dan enam klip terkirim. Reset meminta konfirmasi dan mempertahankan hadiah pertama.
+
+Model menjaga arus **0,2 A**, memakai inti dan bentuk kumparan sama. Hasil **2/4/6 klip** adalah dataset buatan; bukan hukum alat nyata atau bukti efisiensi energi. Baterai biasa tidak otomatis menjaga arus tetap. Kegiatan seluruhnya virtual, bukan petunjuk listrik rumah. Panel mendukung Tab, panah pada pilihan, Enter, dan sentuhan; tujuan derek tetap tanpa drag presisi.
+
 ## Menuntaskan M17-E1 — Nyalakan Lampu Pos Riset
 
 1. Dari Kota, pilih **Ke Bengkel dan Energi** pada Peta. Masuk W06, temui Kak Bima, dan terima episode.
@@ -151,9 +166,9 @@ Semua tindakan perlu mendekati objek; Peta dan kartu misi menyediakan perjalanan
 
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Ketujuh misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kedelapan misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 7** berisi tujuh episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Semua versi 1–6 yang tidak memuat M17-E1 mempertahankan episode tersebut. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 8** berisi delapan episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup, dan semua episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -199,8 +214,15 @@ src/
   game/riverMission.ts  aturan sampling, catatan atomik dan validasi S13
   game/fishingSession.ts state memancing sementara, tanpa timer tambahan
   game/riverUI.ts       kegiatan memancing, kartu, jurnal, tabel dan diagram
-  game/gameState.ts     keadaan wilayah, cadangan v6 dan kompatibilitas v1–v5
-  game/storage.ts       transaksi IndexedDB atomik tujuh misi/episode
+  game/gameState.ts     keadaan wilayah, cadangan v8 dan kompatibilitas v1–v7
+  data/electromagnetContent.ts dataset, enam ID klip, materi, terminal
+  game/electromagnetModel.ts rangkaian alat terpisah dari M17-E1
+  game/electromagnetUI.ts panel perakitan, pengujian dan jurnal
+  game/electromagnetSession.ts animasi dari loop World yang sama
+  game/electromagnetMission.ts  aturan, bukti, parser M17-E2
+  game/craneState.ts    transaksi enam klip dan state derek
+  engine/electromagnetWorld.ts  model dan animasi lokal
+  game/storage.ts       transaksi IndexedDB atomik delapan misi/episode
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -215,10 +237,11 @@ scripts/capture-garden-evidence.mjs     bukti tambahan Kebun pada build produksi
 scripts/capture-block-avatar.mjs        bukti karakter/proporsi pada kamera pembanding
 scripts/capture-swimming-evidence.mjs  cuplikan ramp, berenang, pemulihan
 scripts/capture-boat-evidence.mjs      cuplikan naik, berlayar, sandar, turun
+scripts/capture-electromagnet-evidence.mjs cuplikan derek produksi
 ```
 
 Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustaka dibundel. Bundle produksi tidak memerlukan internet setelah disajikan oleh server lokal. Belum ada service worker/PWA: membuka berkas `index.html` langsung melalui `file://` bukan cara menjalankan yang didukung.
 
 ## Batas prototipe
 
-Belum mencakup wilayah di luar empat wilayah ini, lompat/menyelam, berenang di luar kolam, kendaraan selain gerobak/perahu, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.
+Belum mencakup wilayah di luar lima wilayah ini, lompat/menyelam, berenang di luar kolam, kendaraan selain gerobak/perahu, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.

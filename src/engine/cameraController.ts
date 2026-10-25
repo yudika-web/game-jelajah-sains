@@ -12,6 +12,7 @@ export class FollowCamera {
   safeDistance = cameraDistances.normal;
   interactionFraming = false;
   interactionYaw = 0;
+  inspectionWidth = 0; // Optional apparatus framing; exploration preferences remain unchanged.
   private target = new THREE.Vector3();
   private offset = new THREE.Vector3();
   private desired = new THREE.Vector3();
@@ -58,7 +59,7 @@ export class FollowCamera {
     this.target.copy(position); this.target.y += characterConfig.cameraTargetHeight;
     const angle = this.yaw + this.interactionYaw;
     this.offset.set(Math.sin(angle) * Math.cos(this.pitch), Math.sin(this.pitch), Math.cos(angle) * Math.cos(this.pitch));
-    const requested = cameraDistances[this.distance];
+    const requested = Math.max(cameraDistances[this.distance], this.inspectionWidth / (2 * Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2)) * this.camera.aspect) * (wide ? 1.8 : 1.1));
     this.safeDistance = this.clearance(this.offset, requested);
     this.currentDistance = immediate || this.safeDistance < this.currentDistance ? this.safeDistance : damp(this.currentDistance, this.safeDistance, 5, dt);
     this.desired.copy(this.target).addScaledVector(this.offset, this.currentDistance);

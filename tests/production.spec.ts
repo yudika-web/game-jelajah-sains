@@ -1,3 +1,4 @@
+import {finishedMagnet} from './helpers/electromagnet';
 import {finishedWorkshop} from './helpers/workshop';
 import { test, expect } from '@playwright/test';
 import { createStaticServer } from '../scripts/local/static-server.mjs';
@@ -34,13 +35,13 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await expect(page.locator('#start')).not.toBeVisible();
     // Existing six-mission progress plus completed M17-E1 is loaded from IndexedDB at the production origin, then
     // checked across a real gallery round trip. The server never reads the DB.
-    const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),world:{region:'workshop',activeMission:'M17-E1'}};
+    const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),'M17-E2':finishedMagnet(),world:{region:'workshop',activeMission:'M17-E1'}};
     await page.evaluate(async save => {
       await new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('jelajah-sains', 1);
         request.onsuccess = () => {
           const db = request.result, tx = db.transaction('saves', 'readwrite');
-          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1'].includes(key))) tx.objectStore('saves').put(value, key);
+          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1','M17-E2'].includes(key))) tx.objectStore('saves').put(value, key);
           tx.objectStore('saves').put(save.world, 'world');
           tx.oncomplete = () => { db.close(); resolve(); }; tx.onerror = () => reject(tx.error);
         }; request.onerror = () => reject(request.error);

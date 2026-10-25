@@ -1,0 +1,23 @@
+{
+  "browser": "154.0.8037.57",
+  "physicalDevice": false,
+  "productionBuild": true,
+  "renderer": "Chromium WebGL 2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "frames": 190,
+  "seconds": 12.036842107772827,
+  "sequence": [
+    "lower to tray",
+    "magnet ON: six stable clips",
+    "raise",
+    "move loaded head to bin",
+    "lower",
+    "magnet OFF: six clips delivered",
+    "raise empty"
+  ],
+  "note": "Starts from the three actual browser-recorded coil trials. All transport uses UI controls. Capture cadence is not a physical-device FPS benchmark.",
+  "errors": []
+}
