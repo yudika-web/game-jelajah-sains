@@ -1,3 +1,4 @@
+import {buildResearchBoat} from './boatModel';
 import * as THREE from 'three';
 import { docks,boatConfig } from '../data/boatRegion';
 import type { BoatController } from './boatController';
@@ -29,14 +30,7 @@ export function buildIrrigation(root:THREE.Group,b:(w:number,h:number,d:number,c
   if(['flowBook','irrigationNotes'].includes(p.id))b(.65,.08,.4,'#f7e9c4',p.x,1.8,p.z-.7);
   if(p.id==='cleaningRack'){b(.9,.1,.5,'#a48050',p.x,.9,p.z-.6);b(.09,1,.09,'#b99861',p.x,.95,p.z-.6);b(.45,.1,.15,'#687e70',p.x,1.45,p.z-.6);}
  }
- // Open-topped hull: bow, side rails, floor, bench and handle. Circumscribed radius below 1.65.
- const boat=new THREE.Group();boat.name='research-boat';root.add(boat);
- box(boat,1.65,.18,2.45,'#577f7e',0,-.16,0);box(boat,1.5,.1,2.20,'#bd9a65',0,-.02,0);
- for(const x of [-.85,.85])box(boat,.16,.62,2.5,'#548a8b',x,.14,0);
- for(const z of [-1.24,1.24])box(boat,1.85,.62,.13,'#548a8b',0,.14,z);
- box(boat,1.45,.16,.43,'#9f794e',0,.58,-.06);
- for(const x of [-.44,.44])box(boat,.07,.60,.07,'#586760',x,.54,.35);
- box(boat,.96,.07,.07,'#d2b477',0,.84,.35);
+ const boat=buildResearchBoat(root);
  const sampler=new THREE.Group();root.add(sampler);sampler.visible=false;
  box(sampler,.90,1.2,.80,'#74999d',0,.60,0);const water=box(sampler,.70,.02,.025,'#7ecddd',0,.1,.42);
  for(let i=0;i<=6;i++)box(sampler,i%3===0?.55:.30,.025,.025,'#fff2c7',0,.10+i*.16,.43);

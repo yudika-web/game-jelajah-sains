@@ -1,0 +1,126 @@
+{
+  "checkedAtUTC": "2026-10-25T14:20:45.711976+00:00",
+  "baseCommit": "1c308f295301b485c0bd88aa3f23077a2518768c",
+  "unit": {
+    "passed": 353,
+    "files": 14,
+    "newS16Tests": 37,
+    "additionalRegionMovementTests": 2
+  },
+  "launcher": {
+    "passed": 14,
+    "platform": "Node/Linux; BAT not executed on Windows"
+  },
+  "fullBrowser": {
+    "passed": 55,
+    "minutes": 27.8,
+    "newS16Cases": 4,
+    "productionViewports": [
+      [
+        1280,
+        900
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1920,
+        1080
+      ]
+    ],
+    "offlineAssets": true,
+    "savedMissionCount": 10
+  },
+  "build": {
+    "npmRunBuild": "passed",
+    "preparation": "passed",
+    "entrySHA256": {
+      "character.html": "8e9d55cedd5a3dc897a19ddeabe9b34f81b9c19696a1cb03bec63f3936c60d10",
+      "index.html": "ea9bd9789d36fa475d3335c481714f37df94deb5f5e0919d4140f530a313d84d"
+    },
+    "bundleSHA256": {
+      "game-U8SoNhCO.js": "28a7f5719753de2d401499a4e5169e1dac4d574c3b6d3d6c222e40c4c8e5379c",
+      "character-D3YlC7C_.js": "8f9ac0886f99cc78f79dcd8405f60af07be24fe6abe828a4f65102b8f659e748",
+      "character-qcFvXLxX.js": "18bf7c5ebe3bc642313320893bbd56cead88751752d1d4f43c343b53e3123150"
+    }
+  },
+  "backup": {
+    "version": 10,
+    "supportedPreviousVersions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "missionCount": 10,
+    "organismIds": [
+      "phyto",
+      "zoo",
+      "grazer",
+      "hunter",
+      "predator"
+    ],
+    "linkCount": 5,
+    "wrongThenCorrectConclusion": [
+      false,
+      true
+    ],
+    "completed": true,
+    "reward": 50,
+    "m17Completed": [
+      true,
+      true,
+      true
+    ]
+  },
+  "resourceCycles": {
+    "regionRoots": 1,
+    "geometries": [
+      70,
+      70,
+      70
+    ],
+    "physicalDevice": false
+  },
+  "media": {
+    "browser": "154.0.8037.57",
+    "productionBuild": true,
+    "physicalDevice": false,
+    "renderer": "Chromium WebGL 2 SwiftShader",
+    "viewport": [
+      1440,
+      960
+    ],
+    "frames": 329,
+    "seconds": 22.49328589439392,
+    "checkpoint": "Browser-tested completed-v10.json; this records exploration of the completed episode, not a fresh completion.",
+    "sequence": [
+      "boarded local coastal boat",
+      "real water navigation to observation dock",
+      "moor and exit",
+      "predator specimen beneath the sea surface",
+      "recover boat to beach dock",
+      "underwater observation window",
+      "food web disturbance case"
+    ],
+    "note": "One continuous recording. Recovery uses the explicit Kembali ke Dermaga control. No physical-device performance claims.",
+    "errors": [],
+    "external": []
+  },
+  "physicalDevices": {
+    "HP": false,
+    "IFP": false,
+    "WindowsBAT": false,
+    "LAN": false
+  }
+}

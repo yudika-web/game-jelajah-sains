@@ -1,3 +1,7 @@
+import {buildCoastal} from './coastalWorld';
+import {coastalDocks,coastalBoatNavigation} from '../data/coastalRegion';
+import type {OrganismId} from '../data/coastalContent';
+import type {CoastalProgress} from '../game/coastalMission';
 import {buildEnergy,type EnergyView} from './energyWorld';
 import {initialEnergy,type EnergyProgress} from '../game/energyMission';
 import {buildElectromagnet,type ElectromagnetView} from './electromagnetWorld';
@@ -8,7 +12,7 @@ import type {WorkshopProgress} from '../game/workshopMission';
 import {poolSwimmingNavigation,entersPool,exitsPool,poolExit,poolMarker,swimSpeeds} from '../data/poolRegion';
 import type {BuoyancyTrial} from '../game/buoyancyTrial';
 import { BoatController } from './boatController';
-import { boatConfig,boatNavigation,docks,nearbyDock,type DockId } from '../data/boatRegion';
+import { boatConfig,boatNavigation,docks,type DockId } from '../data/boatRegion';
 import type { IrrigationProgress } from '../game/irrigationMission';
 import type { FlowSampling } from '../game/flowSampling';
 import { buildRiver, type RiverView } from './riverWorld';
@@ -64,7 +68,7 @@ export class World {
   onArrive: (() => void) | null = null;
   onUpdate: (near: PlaceId | null) => void = () => {};
   region: RegionId = 'town';
-  private regionRoot = new THREE.Group();
+  private regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});private regionDisposals=0;
   swimming=false;private swimDistance=0;
   onSwimPractice:()=>void=()=>{};onBuoyancyFrame:(dt:number,active:boolean)=>void=()=>{};private buoyancyTrial:BuoyancyTrial|null=null;
   setBuoyancyTrial(t:BuoyancyTrial|null){this.buoyancyTrial=t;}
@@ -78,12 +82,15 @@ export class World {
   setFlowSampling(s:FlowSampling|null){this.flowSampling=s;}
   setIrrigation(p:IrrigationProgress){this.riverView?.irrigation.update(p);this.canvas.dataset.screenCleaned=String(p.cleaned);}
   private boatAppearance(active:boolean){this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const obj=this.player.getObjectByName(name);if(obj)obj.visible=!active;}}
-  boardBoat(){if(this.region!=='river'||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;this.onBoatTutorial('board',0);return true;}
+  boardBoat(){if(!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
   startBoat(){if(!this.boat.start())return false;this.stop();this.boat.start();return true;}
-  moorBoat(){const d=this.boat.moor(this.position);if(!d)return null;this.stop();this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(d==='irrigation'&&this.boat.tripFrom==='research')this.onBoatTutorial('arrive',this.boat.distanceMm);return d;}
-  exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions.river.navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
-  recoverBoat(){this.stop();this.boat.recover();this.running=false;this.playerAnimator.boating=false;this.boatAppearance(false);this.flowSampling=null;if(this.region==='river')this.position.set(docks.research.land.x,0,docks.research.land.z);this.endInteraction();}
-  sailTo(dock:DockId,arrive?:()=>void){return this.boat.aboard&&this.goTo(docks[dock].water,arrive);}
+  moorBoat(){const d=this.boat.moor(this.position);if(!d)return null;this.stop();this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river'&&d==='irrigation'&&this.boat.tripFrom==='research')this.onBoatTutorial('arrive',this.boat.distanceMm);return d;}
+  exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions[this.region].navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(this.region==='river'&&dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
+  recoverBoat(){this.stop();this.boat.recover();this.running=false;this.playerAnimator.boating=false;this.boatAppearance(false);this.flowSampling=null;if(this.region==='river'||this.region==='coast')this.position.set(this.boat.docks.research.land.x,0,this.boat.docks.research.land.z);this.endInteraction();}
+  sailTo(dock:DockId,arrive?:()=>void){return this.boat.aboard&&this.goTo(this.boat.docks[dock].water,arrive);}
+  private coastalView:ReturnType<typeof buildCoastal>|null=null;
+  coastalFocus:OrganismId|null=null;private coastalCameraPoint=new THREE.Vector3();
+  setCoastal(p:CoastalProgress){this.coastalView?.update(p);this.canvas.dataset.coastRecords=String(p.records.length);this.canvas.dataset.coastLinks=String(p.links.length);this.canvas.dataset.coastScenario=String(p.scenario);}
   private energyView:EnergyView|null=null;private energyProgress=initialEnergy();
   energyFraction=0;energyFocus:'solar'|'wind'|'service'|'battery'|null=null;private energyCameraPoint=new THREE.Vector3();
   onEnergyFrame:(dt:number,active:boolean)=>void=()=>{};
@@ -115,7 +122,7 @@ export class World {
   private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
   private gardenView: GardenView | null = null;
   get places() { return regions[this.region].places; }
-  get navigation() { if(this.boat.aboard)return boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
+  get navigation() { if(this.boat.aboard)return this.region==='coast'?coastalBoatNavigation:boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
   get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
   approach(id:PlaceId) {return this.pushing?rimbaCartConfig.approach:1.4;}
   canPushCart() {return this.region==='rimba'&&this.rimbaProgress.repaired&&Math.hypot(this.position.x-cartParking.x,this.position.z-cartParking.z)<3.25&&walkable(this.position,rimbaNavigation(this.rimbaProgress.cOpen,true));}
@@ -299,9 +306,9 @@ export class World {
       }
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
-    this.regionRoot.clear(); this.regionRoot = new THREE.Group(); this.scene.add(this.regionRoot);
+    this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
     this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
-    this.region = region; this.barrier.visible = false;
+    this.coastalView=null;this.coastalFocus=null;this.region = region;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
       const b = (w:number,h:number,d:number,c:string,x:number,y:number,z:number) => { this.box(this.regionRoot,w,h,d,c,x,y,z,true); };
@@ -326,6 +333,15 @@ export class World {
       this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-4.11,0,-26.81),new THREE.Vector3(-3.89,4.4,-26.59)));
       for(const x of [21.9,30.1])this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(x-.15,0,-8.4),new THREE.Vector3(x+.15,3.8,-8)));
     }
+    else if(region==='coast'){
+      const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.coastalView=buildCoastal({root:this.regionRoot,box:b,label:(...args)=>{this.label(...args);},npc:(x,z)=>{
+        const rig=createCharacter('lestari','coastLestari');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);
+        this.npcs.push({id:'coastLestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
+        this.npcLabels.set('coastLestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'coastLestari'));
+      }});
+      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13.5,0,8),new THREE.Vector3(-8.5,3,12))];
+    }
     else if(region==='river'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
       this.riverView=buildRiver({root:this.regionRoot,box:b,label:(...args)=>{this.label(...args);},npc:(x,z)=>{
@@ -346,8 +362,10 @@ export class World {
       this.rimbaView.update(this.rimbaProgress);
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
+    if(fromGate&&region==='river'&&previous==='coast')this.boat.recover();
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
     if(fromGate && region === 'town') { this.position.set(previous==='workshop'?-15:previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='workshop'?-3:previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    if(fromGate&&region==='river'&&previous==='coast'){this.position.set(0,0,12);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
   }
   private updateRimbaCamera() {
@@ -397,7 +415,7 @@ export class World {
     const npc = this.npcs.find(n => n.id === id); npc?.animator.greet();
   }
   setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
-  endInteraction() { this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
+  endInteraction() { this.coastalFocus=null; this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
   setTrial(done: boolean) { this.barrier.visible = done && this.region === 'town'; }
   pick(clientX: number, clientY: number): { place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
@@ -409,7 +427,7 @@ export class World {
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
-    if(this.boat.aboard){const d=nearbyDock(this.position);return d?docks[d].place:null;}
+    if(this.boat.aboard){const d=this.boat.nearby(this.position);return d?this.boat.docks[d].place:null;}
     let nearest: PlaceId | null = null, distance: number = this.interactionRadius;
     for (const p of this.places) {
       const d = Math.hypot(p.x - this.position.x, p.z - this.position.z);
@@ -469,14 +487,16 @@ export class World {
     this.electromagnetView?.frame(this.electromagnetProgress,this.electromagnetFraction);
     this.riverView?.pool.frame(this.buoyancyTrial);this.canvas.dataset.swimming=String(this.swimming);
     this.riverView?.irrigation.frame(this.boat,this.flowSampling);
+    this.coastalView?.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.boat);this.canvas.dataset.coastFocus=this.coastalFocus??'';
     this.canvas.dataset.boatAboard=String(this.boat.aboard);this.canvas.dataset.boatEnabled=String(this.boat.enabled);this.canvas.dataset.boatDock=this.boat.dock??'';this.canvas.dataset.boatDistance=String(this.boat.distanceMm);
     this.canvas.dataset.fishingPhase=this.fishingSession?.phase??'idle';
     this.canvas.dataset.rodVisible=String(this.playerRig.tools.rod.visible);
     this.rimbaView?.frame(this.position,this.player.rotation.y,travelled,this.pushing,this.reducedMotion);
     this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
     if(this.energyFocus==='solar')this.energyCameraPoint.set(-12,.7,-25.2);else if(this.energyFocus==='wind')this.energyCameraPoint.set(-4,1.7,-25.7);else if(this.energyFocus==='battery')this.energyCameraPoint.set(4,.6,-25.7);else this.energyCameraPoint.set(29,.6,-25.7);
-    this.followCamera.inspectionWidth=this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    this.followCamera.update(this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
+    this.followCamera.inspectionWidth=this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
+    this.followCamera.update(this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
     this.canvas.dataset.x = this.position.x.toFixed(2); this.canvas.dataset.z = this.position.z.toFixed(2);
@@ -494,6 +514,7 @@ export class World {
       this.canvas.dataset.cameraDistance = this.cameraDistance;
       this.canvas.dataset.cameraYaw = this.yaw.toFixed(3);
       this.canvas.dataset.reducedMotion = String(this.reducedMotion);
+      this.canvas.dataset.regionRoots=String(this.scene.children.filter(o=>o.name==='active-region').length);this.canvas.dataset.regionDisposals=String(this.regionDisposals);this.canvas.dataset.geometries=String(this.renderer.info.memory.geometries);this.canvas.dataset.textures=String(this.renderer.info.memory.textures);
       this.canvas.dataset.drawCalls = String(this.renderer.info.render.calls);
       this.canvas.dataset.triangles = String(this.renderer.info.render.triangles);
       for (const [id, label] of this.npcLabels) {
@@ -502,12 +523,12 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
-    if(this.region==='garden'||this.region==='rimba'||this.region==='river') for(const label of this.regionLabels) {
+    if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
       label.visible=!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
-      const width=Math.min(plant?.65:['sari','damar','lestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     this.gardenView?.frame(dt, this.reducedMotion);

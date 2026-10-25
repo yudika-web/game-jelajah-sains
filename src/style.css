@@ -432,3 +432,6 @@ body[data-mode=ifp] .crane-actions button { min-height: 64px; }
 .energy-plan-row {padding:12px 0;border-bottom:1px solid #dce2cf;display:grid;gap:8px}.energy-plan-row strong{font-size:14px}.energy-graph{width:100%;max-height:230px;background:#f2f3e8;border-radius:14px}.energy-interval-data{font-size:12px}.energy-interval-data td,.energy-interval-data th{padding:8px 4px}.energy-plan-row input{min-width:22px;min-height:22px}[data-energy-port][aria-pressed=true]{outline:3px solid #ba974e;background:#e5d8a8}
 
 .energy-graph{height:auto;aspect-ratio:360/170;display:block}.energy-camera-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.energy-camera-controls button{min-height:44px;font-size:12px}.energy-graph+figcaption{font-size:12px;line-height:1.5}
+
+/* S16 uses native controls and a shared dialog; no precision drag required. */
+.coast-web{margin:1rem 0;max-width:540px}.coast-web svg{width:100%;height:auto;aspect-ratio:360/350;display:block}.coast-web figcaption{font-size:.82rem;line-height:1.5}.coast-specimen{display:block;width:min(100%,280px);height:auto;aspect-ratio:280/100;margin:auto}.coast-organism-buttons{display:flex;gap:.5rem;flex-wrap:wrap}.coast-organism-buttons button{min-height:48px;flex:1 1 110px}#coast-records{min-width:440px}#coast-link-form select{min-height:48px}

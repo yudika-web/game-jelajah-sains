@@ -1,0 +1,25 @@
+{
+  "browser": "154.0.8037.57",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL 2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "frames": 329,
+  "seconds": 22.49328589439392,
+  "checkpoint": "Browser-tested completed-v10.json; this records exploration of the completed episode, not a fresh completion.",
+  "sequence": [
+    "boarded local coastal boat",
+    "real water navigation to observation dock",
+    "moor and exit",
+    "predator specimen beneath the sea surface",
+    "recover boat to beach dock",
+    "underwater observation window",
+    "food web disturbance case"
+  ],
+  "note": "One continuous recording. Recovery uses the explicit Kembali ke Dermaga control. No physical-device performance claims.",
+  "errors": [],
+  "external": []
+}

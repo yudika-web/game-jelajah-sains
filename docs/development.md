@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Wilayah terbaru tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v9**, dengan sembilan misi/episode; rincian mutakhir ada pada bagian M17-E3.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v10**, dengan sepuluh misi/episode; rincian mutakhir ada pada bagian S16.
 
 ## Sumber dan keputusan implementasi
 
@@ -186,3 +186,12 @@ Pemeriksaan dan bukti mutakhir: [workshop-electromagnet-review.md](workshop-elec
 W06 diperluas ke utara hingga z=-32; semua titik pendekatan lama/baru diuji antarstasiun. Konektor DC berpasangan mencakup jalur pergi/kembali dan pengatur yang cocok, sehingga episode berfokus pada sumber/penyimpan, bukan mengulang puzzle kabel panjang E1. Model E1/E2 dan catatan historisnya dipertahankan.
 
 Rekaman M17-E3 ditambahkan pada IndexedDB skema 1; cadangan v9 menerima v1–v8 dan mempertahankan episode yang tidak tercakup. Runtime dibatalkan saat reload, suplai dimatikan, tetapi energi dan interval sah tetap ada. Retry uji rencana memulai percobaan baru dari 2 Wh tanpa menghapus hasil awal. Rincian dan bukti: [workshop-energy-review.md](workshop-energy-review.md).
+
+
+## W05 / S16 — Pesisir
+
+`coastalContent.ts` memisahkan lima kelompok, lima hubungan berarah dan tiga kartu dari `coastalMission.ts` (transaksi bukti dan replay validator), `coastalRegion.ts` (wilayah/jalur), `coastalWorld.ts` (model dan animasi) dan `coastalUI.ts` (pengamatan, jurnal, papan dan kasus). Hanya loop World, FollowCamera, input dan HUD perahu lama yang dipakai. `BoatController.configure` memulihkan runtime kendaraan sebelum mengganti konfigurasi dermaga. `boatModel.ts` dipakai W04 dan W05.
+
+W05 dibagi tepian pantai dan titik predator, dihubungkan hanya dengan perahu. Navigasi darat membatasi laut; navigasi kendaraan memakai radius lambung 1,65 dan sweep gerakan lama. Pengamatan memerlukan jarak di darat, membuka specimen, memilih ciri/peran, lalu Catat. Kamera inspeksi sementara memakai target baru tanpa mengubah preferensi jarak. Pada reload dan transisi, kendaraan diparkir aman; sumber daya region lama dilepas, sementara geometri/material rig bersama tetap dilindungi.
+
+IndexedDB tetap skema 1, key S16 ditambahkan dalam transaksi sepuluh misi. Cadangan v10 menerima v1–v9; versi lama tidak menghapus S16. Validator mengulang riwayat untuk menolak pengamatan/tautan ganda, urutan bukti keliru, klaim selesai/hadiah tanpa bukti. Reset mempertahankan receipt hadiah pertama. Status M17 tetap berasal dari completed E1/E2/E3, terpisah dari S16. Laporan dan bukti: [coastal-foodweb-review.md](coastal-foodweb-review.md).

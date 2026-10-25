@@ -1,0 +1,9 @@
+{
+  "regionRoots": 1,
+  "geometries": [
+    70,
+    70,
+    70
+  ],
+  "physicalDevice": false
+}

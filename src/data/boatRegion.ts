@@ -1,6 +1,7 @@
 import type { Place } from './content';
 import type { NavigationArea,Point } from '../engine/navigation';
 export const boatConfig={walkSpeed:3.5,runSpeed:5,radius:1.65,dockTolerance:.5,minTutorialDistanceMm:8000} as const;
+export type BoatDocks=Record<'research'|'irrigation',{name:string;place:Place['id'];water:Point;land:Point;yaw:number}>;
 export const docks={
  research:{name:'Dermaga Riset',place:'boatStart',water:{x:8,z:13},land:{x:5,z:13},yaw:-Math.PI/2},
  irrigation:{name:'Dermaga Pengamatan',place:'boatObservation',water:{x:13,z:0},land:{x:17,z:0},yaw:Math.PI/2},

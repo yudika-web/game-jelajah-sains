@@ -4,6 +4,7 @@ import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const riverPlaces: Place[] = [
   ...poolPlaces,
+  {id:'riverCoastDock',name:'Dermaga keberangkatan ke Pesisir',short:'Ke Pesisir',action:'Berangkat',x:0,z:12,color:'#5eaaa8'},
   ...irrigationPlaces,
   {id:'lestari',name:'Kak Lestari · peneliti perairan',short:'Kak Lestari',action:'Bicara',x:-6,z:9,color:'#438e91'},
   {id:'rodRack',name:'Rak alat pancing pinjaman',short:'Alat pancing',action:'Pinjam',x:-2,z:8,color:'#b9975e'},
