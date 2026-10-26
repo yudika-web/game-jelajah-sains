@@ -1,3 +1,4 @@
+import {initialSolid,parseSolid,type SolidProgress} from './solidMission';
 import {initialHydraulic,parseHydraulic,type HydraulicProgress} from './hydraulicMission';
 import {initialPressure,parsePressure,type PressureProgress} from './pressureMission';
 import {initialCoastal,parseCoastal,type CoastalProgress} from './coastalMission';
@@ -11,23 +12,23 @@ import { initialProgress, parseProgress, type Progress } from './mission';
 import { initialGarden, parseGarden, type GardenProgress } from './gardenMission';
 import { initialRimba, parseRimba, type RimbaProgress } from './rimbaMission';
 export type RegionId = 'town' | 'garden' | 'rimba' | 'river' | 'coast' | 'workshop';
-export type MissionId = 'M01' | 'M14' | 'W03-LOG01' | 'S13' | 'S14' | 'S15' | 'M17-E1' | 'M17-E2' | 'M17-E3' | 'S16' | 'M16-E1' | 'M16-E2';
+export type MissionId = 'M01' | 'M14' | 'W03-LOG01' | 'S13' | 'S14' | 'S15' | 'M17-E1' | 'M17-E2' | 'M17-E3' | 'S16' | 'M16-E1' | 'M16-E2' | 'M16-E3';
 export interface TravelState { region: RegionId; activeMission: MissionId; }
-export interface GameState { M01: Progress; M14: GardenProgress; Rimba: RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; M17E1:WorkshopProgress; M17E2:ElectromagnetProgress; M17E3:EnergyProgress; S16:CoastalProgress; M16E1:PressureProgress; M16E2:HydraulicProgress; world: TravelState; }
-export interface Backup { version: 12; missions: { M01: Progress; M14: GardenProgress; 'W03-LOG01':RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; 'M17-E1':WorkshopProgress; 'M17-E2':ElectromagnetProgress; 'M17-E3':EnergyProgress; S16:CoastalProgress; 'M16-E1':PressureProgress; 'M16-E2':HydraulicProgress }; world: TravelState; }
-export const initialGame = (): GameState => ({ M01: initialProgress(), M14: initialGarden(), Rimba:initialRimba(), S13:initialRiver(), S14:initialBuoyancy(), S15:initialIrrigation(), M17E1:initialWorkshop(), M17E2:initialElectromagnet(), M17E3:initialEnergy(), S16:initialCoastal(), M16E1:initialPressure(), M16E2:initialHydraulic(), world: { region: 'town', activeMission: 'M01' } });
+export interface GameState { M01: Progress; M14: GardenProgress; Rimba: RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; M17E1:WorkshopProgress; M17E2:ElectromagnetProgress; M17E3:EnergyProgress; S16:CoastalProgress; M16E1:PressureProgress; M16E2:HydraulicProgress; M16E3:SolidProgress; world: TravelState; }
+export interface Backup { version: 13; missions: { M01: Progress; M14: GardenProgress; 'W03-LOG01':RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; 'M17-E1':WorkshopProgress; 'M17-E2':ElectromagnetProgress; 'M17-E3':EnergyProgress; S16:CoastalProgress; 'M16-E1':PressureProgress; 'M16-E2':HydraulicProgress; 'M16-E3':SolidProgress }; world: TravelState; }
+export const initialGame = (): GameState => ({ M01: initialProgress(), M14: initialGarden(), Rimba:initialRimba(), S13:initialRiver(), S14:initialBuoyancy(), S15:initialIrrigation(), M17E1:initialWorkshop(), M17E2:initialElectromagnet(), M17E3:initialEnergy(), S16:initialCoastal(), M16E1:initialPressure(), M16E2:initialHydraulic(), M16E3:initialSolid(), world: { region: 'town', activeMission: 'M01' } });
 export function parseTravel(raw: unknown): TravelState {
   if (!raw || typeof raw !== 'object') throw new Error('Keadaan wilayah tidak valid.');
   const w = raw as TravelState;
-  if (!['town', 'garden','rimba','river','coast','workshop'].includes(w.region) || !['M01', 'M14','W03-LOG01','S13','S14','S15','M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2'].includes(w.activeMission)) throw new Error('Keadaan wilayah tidak valid.');
+  if (!['town', 'garden','rimba','river','coast','workshop'].includes(w.region) || !['M01', 'M14','W03-LOG01','S13','S14','S15','M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2','M16-E3'].includes(w.activeMission)) throw new Error('Keadaan wilayah tidak valid.');
   return { region: w.region, activeMission: w.activeMission };
 }
-export function makeBackup(p: GameState): Backup { return structuredClone<Backup>({ version: 12, missions: { M01: p.M01, M14: p.M14, 'W03-LOG01':p.Rimba, S13:p.S13, S14:p.S14, S15:p.S15, 'M17-E1':p.M17E1,'M17-E2':p.M17E2,'M17-E3':p.M17E3, S16:p.S16, 'M16-E1':p.M16E1, 'M16-E2':p.M16E2 }, world: p.world }); }
-export function importBackup(raw: unknown, current: GameState): { game: GameState; scope: 'M01' | 'both' | 'three' | 'four' | 'five' | 'six' | 'seven' | 'eight' | 'nine' | 'ten' | 'eleven' | 'all' } {
+export function makeBackup(p: GameState): Backup { return structuredClone<Backup>({ version: 13, missions: { M01: p.M01, M14: p.M14, 'W03-LOG01':p.Rimba, S13:p.S13, S14:p.S14, S15:p.S15, 'M17-E1':p.M17E1,'M17-E2':p.M17E2,'M17-E3':p.M17E3, S16:p.S16, 'M16-E1':p.M16E1, 'M16-E2':p.M16E2, 'M16-E3':p.M16E3 }, world: p.world }); }
+export function importBackup(raw: unknown, current: GameState): { game: GameState; scope: 'M01' | 'both' | 'three' | 'four' | 'five' | 'six' | 'seven' | 'eight' | 'nine' | 'ten' | 'eleven' | 'twelve' | 'all' } {
   if (!raw || typeof raw !== 'object') throw new Error('Berkas bukan cadangan Jelajah Sains.');
   const b = raw as {version:number;missions?:Record<string,unknown>;world:unknown};
   if (b.version === 1) return { game: { ...structuredClone(current), M01: parseProgress(raw) }, scope: 'M01' };
-  if (![2,3,4,5,6,7,8,9,10,11,12].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
+  if (![2,3,4,5,6,7,8,9,10,11,12,13].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
   const garden = parseGarden(b.missions.M14);
   if (current.M14.reward === 100) {
     garden.reward = 100; garden.firstCompletedAt = current.M14.firstCompletedAt;
@@ -51,5 +52,7 @@ export function importBackup(raw: unknown, current: GameState): { game: GameStat
   if(current.M16E1.reward===50&&pressure.reward===0){pressure.reward=50;pressure.firstCompletedAt=current.M16E1.firstCompletedAt;pressure.rewardProof=structuredClone(current.M16E1.rewardProof);pressure.epoch=Math.max(pressure.epoch,current.M16E1.epoch,1);pressure.revision=pressure.epoch+pressure.history.length;}
   const hydraulic=b.version>=12?parseHydraulic(b.missions['M16-E2']):structuredClone(current.M16E2);
   if(current.M16E2.reward===50&&hydraulic.reward===0){hydraulic.reward=50;hydraulic.firstCompletedAt=current.M16E2.firstCompletedAt;hydraulic.rewardProof=structuredClone(current.M16E2.rewardProof);hydraulic.epoch=Math.max(hydraulic.epoch,current.M16E2.epoch,1);hydraulic.revision=hydraulic.epoch+hydraulic.history.length;}
-  return { game: { M01: parseProgress(b.missions.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':'all' };
+  const solid=b.version>=13?parseSolid(b.missions['M16-E3']):structuredClone(current.M16E3);
+  if(current.M16E3.reward===50&&solid.reward===0){solid.reward=50;solid.firstCompletedAt=current.M16E3.firstCompletedAt;solid.rewardProof=structuredClone(current.M16E3.rewardProof);solid.epoch=Math.max(solid.epoch,current.M16E3.epoch,1);solid.revision=solid.epoch+solid.history.length;}
+  return { game: { M01: parseProgress(b.missions.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), M16E3:parseSolid(solid), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':b.version===12?'twelve':'all' };
 }

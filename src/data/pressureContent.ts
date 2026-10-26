@@ -8,6 +8,6 @@ export const pressureCards={
  plan:{title:'Catatan Rencana Pengukuran',text:'Bandingkan kedalaman 2, 4, dan 8 meter di lokasi A. Setelah itu, bandingkan A4 dengan B4 yang sama-sama berkedalaman 4 meter. Pertahankan massa jenis dan kondisi air tenang. Jarak mendatar dari pantai bukan penentu tunggal tekanan. Stabilkan robot, baca indikator, lalu catat. Semua titik menggunakan sensor dan asumsi model yang sama.'},
 } as const;
 export type PressureSource=keyof typeof pressureCards;
-export const pressureNote='Model tekanan tambahan relatif terhadap permukaan, bukan tekanan absolut, kabin, atau tubuh manusia. Massa jenis tetap dan air tenang adalah asumsi latihan. M16-E1 dan M16-E2 tersedia; bab M16 masih dalam pengembangan; S17 tidak otomatis selesai.';
+export const pressureNote='Model tekanan tambahan relatif terhadap permukaan, bukan tekanan absolut, kabin, atau tubuh manusia. Massa jenis tetap dan air tenang adalah asumsi latihan. M16-E1, M16-E2 dan M16-E3 tersedia; bab M16 masih dalam pengembangan; S17 tidak otomatis selesai.';
 export const correctPressureAnswers={depth:'increases',double:'twice',same:'equal-depth',horizontal:'not-alone',assumption:'fixed-still'} as const;
 export type PressureAnswers=Record<keyof typeof correctPressureAnswers,string>;

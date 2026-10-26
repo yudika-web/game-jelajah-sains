@@ -1,0 +1,26 @@
+{
+  "checkedAtUTC": "2026-10-26T19:39:36.672Z",
+  "browser": "154.0.8037.57",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "frames": 395,
+  "seconds": 29.02530312538147,
+  "checkpoint": "prepared-v13.json from actual IFP gameplay: accepted, read sources, checked 400 N, measured A/B/C, selected contact area and C; no trial results.",
+  "sequence": [
+    "C/A/B initial trials with constant 400 N",
+    "observe and explicitly record every result",
+    "lift load and reset media before each replacement",
+    "A passes width but exceeds 6 kPa",
+    "C stops at width gate, load remains lifted, no pressure measurement",
+    "B passes both constraints",
+    "inspect journal"
+  ],
+  "note": "Continuous actual-UI production capture. Maket, not human narrow-path navigation. Not a physical-device FPS measurement.",
+  "errors": [],
+  "external": []
+}

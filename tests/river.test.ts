@@ -67,7 +67,7 @@ describe('S13 deterministic sampling and atomic release',()=>{
   const v2=JSON.parse(readFileSync(new URL('./fixtures/m01-m14-v2.json',import.meta.url),'utf8'));
   const v3=makeBackup(initialGame()) as any;v3.version=3;delete v3.missions.S13;
   for(const backup of [v1,v2,v3])expect(importBackup(backup,game).game.S13).toEqual(game.S13);
-  const v4=makeBackup(game);expect(v4.version).toBe(12);expect(importBackup(v4,initialGame()).game).toEqual(game);
+  const v4=makeBackup(game);expect(v4.version).toBe(13);expect(importBackup(v4,initialGame()).game).toEqual(game);
   const bad=structuredClone(v4);bad.missions.S13.records[0].group='flat';expect(()=>importBackup(bad,game)).toThrow();expect(game.S13.records[0].group).toBe('whiskered');
  });
  it('imports an actual pre-S13 v3 completed-cart fixture without losing S13 or its first reward',()=>{

@@ -1,7 +1,9 @@
+import {solidPlaces,solidObstacles} from './solidRegion';
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const cartParking = {x:2,z:8};
 export const rimbaPlaces: Place[] = [
+ ...solidPlaces,
   {id:'damar',name:'Pak Damar · penjaga hutan',short:'Pak Damar',action:'Bicara',x:-6,z:13,color:'#687c42'},
   {id:'forestMap',name:'Papan peta jalur aman',short:'Peta aman',action:'Baca peta',x:2,z:14,color:'#71916b'},
   {id:'capacityBook',name:'Buku Kapasitas dan Volume',short:'Kapasitas & volume',action:'Baca',x:-12,z:3,color:'#5d91a2'},
@@ -17,6 +19,7 @@ export const rimbaPlaces: Place[] = [
 ];
 export const forestTrees=[[-16,-10],[-15,-5],[-16,1],[-16,9],[-15,17],[16,-11],[15,-5],[16,3],[16,12],[7,18],[-8,-12],[-1,-12],[-3,18]];
 const obstacle = [
+ ...solidObstacles,
   {x:10.8,z:15,width:.3,depth:.3},{x:15.2,z:15,width:.3,depth:.3},
   {x:-6,z:13,width:.6,depth:.6},
   {x:-2,z:8,width:1.2,depth:.6},
@@ -31,7 +34,7 @@ const areas = new Map<string,NavigationArea>();
 for(const open of [false,true])for(const cart of [false,true]) {
   const extra=cart?rimbaCartConfig.radius-.45:0;
   areas.set(`${open}/${cart}`,{radius:cart?rimbaCartConfig.radius:.45,
-    bounds:{minX:-18+extra,maxX:18-extra,minZ:-14+extra,maxZ:19-extra},
+    bounds:{minX:-18+extra,maxX:18-extra,minZ:-14+extra,maxZ:37-extra},
     obstacles:[...obstacle,...(!open?[{x:5,z:-8,width:6,depth:4}]:[]),...(!cart?[{x:cartParking.x,z:cartParking.z-.85,width:1.4,depth:1.5}]:[])],
   });
 }

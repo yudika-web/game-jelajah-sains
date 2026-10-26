@@ -1,0 +1,28 @@
+{
+  "checkedAtUTC": "2026-10-26T19:39:03.412Z",
+  "productionBuild": true,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "77",
+      "textures": "25",
+      "disposals": "3",
+      "loads": "1"
+    },
+    {
+      "roots": "1",
+      "geometries": "77",
+      "textures": "25",
+      "disposals": "5",
+      "loads": "1"
+    },
+    {
+      "roots": "1",
+      "geometries": "77",
+      "textures": "25",
+      "disposals": "7",
+      "loads": "1"
+    }
+  ],
+  "note": "Three town/Rimba round trips. Object counts, not a physical-device performance benchmark."
+}

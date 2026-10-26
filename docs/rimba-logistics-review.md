@@ -1,5 +1,7 @@
 # W03 Rimba dan Gambut — Bantu Pos Rimba
 
+> Keadaan terkini menambahkan [M16-E3 Pijakan Aman Pos Rimba](solid-pressure-review.md), cadangan v13 dan key ketiga belas. Laporan di bawah mendokumentasikan tahap sebelumnya; aturan serta bukti historisnya dipertahankan.
+
 > Catatan tahap W03. Sejak penambahan W04/S13, format ekspor menjadi v4 dan tetap menerima v1–v3. Lihat [laporan S13](river-fishing-review.md) untuk keadaan terbaru; aturan logistik W03 tetap sama.
 
 Episode **W03-LOG01** mengimplementasikan bagian “Misi khusus dukungan pos kebakaran hutan” dan tahap prototipe pembuktian dalam [rancangan-game.md](rancangan-game.md). ID episode ini berdiri sendiri; identitas M01, M14, dan misi utama dalam rancangan dipertahankan.

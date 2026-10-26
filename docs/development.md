@@ -2,7 +2,7 @@
 
 Episode terbaru tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v12**, dengan dua belas misi/episode; rincian mutakhir ada pada bagian M16-E2.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v13**, dengan tiga belas misi/episode; rincian mutakhir ada pada bagian M16-E3.
 
 ## Sumber dan keputusan implementasi
 
@@ -217,3 +217,18 @@ Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara
 Batas W06 diperpanjang ke z=36, tanah, jalur, peta serta obstacle ikut diperbarui. Titik pendekatan seluruh stasiun baru dan lama diuji. RegionRoot lama tetap dibersihkan oleh World; aset karakter bersama tidak dilepas. Tidak ada wilayah atau misi baru selain episode ini.
 
 IndexedDB tetap skema 1 dengan key M16-E2. Ekspor v12 berisi dua belas misi; v1–v11 tetap diterima dan mempertahankan episode yang tidak dicakup. Reset episode mempertahankan receipt hadiah pertama; M16 tetap Dalam pengembangan dan status M17 hanya memakai completed E1/E2/E3. Lihat [hydraulic-lift-review.md](hydraulic-lift-review.md).
+
+
+## W03 / M16-E3 — Pijakan Aman Pos Rimba
+
+`solidContent.ts` menyimpan ukuran, gaya tetap 400 N, batas media 6 kPa, jalur 30 cm dan materi. `solidModel.ts` menghitung luas dari ukuran, konversi cm²/m², p=F/A dan Pa/kPa. Result untuk tantangan C memisahkan tekanan referensi dari `observedPressurePa=null`, karena tidak melewati gerbang dan tidak terjadi kontak.
+
+`solidMission.ts` memvalidasi penerimaan, tiga sumber, pemeriksaan gaya, ukuran A/B/C, variabel adil, pemasangan aman, prediksi, fase running/preview/observed/recorded serta reset media. `solidSession.ts` memakai delta World yang sama. Revisi menolak tindakan lama dan klik ganda. Parser mereplay bukti, menghitung hasil dari model, lalu membandingkan keadaan dan receipt hadiah pertama.
+
+`solidWorld.ts` membangun maket, tiga penopang ber-ID tetap yang berpindah dari rak, satu beban, baki, penggaris serta gerbang ukur. Panjang/lebar penopang dan jalur memakai faktor ×3. Gerbang menghalangi C sebelum sisi depannya menembus pengukur; bebannya tetap terangkat. Tidak ada penghalang navigasi manusia selebar 30 cm. Seluruh meja menjadi obstacle darat; kamera memakai tinggi meja untuk menghindari pembingkaian dari dalam obstacle bangunan. Warna memproyeksikan bidang kontak di atas penopang, tanpa mengubah luas data. Tidak ada simulasi deformasi tanah numerik.
+
+`solidUI.ts` memakai panel, input dan kamera yang sama. Seluruh langkah memakai tombol/daftar native, tanpa drag. Fokus/tab tersembunyi menghentikan presentasi; pembatalan, menu lain atau reload memulihkan beban dan media. Tidak ada loop/render/input kedua. Aset lokal dilepas bersama regionRoot Rimba.
+
+Rimba diperpanjang sampai z=37; tanah, jalur, pagar, peta dan obstacle ikut diperbarui. Batas utara area api dan aturan jalur C logistik tetap. Navigasi diuji dengan radius karakter dan gerobak, memakai titik awal yang sah untuk masing-masing. Aturan air, kecepatan gerobak dan W03-LOG01 tidak diubah.
+
+Key IndexedDB baru M16-E3 tetap pada skema 1, store saves. Cadangan v13 berisi tiga belas misi/episode dan menerima v1–v12, sambil mempertahankan misi baru yang tidak dicakup. Hadiah 50 XP sekali. M16 tetap Dalam pengembangan; M17 masih diturunkan hanya dari completed M17-E1/E2/E3. Lihat [solid-pressure-review.md](solid-pressure-review.md).

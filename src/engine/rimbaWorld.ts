@@ -22,8 +22,8 @@ export function buildRimba({root,box:b,label,npc}:Builder):RimbaView {
   b(42,.8,43,'#738361',0,-.45,1);b(29,.05,4,'#bcaa80',0,.01,7);
   b(4,.07,30,'#c5b38d',0,.02,0);b(26,.06,4,'#bcaa80',-1,.03,-1);
   b(16,.05,3,'#b4a77f',5,.02,-6);
-  for(const x of [-18.8,18.8])for(let z=-14;z<20;z+=2){b(.15,1,.15,'#6e5b40',x,.5,z);b(.12,.12,2.1,'#957e51',x,.75,z);}
-  for(const z of [-14.8,19.8])for(let x=-18;x<20;x+=2){b(.15,1,.15,'#6e5b40',x,.5,z);b(2.1,.12,.12,'#957e51',x,.75,z);}
+  for(const x of [-18.8,18.8])for(let z=-14;z<38;z+=2){b(.15,1,.15,'#6e5b40',x,.5,z);b(.12,.12,2.1,'#957e51',x,.75,z);}
+  for(const z of [-14.8,37.8])for(let x=-18;x<20;x+=2){b(.15,1,.15,'#6e5b40',x,.5,z);b(2.1,.12,.12,'#957e51',x,.75,z);}
   const zoneX=(depotZone.minX+depotZone.maxX)/2,zoneZ=(depotZone.minZ+depotZone.maxZ)/2;
   for(const z of [depotZone.minZ,depotZone.maxZ])b(depotZone.maxX-depotZone.minX,.018,.10,'#e9d994',zoneX,.08,z);
   for(const x of [depotZone.minX,depotZone.maxX])b(.10,.018,depotZone.maxZ-depotZone.minZ,'#e9d994',x,.08,zoneZ);
@@ -66,7 +66,7 @@ export function buildRimba({root,box:b,label,npc}:Builder):RimbaView {
   const wheels=[-.64,.64].map(x=>{const pivot=new THREE.Group();pivot.position.set(x,.32,.85);cart.add(pivot);const tire=mesh(new THREE.CylinderGeometry(.27,.27,.12,12),'#4b5047',0,0,0,pivot);tire.rotation.z=Math.PI/2;box(.14,.4,.07,'#c1b183',0,0,0,pivot);return pivot;});
   const broken=box(.45,.12,.28,'#bc965b',-.64,.18,1.13,cart);broken.rotation.z=.3;
   npc(-6,13);
-  for(const p of rimbaPlaces){if(p.id!=='damar')label(p.short,p.x,['forestSource'].includes(p.id)?2.9:2.5,p.z,p.id);const ring=mesh(new THREE.RingGeometry(.62,.72,20),p.color,p.x,.11,p.z);ring.rotation.x=-Math.PI/2;ring.userData.place=p.id;}
+  for(const p of rimbaPlaces.filter(p=>!p.id.startsWith('solid'))){if(p.id!=='damar')label(p.short,p.x,['forestSource'].includes(p.id)?2.9:2.5,p.z,p.id);const ring=mesh(new THREE.RingGeometry(.62,.72,20),p.color,p.x,.11,p.z);ring.rotation.x=-Math.PI/2;ring.userData.place=p.id;}
   for(const x of [10.8,15.2])b(.3,3.3,.3,'#816b47',x,1.65,15);
   b(4.8,.4,.4,'#5e7957',13,3.35,15);
   label('VERSI LATIHAN · JALUR AMAN',13,4.1,15,'forestTownGate',true);
