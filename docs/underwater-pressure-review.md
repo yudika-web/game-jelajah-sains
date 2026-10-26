@@ -1,5 +1,7 @@
 # W05 / M16-E1 — Ekspedisi Tekanan Bawah Air
 
+> Laporan historis tahap ROV. Tahap berikutnya menambahkan [M16-E2 hidraulik](hydraulic-lift-review.md), cadangan v12 dan key kedua belas tanpa mengubah data ROV. Bab M16 tetap Dalam pengembangan.
+
 Pengembangan sesudah W05/S16 (`9149c0c`), 26 Oktober 2026. Tidak ditemukan AGENTS.md. Rancangan M16 membahas tekanan zat padat, kedalaman, hidraulik dan gaya apung; tahap ini hanya episode tekanan air dengan ROV. **Bab M16 tetap Dalam pengembangan**. S17 tidak otomatis selesai dan tidak memperoleh hadiah tambahan.
 
 ## Cara bermain

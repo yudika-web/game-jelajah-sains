@@ -1,0 +1,26 @@
+{
+  "checkedAtUTC": "2026-10-26T10:27:09.495Z",
+  "browser": "154.0.8037.57",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "renderer": "Chromium WebGL2 SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "frames": 318,
+  "seconds": 31.389684915542603,
+  "checkpoint": "prepared-v12.json captured from real IFP browser gameplay: accepted, read sources, inspected load, selected variable and module; no experiment results.",
+  "sequence": [
+    "test A, B, C with actual SI travel of both pistons",
+    "observe and explicitly record every result",
+    "recover supported load before module change",
+    "challenge A blocked at 50 N",
+    "challenge C limited to 12 cm input / 3 cm output",
+    "challenge B reaches 5 cm",
+    "inspect journal"
+  ],
+  "note": "Continuous actual-UI recording from production. Not a physical-device FPS measurement.",
+  "errors": [],
+  "external": []
+}

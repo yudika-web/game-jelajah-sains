@@ -29,7 +29,7 @@ export function buildWorkshop({root,box:b,label,npc}:Builder):WorkshopView {
  b(.10,.08,.95,'#6b7773',5.1,1.03,1.725);
  const boardBulb=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),new THREE.MeshLambertMaterial({color:'#bbbca7',emissive:'#000000'}));boardBulb.position.set(5.1,1.18,1.725);boardBulb.name='circuit-board-bulb';root.add(boardBulb);
  const plug=mesh(.35,.17,.3,'#537b76',1.3,1.05,2.2);
- for(const p of workshopPlaces.filter(p=>p.x<16&&p.z>-16)){
+ for(const p of workshopPlaces.filter(p=>p.x<16&&p.z>-16&&p.z<20)){
   if(p.id==='bima')npc(p.x,p.z);
   else if(p.id!=='workshopTownGate'){
    if(p.id!=='circuitBoard'){

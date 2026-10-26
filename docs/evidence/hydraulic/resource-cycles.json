@@ -1,0 +1,28 @@
+{
+  "checkedAtUTC": "2026-10-26T10:26:32.249Z",
+  "productionBuild": true,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "109",
+      "textures": "47",
+      "disposals": "3",
+      "crates": "1"
+    },
+    {
+      "roots": "1",
+      "geometries": "109",
+      "textures": "47",
+      "disposals": "5",
+      "crates": "1"
+    },
+    {
+      "roots": "1",
+      "geometries": "109",
+      "textures": "47",
+      "disposals": "7",
+      "crates": "1"
+    }
+  ],
+  "note": "Three town/workshop round trips. Object counts, not a physical-device performance benchmark."
+}

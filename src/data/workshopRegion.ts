@@ -1,8 +1,10 @@
+import {hydraulicPlaces,hydraulicObstacles} from './hydraulicRegion';
 import {energyPlaces,energyObstacles} from './energyRegion';
 import {electromagnetPlaces,electromagnetObstacles} from './electromagnetRegion';
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const workshopPlaces:Place[]=[
+ ...hydraulicPlaces,
  ...energyPlaces,
  ...electromagnetPlaces,
  {id:'bima',name:'Kak Bima · teknisi pos',short:'Kak Bima',action:'Bicara',x:-4,z:7,color:'#cc9650'},
@@ -17,10 +19,11 @@ export const workshopPlaces:Place[]=[
  {id:'researchLamp',name:'Lampu pos riset 3 V',short:'Lampu pos riset',action:'Uji / amati',x:10,z:-7,color:'#d3b765'},
  {id:'workshopTownGate',name:'Gerbang menuju Kota Sains',short:'Ke Kota Sains',action:'Masuk Kota',x:0,z:16,color:'#758c75'},
 ];
-export const workshopNavigation:NavigationArea={bounds:{minX:-17,maxX:33,minZ:-32,maxZ:18},obstacles:[
+export const workshopNavigation:NavigationArea={bounds:{minX:-17,maxX:33,minZ:-32,maxZ:36},obstacles:[
  {x:-11,z:-11,width:8,depth:5}, {x:10,z:-12,width:7,depth:5},
+ ...hydraulicObstacles,
  ...energyObstacles,
  ...electromagnetObstacles,
- ...workshopPlaces.filter(p=>p.id!=='workshopTownGate'&&!electromagnetPlaces.includes(p)&&!energyPlaces.includes(p)).map(p=>p.id==='bima'?{x:p.x,z:p.z,width:.6,depth:.6}:p.id==='circuitBoard'?{x:p.x,z:1.9,width:5,depth:2.2}:{x:p.x,z:p.z-.7,width:1.5,depth:.65}),
+ ...workshopPlaces.filter(p=>p.id!=='workshopTownGate'&&!electromagnetPlaces.includes(p)&&!energyPlaces.includes(p)&&!hydraulicPlaces.includes(p)).map(p=>p.id==='bima'?{x:p.x,z:p.z,width:.6,depth:.6}:p.id==='circuitBoard'?{x:p.x,z:1.9,width:5,depth:2.2}:{x:p.x,z:p.z-.7,width:1.5,depth:.65}),
  ...[[-15,13],[-15,-2],[15,12],[15,2]].map(([x,z])=>({x,z,width:.5,depth:.5})),
 ]};

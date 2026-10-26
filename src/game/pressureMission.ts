@@ -44,7 +44,7 @@ export function parsePressure(raw:unknown):PressureProgress{
 }
 export function settlePressure(p:PressureProgress,reason:'reload'|'leave'|'home'='reload'){return p.deployed?pressureTransition(p,{type:'return',reason}).progress:p.trial?pressureTransition(p,{type:'cancel'}).progress:p;}
 export const pressureSteps=(p:PressureProgress)=>[
- {title:'Terima Ekspedisi Tekanan',detail:'M16-E1; episode bab berikutnya belum tersedia.',place:'coastLestari',done:p.accepted},
+ {title:'Terima Ekspedisi Tekanan',detail:'M16-E2 tersedia di Bengkel; bab M16 masih dikembangkan.',place:'coastLestari',done:p.accepted},
  {title:'Baca tekanan dan rencana',detail:'Sensor eksternal dan asumsi model.',place:p.sources.water?'pressureNotes':'pressureBook',done:Object.values(p.sources).every(Boolean)},
  {title:'Ambil dan periksa sensor',detail:'Uji fungsi sebelum pemeriksaan nol.',place:'pressureRack',done:p.sensorChecked},
  {title:'Periksa nol relatif di permukaan',detail:'Kendalikan ROV, Stabilkan di dok, baca lalu Catat.',place:'rovControl',done:p.zero},

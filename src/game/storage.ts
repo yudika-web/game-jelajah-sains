@@ -1,3 +1,4 @@
+import {parseHydraulic} from './hydraulicMission';
 import {parsePressure} from './pressureMission';
 import {parseCoastal} from './coastalMission';
 import {parseEnergy} from './energyMission';
@@ -46,7 +47,7 @@ export async function loadProgress(): Promise<Progress | null> {
 }
 export async function saveProgress(p: Progress): Promise<void> { await writeKeys([['M01', p]]); }
 export async function loadGame(): Promise<GameState> {
-  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1', 'M17-E2', 'M17-E3', 'S16', 'M16-E1', 'world']);
+  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1', 'M17-E2', 'M17-E3', 'S16', 'M16-E1', 'M16-E2', 'world']);
   const game = initialGame();
   if (values.M01 !== undefined) game.M01 = parseProgress(values.M01);
   if (values.M14 !== undefined) game.M14 = parseGarden(values.M14);
@@ -59,7 +60,8 @@ export async function loadGame(): Promise<GameState> {
   if(values['M17-E3']!==undefined)game.M17E3=parseEnergy(values['M17-E3']);
   if(values.S16!==undefined)game.S16=parseCoastal(values.S16);
   if(values['M16-E1']!==undefined)game.M16E1=parsePressure(values['M16-E1']);
+  if(values['M16-E2']!==undefined)game.M16E2=parseHydraulic(values['M16-E2']);
   if (values.world !== undefined) game.world = parseTravel(values.world);
   return game;
 }
-export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['M17-E1',p.M17E1], ['M17-E2',p.M17E2], ['M17-E3',p.M17E3], ['S16',p.S16], ['M16-E1',p.M16E1], ['world', p.world]]); }
+export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['M17-E1',p.M17E1], ['M17-E2',p.M17E2], ['M17-E3',p.M17E3], ['S16',p.S16], ['M16-E1',p.M16E1], ['M16-E2',p.M16E2], ['world', p.world]]); }

@@ -1,3 +1,4 @@
+import {finishedHydraulic} from './helpers/hydraulic';
 import {finishedPressure} from './helpers/pressure';
 import {finishedCoastal} from './helpers/coastal';
 import {finishedEnergy} from './helpers/energy';
@@ -38,13 +39,13 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await expect(page.locator('#start')).not.toBeVisible();
     // Existing six-mission progress plus completed M17-E1 is loaded from IndexedDB at the production origin, then
     // checked across a real gallery round trip. The server never reads the DB.
-    const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),'M17-E2':finishedMagnet(),'M17-E3':finishedEnergy(),S16:finishedCoastal(),'M16-E1':finishedPressure(),world:{region:'workshop',activeMission:'M17-E1'}};
+    const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),'M17-E2':finishedMagnet(),'M17-E3':finishedEnergy(),S16:finishedCoastal(),'M16-E1':finishedPressure(),'M16-E2':finishedHydraulic(),world:{region:'workshop',activeMission:'M17-E1'}};
     await page.evaluate(async save => {
       await new Promise<void>((resolve, reject) => {
         const request = indexedDB.open('jelajah-sains', 1);
         request.onsuccess = () => {
           const db = request.result, tx = db.transaction('saves', 'readwrite');
-          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1','M17-E2','M17-E3','S16','M16-E1'].includes(key))) tx.objectStore('saves').put(value, key);
+          for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2'].includes(key))) tx.objectStore('saves').put(value, key);
           tx.objectStore('saves').put(save.world, 'world');
           tx.oncomplete = () => { db.close(); resolve(); }; tx.onerror = () => reject(tx.error);
         }; request.onerror = () => reject(request.error);
@@ -79,7 +80,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
       request.onsuccess = () => { const db = request.result, read = db.transaction('saves').objectStore('saves').getAll(); read.onsuccess = () => { db.close(); resolve(read.result); }; };
     }));
     expect(savedAfter).toEqual(savedBefore);
-    await page.locator('#start').click();await page.locator('#active-mission').selectOption('S16');await page.locator('#journal').click();await expect(page.locator('#coast-records tbody tr')).toHaveCount(5);await expect(page.locator('[data-coast-link]')).toHaveCount(5);await page.locator('#close-panel').click();await page.locator('#active-mission').selectOption('M16-E1');await expect(page.locator('#garden-status')).toContainText('Dalam pengembangan');await page.locator('#journal').click();await expect(page.locator('#pressure-data tbody tr')).toHaveCount(4);await page.locator('#close-panel').click();await page.locator('#active-mission').selectOption('M17-E1');await page.locator('#settings').click();await page.locator('#reset-workshop').click();await page.locator('#confirm-workshop-reset').click();await expect(page.locator('#garden-status')).toContainText('Dalam pengembangan');
+    await page.locator('#start').click();await page.locator('#active-mission').selectOption('S16');await page.locator('#journal').click();await expect(page.locator('#coast-records tbody tr')).toHaveCount(5);await expect(page.locator('[data-coast-link]')).toHaveCount(5);await page.locator('#close-panel').click();await page.locator('#active-mission').selectOption('M16-E2');await page.locator('#journal').click();await expect(page.locator('#hydraulic-data tbody tr')).toHaveCount(3);await page.locator('#close-panel').click();await page.locator('#active-mission').selectOption('M16-E1');await expect(page.locator('#garden-status')).toContainText('Dalam pengembangan');await page.locator('#journal').click();await expect(page.locator('#pressure-data tbody tr')).toHaveCount(4);await page.locator('#close-panel').click();await page.locator('#active-mission').selectOption('M17-E1');await page.locator('#settings').click();await page.locator('#reset-workshop').click();await page.locator('#confirm-workshop-reset').click();await expect(page.locator('#garden-status')).toContainText('Dalam pengembangan');
     expect(external).toEqual([]); expect(errors).toEqual([]); expect(failed).toEqual([]);
   });
 }

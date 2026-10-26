@@ -2,7 +2,7 @@
 
 Episode terbaru tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v11**, dengan sebelas misi/episode; rincian mutakhir ada pada bagian M16-E1.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v12**, dengan dua belas misi/episode; rincian mutakhir ada pada bagian M16-E2.
 
 ## Sumber dan keputusan implementasi
 
@@ -204,3 +204,16 @@ ROV beroperasi di volume terbatas W05, sementara akar pemain tetap di pos. Input
 `pressureModel.ts` menghitung h dari tinggi sensor eksternal sebenarnya, bukan kamera/dasar. Sensor memiliki offset vertikal 0,12 unit dari akar robot. Permukaan y=-0,175; p=1025×10×h Pa. `pressureMission.ts` memisahkan kalibrasi nol relatif, variabel, tutorial, prediksi, sesi pembacaan, empat rekaman, kembali dok dan kesimpulan. `pressureSampling.ts` memakai delta World aktif; pembacaan tidak memakai jam nyata atau loop kedua.
 
 Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara; preferensi Dekat/Normal/Jauh tetap. Renderer, Scene dan regionRoot tetap satu. Aset dasar laut dimiliki W05 dan dilepas bersama region; update berhenti di wilayah lain. Reload/keluar wilayah memarkir robot serta membatalkan pembacaan belum disahkan. Key M16-E1 ditambahkan pada IndexedDB skema 1, cadangan v11 menerima v1–v10. Bab M16 tetap Dalam pengembangan, status M17 tidak berubah. Bukti lengkap: [underwater-pressure-review.md](underwater-pressure-review.md).
+
+
+## W06 / M16-E2 — Lift Hidraulik
+
+`hydraulicContent.ts` memuat parameter, tiga luas keluaran dan materi. `hydraulicModel.ts` menghitung tambahan tekanan F/A, gaya, perpindahan setara volume serta usaha ideal dengan konversi SI eksplisit. Record memakai integer mm, mm³ dan mJ. Pengujian awal dan tantangan memakai fungsi hasil yang sama. Batas gaya tidak cukup menahan kedua piston; batas gerak menghasilkan kenaikan parsial yang tepat.
+
+`hydraulicMission.ts` mengelola bukti, revisi transaksi, prediksi/perbaikan, percobaan, tantangan, kesimpulan dan receipt hadiah. Parser mereplay tindakan lalu memeriksa kesamaan keadaan serta hasil rumus; impor ditolak sebelum state aktif berubah. `hydraulicSession.ts` hanya memakai delta dari render loop World yang sudah ada, tanpa timer/renderer baru. Fokus dan visibility menghentikan waktu presentasi. Menutup panel atau reload memulihkan alat tanpa mencatat preview.
+
+`hydraulicWorld.ts` memiliki geometri, material dan tekstur wilayah. Dua piston dan satu peti stable ID bergerak dalam SI, volume cairan visual tetap. Penampang radial diperbesar ×12 dengan label; tidak mengubah luas data atau jarak vertikal. `hydraulicUI.ts` memakai dialog dan kamera yang sama; diagram pembesaran menjelaskan gerak sentimeter. Tidak ada drag wajib. Kamera detail bersifat sementara dan tidak mengubah preferensi.
+
+Batas W06 diperpanjang ke z=36, tanah, jalur, peta serta obstacle ikut diperbarui. Titik pendekatan seluruh stasiun baru dan lama diuji. RegionRoot lama tetap dibersihkan oleh World; aset karakter bersama tidak dilepas. Tidak ada wilayah atau misi baru selain episode ini.
+
+IndexedDB tetap skema 1 dengan key M16-E2. Ekspor v12 berisi dua belas misi; v1–v11 tetap diterima dan mempertahankan episode yang tidak dicakup. Reset episode mempertahankan receipt hadiah pertama; M16 tetap Dalam pengembangan dan status M17 hanya memakai completed E1/E2/E3. Lihat [hydraulic-lift-review.md](hydraulic-lift-review.md).

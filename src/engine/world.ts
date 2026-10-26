@@ -1,3 +1,5 @@
+import {buildHydraulic} from './hydraulicWorld';
+import {initialHydraulic,type HydraulicProgress} from '../game/hydraulicMission';
 import {RovController} from './rovController';
 import {buildPressureWorld} from './pressureWorld';
 import {pressureConfig,type PressurePoint} from '../data/pressureContent';
@@ -103,6 +105,10 @@ export class World {
   private coastalView:ReturnType<typeof buildCoastal>|null=null;
   coastalFocus:OrganismId|null=null;private coastalCameraPoint=new THREE.Vector3();
   setCoastal(p:CoastalProgress){this.coastalView?.update(p);this.canvas.dataset.coastRecords=String(p.records.length);this.canvas.dataset.coastLinks=String(p.links.length);this.canvas.dataset.coastScenario=String(p.scenario);}
+  private hydraulicView:ReturnType<typeof buildHydraulic>|null=null;private hydraulicProgress=initialHydraulic();
+  hydraulicFraction=0;hydraulicFocus=false;private hydraulicCameraPoint=new THREE.Vector3(8,.65,26.2);
+  onHydraulicFrame:(dt:number,active:boolean)=>void=()=>{};
+  setHydraulic(p:HydraulicProgress){this.hydraulicProgress=p;this.canvas.dataset.hydraulicPhase=p.trial?.phase??'idle';this.canvas.dataset.hydraulicModule=p.installed??'';}
   private energyView:EnergyView|null=null;private energyProgress=initialEnergy();
   energyFraction=0;energyFocus:'solar'|'wind'|'service'|'battery'|null=null;private energyCameraPoint=new THREE.Vector3();
   onEnergyFrame:(dt:number,active:boolean)=>void=()=>{};
@@ -319,7 +325,7 @@ export class World {
     });
     geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
-    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='garden') {
@@ -333,6 +339,7 @@ export class World {
     }
     else if(region==='workshop'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.hydraulicView=buildHydraulic({root:this.regionRoot,box:b,label:(...args)=>this.label(...args)});
       this.energyView=buildEnergy({root:this.regionRoot,box:b,label:(...args)=>this.label(...args)});
       this.electromagnetView=buildElectromagnet({root:this.regionRoot,box:b,label:(...args)=>this.label(...args)});
       this.workshopView=buildWorkshop({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{
@@ -499,6 +506,7 @@ export class World {
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
       this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
+    this.onHydraulicFrame(dt,this.region==='workshop'&&!document.hidden&&document.hasFocus());this.hydraulicView?.frame(this.hydraulicProgress,this.hydraulicFraction);if(this.hydraulicView){this.canvas.dataset.hydraulicInput=String(this.regionRoot.userData.hydraulicInputMm);this.canvas.dataset.hydraulicOutput=String(this.regionRoot.userData.hydraulicOutputMm);this.canvas.dataset.hydraulicCrates='1';}
     this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(document.hidden?0:dt,this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
     this.onElectromagnetFrame(dt,this.region==='workshop'&&!document.hidden);
     this.electromagnetView?.frame(this.electromagnetProgress,this.electromagnetFraction);
@@ -512,9 +520,9 @@ export class World {
     this.canvas.dataset.pushing=String(this.pushing);if(this.rimbaView)this.canvas.dataset.cartWheelAngle=this.rimbaView.wheelAngle().toFixed(4);
     if(this.energyFocus==='solar')this.energyCameraPoint.set(-12,.7,-25.2);else if(this.energyFocus==='wind')this.energyCameraPoint.set(-4,1.7,-25.7);else if(this.energyFocus==='battery')this.energyCameraPoint.set(4,.6,-25.7);else this.energyCameraPoint.set(29,.6,-25.7);
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
-    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:1;
-    this.followCamera.inspectionWidth=this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    this.followCamera.update(this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:this.hydraulicFocus?.38:1;
+    this.followCamera.inspectionWidth=this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
+    this.followCamera.update(this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
     this.onPressureFrame(dt,this.region==='coast'&&!document.hidden&&document.hasFocus());
     this.pressureView?.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.rov);
     if(this.rov.active){(this.scene.background as THREE.Color).set('#86b7b6');const f=this.scene.fog as THREE.Fog;f.color.set('#86b7b6');f.near=8;f.far=38;}
@@ -545,6 +553,7 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
+    if(this.region==='workshop')for(const label of this.regionLabels)label.visible=!this.hydraulicFocus;
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
