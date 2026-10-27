@@ -1,0 +1,37 @@
+{
+  "checkedAtUTC": "2026-10-27T10:56:14.362463+00:00",
+  "contentReviewDate": "2026-10-27",
+  "links": [
+    {
+      "url": "https://www.usgs.gov/programs/earthquake-hazards/science-earthquakes",
+      "access": "blocked",
+      "status": 403,
+      "verifiedCurrentPageContent": false
+    },
+    {
+      "url": "https://www.usgs.gov/faqs/are-tectonic-plates-floating-magma",
+      "access": "blocked",
+      "status": 403,
+      "verifiedCurrentPageContent": false
+    },
+    {
+      "url": "https://pubs.usgs.gov/gip/dynamic/inside.html",
+      "access": "blocked",
+      "status": 403,
+      "verifiedCurrentPageContent": false
+    },
+    {
+      "url": "https://pubs.usgs.gov/gip/dynamic/understanding.html",
+      "access": "blocked",
+      "status": 403,
+      "verifiedCurrentPageContent": false
+    },
+    {
+      "url": "https://www.bmkg.go.id/gempabumi/mitigasi/antisipasi-gempabumi",
+      "access": "blocked",
+      "status": 403,
+      "verifiedCurrentPageContent": false
+    }
+  ],
+  "limitation": "Direct requests and official alternative publication paths rejected by this environment. Links are references for follow-up primary-source review, not a claim of current-page verification."
+}

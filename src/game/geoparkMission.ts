@@ -1,0 +1,56 @@
+import {earthLayers,plateIds,plateModels,geoCards,geoAnswers,type EarthLayer,type PlateId,type GeoSource,type GeoAnswers} from '../data/geoparkContent';
+import {correctLayerOrder,plateResult} from './geoparkModel';
+import {atGeoMuster} from '../data/geoparkRegion';
+type Action={type:'accept'}|{type:'read';source:GeoSource}|{type:'layers';order:EarthLayer[]}|{type:'predict';id:PlateId;motion:string}|{type:'start';id:PlateId}|{type:'finish'}|{type:'observe'}|{type:'record';phenomenon:string}|{type:'cancel'}|{type:'exercise'}|{type:'sign';route:'A'|'B'|'C'}|{type:'route';route:string;reason:string}|{type:'arrive';xMm:number;zMm:number}|{type:'conclude';answers:GeoAnswers}|{type:'reflect';text:string};
+export type GeoEvent=(Action&{revision?:number})|{type:'reset'};
+export interface GeoProgress{version:1;mission:'M13';epoch:number;revision:number;accepted:boolean;sources:Record<GeoSource,boolean>;layers:EarthLayer[];layerAttempts:{order:EarthLayer[];correct:boolean}[];predictions:{id:PlateId;motion:string}[];records:ReturnType<typeof plateResult>[];observations:{id:PlateId;phenomenon:string;correct:boolean}[];trial:{id:PlateId;phase:'running'|'preview'|'observed'}|null;exercise:boolean;signs:Record<'A'|'B'|'C',boolean>;routes:{route:string;reason:string;correct:boolean}[];routeChosen:boolean;arrived:boolean;arrival:{xMm:number;zMm:number}|null;answers:(GeoAnswers&{correct:boolean})[];reflection:string;completed:boolean;reward:0|100;firstCompletedAt:string|null;rewardProof:{at:string;history:Action[]}|null;history:Action[];}
+export const initialGeo=():GeoProgress=>({version:1,mission:'M13',epoch:0,revision:0,accepted:false,sources:{layers:false,plates:false,landscape:false,situation:false},layers:[],layerAttempts:[],predictions:[],records:[],observations:[],trial:null,exercise:false,signs:{A:false,B:false,C:false},routes:[],routeChosen:false,arrived:false,arrival:null,answers:[],reflection:'',completed:false,reward:0,firstCompletedAt:null,rewardProof:null,history:[]});
+export const geoCheckpoint=(p:GeoProgress)=>p.arrived?3:p.layers.length===4&&p.records.length===3?2:p.layers.length===4?1:0;
+export function geoTransition(p:GeoProgress,e:GeoEvent,now=()=>new Date().toISOString()):{progress:GeoProgress;ok:boolean;message:string}{
+ const fail=(message:string)=>({progress:p,ok:false,message});
+ if(e.type==='reset')return{progress:{...initialGeo(),epoch:p.revision+1,revision:p.revision+1,reward:p.reward,firstCompletedAt:p.firstCompletedAt,rewardProof:structuredClone(p.rewardProof)},ok:true,message:'M13 diulang; hadiah pertama dan misi lain tetap tersimpan.'};
+ if(e.revision!==undefined&&e.revision!==p.revision)return fail('Tindakan lama diabaikan.');
+ if(p.history.length>=3000)return fail('Riwayat penuh; cadangkan lalu ulangi M13.');
+ if(e.type!=='accept'&&!p.accepted)return fail('Terima M13 dari Kak Raka dahulu.');
+ const n=structuredClone(p);let ok=true,message='Catatan Geopark tersimpan.';
+ switch(e.type){
+ case'accept':if(p.accepted)return fail('M13 sudah diterima.');n.accepted=true;break;
+ case'read':if(!Object.hasOwn(geoCards,e.source)||p.sources[e.source]||(e.source==='situation'&&!p.exercise))return fail('Sumber sudah dicatat atau latihan belum dimulai.');n.sources[e.source]=true;break;
+ case'layers':if(!p.sources.layers||p.layers.length||!Array.isArray(e.order)||e.order.length!==4||new Set(e.order).size!==4||!e.order.every(v=>earthLayers.includes(v)))return fail('Baca buku, lalu susun empat lapisan berbeda.');ok=correctLayerOrder(e.order);n.layerAttempts.push({order:[...e.order],correct:ok});if(ok)n.layers=[...e.order];message=ok?'Urutan luar ke dalam dicatat. Litosfer mencakup kerak dan mantel paling atas.':'Urutan belum sesuai. Mulai dari bagian terluar; lihat kembali nama dan sifat lapisan. Upaya tersimpan.';break;
+ case'predict':if(!plateIds.includes(e.id)||p.trial||!p.layers.length||!p.sources.plates||!p.sources.landscape||p.records.some(r=>r.id===e.id)||!['away','toward','parallel'].includes(e.motion))return fail('Lengkapi bagian lapisan dan sumber lempeng; prediksi saat model diam.');n.predictions.push({id:e.id,motion:e.motion});break;
+ case'start':if(!plateIds.includes(e.id)||p.trial||p.records.some(r=>r.id===e.id)||!p.predictions.some(r=>r.id===e.id))return fail('Prediksi gerak sebelum menjalankan model yang belum dicatat.');n.trial={id:e.id,phase:'running'};break;
+ case'finish':if(p.trial?.phase!=='running')return fail('Model belum berjalan.');n.trial!.phase='preview';break;
+ case'observe':if(p.trial?.phase!=='preview')return fail('Tunggu model selesai, lalu Amati.');n.trial!.phase='observed';break;
+ case'record':if(p.trial?.phase!=='observed'||!['new-crust','trench','offset'].includes(e.phenomenon))return fail('Jalankan dan amati model sebelum mencatat.');ok=e.phenomenon===plateModels[p.trial.id].phenomenon;n.observations.push({id:p.trial.id,phenomenon:e.phenomenon,correct:ok});if(ok){n.records.push(plateResult(p.trial.id));n.trial=null;}message=ok?'Pengamatan maket disahkan.':'Gejala belum sesuai arah gerak yang diamati. Periksa penanda dan maket; upaya awal disimpan.';break;
+ case'cancel':if(!p.trial)return fail('Model sudah diam.');n.trial=null;message='Model dipulihkan tanpa menambah bukti.';break;
+ case'exercise':if(p.exercise||p.layers.length!==4||p.records.length!==3||p.trial)return fail('Selesaikan lapisan dan tiga pengamatan dahulu.');n.exercise=true;message='Guncangan simulasi sudah berhenti. Ikuti arahan pemandu: baca peta dan periksa kondisi. Rute lama dibatalkan.';break;
+ case'sign':if(!p.exercise||!['A','B','C'].includes(e.route)||p.signs[e.route])return fail('Mulai latihan, lalu periksa penanda kondisi.');n.signs[e.route]=true;break;
+ case'route':if(!p.exercise||!p.sources.situation||!Object.values(p.signs).every(Boolean)||p.routeChosen||!['A','B','C'].includes(e.route)||!['shortest','open-marked','cliff'].includes(e.reason))return fail('Baca peta dan periksa ketiga penanda kondisi dahulu.');ok=e.route==='B'&&e.reason==='open-marked';n.routes.push({route:e.route,reason:e.reason,correct:ok});n.routeChosen=ok;message=ok?'B terbuka dan menghindari penghalang pada peta latihan. Tempuh jalurnya, lalu konfirmasi di titik kumpul.':'Jarak terpendek saja tidak cukup. A dekat bangunan model rusak, C berada di bawah tebing; periksa jalur terbuka. Upaya disimpan.';break;
+ case'arrive':if(!p.routeChosen||p.arrived||!Number.isSafeInteger(e.xMm)||!Number.isSafeInteger(e.zMm)||!atGeoMuster({x:e.xMm/1000,z:e.zMm/1000}))return fail('Datang melalui jalur B ke titik kumpul; pemulihan ke pos bukan bukti kedatangan.');n.arrived=true;n.arrival={xMm:e.xMm,zMm:e.zMm};message='Posisi di titik kumpul dikonfirmasi kepada pemandu.';break;
+ case'conclude':if(p.completed||!p.arrived||!e.answers||!Object.keys(geoAnswers).every(k=>typeof e.answers[k as keyof GeoAnswers]==='string'&&e.answers[k as keyof GeoAnswers].length<=60))return fail('Selesaikan tiga bagian dan konfirmasi kedatangan sebelum menyimpulkan.');ok=Object.entries(geoAnswers).every(([k,v])=>e.answers[k as keyof GeoAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=100;n.firstCompletedAt=now();}message=ok?'M13 selesai · 100 XP pertama. S19, S20, S21 dan bab lain tetap terpisah.':'Hubungkan litosfer, sifat mantel, perbedaan batas, kondisi jalur dan batas model. Upaya awal disimpan.';break;
+ case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
+ default:return fail('Tindakan tidak dikenal.');
+ }
+ const action=structuredClone(e) as Action&{revision?:number};delete action.revision;n.history.push(action);n.revision++;if(n.reward===100&&!p.rewardProof)n.rewardProof={at:n.firstCompletedAt!,history:structuredClone(n.history)};return{progress:n,ok,message};
+}
+const canonical=(v:unknown):unknown=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,x])=>[k,canonical(x)])):v;
+export function parseGeo(raw:unknown):GeoProgress{const bad=():never=>{throw Error('Progres M13 tidak valid: checkpoint, model, jalur, posisi atau hadiah tidak sesuai.');};try{if(!raw||typeof raw!=='object')return bad();const p=raw as GeoProgress;
+ if(p.version!==1||p.mission!=='M13'||!Number.isSafeInteger(p.epoch)||p.epoch<0||!Number.isSafeInteger(p.revision)||!Array.isArray(p.history)||p.history.length>3000||p.revision!==p.epoch+p.history.length||![0,100].includes(p.reward))return bad();
+ if(p.reward===100?typeof p.firstCompletedAt!=='string'||!Number.isFinite(Date.parse(p.firstCompletedAt)):p.firstCompletedAt!==null||p.rewardProof!==null)return bad();
+ const replay=(history:Action[],seed:GeoProgress)=>{if(!Array.isArray(history)||history.length>3000)return bad();let n=seed;for(const e of history){if(!e||typeof e!=='object'||e.type==='reset' as string||Object.hasOwn(e,'revision'))return bad();const r=geoTransition(n,e,()=>p.firstCompletedAt??'2000-01-01T00:00:00.000Z');if(r.progress===n)return bad();n=r.progress;}return n;};
+ if(p.reward===100){if(!p.rewardProof||p.rewardProof.at!==p.firstCompletedAt)return bad();const award=replay(p.rewardProof.history,initialGeo());if(!award.completed||award.history.at(-1)?.type!=='conclude')return bad();}
+ const seed=initialGeo();seed.epoch=p.epoch;seed.revision=p.epoch;if(p.epoch>0){seed.reward=p.reward;seed.firstCompletedAt=p.firstCompletedAt;seed.rewardProof=structuredClone(p.rewardProof);}const n=replay(p.history,seed);if(JSON.stringify(canonical(n))!==JSON.stringify(canonical(p)))return bad();return n;
+ }catch{return bad();}}
+export const settleGeo=(p:GeoProgress)=>p.trial?geoTransition(p,{type:'cancel'}).progress:p;
+export const geoSteps=(p:GeoProgress)=>[
+ {title:'Terima Pesan dari Geopark',detail:'Tiga bagian, satu misi dan checkpoint.',place:'raka',done:p.accepted},
+ {title:'Baca buku lapisan',detail:'Kenali nama dan sifat, bukan warna saja.',place:'geoBook',done:p.sources.layers},
+ {title:'Susun lapisan luar ke dalam',detail:'Amati penampang; ukuran tidak berskala.',place:'geoEarth',done:p.layers.length===4},
+ {title:'Baca catatan dan papan bentang alam',detail:'Bedakan maket dengan gejala di alam.',place:p.sources.plates?'geoLandscape':'geoNotes',done:p.sources.plates&&p.sources.landscape},
+ {title:`Catat tiga model · ${p.records.length}/3`,detail:'Prediksi, jalankan, amati, pilih gejala, Catat.',place:plateModels[plateIds.find(id=>!p.records.some(r=>r.id===id))??'divergent'].place,done:p.records.length===3},
+ {title:'Mulai latihan bersama Kak Raka',detail:'Guncangan simulasi sudah berhenti; tanpa guncangan kamera.',place:'raka',done:p.exercise},
+ {title:'Baca peta dan periksa kondisi',detail:'Periksa A, B dan C di dunia.',place:!p.sources.situation?'geoMap':!p.signs.A?'geoSignA':!p.signs.B?'geoSignB':'geoSignC',done:p.sources.situation&&Object.values(p.signs).every(Boolean)},
+ {title:'Pilih jalur beserta alasan',detail:'Utamakan kondisi yang ditandai, bukan jarak saja.',place:'geoMap',done:p.routeChosen},
+ {title:'Tempuh B dan konfirmasi tiba',detail:'Posisi nyata pada titik kumpul diperlukan.',place:'geoMuster',done:p.arrived},
+ {title:'Simpulkan bersama Kak Raka',detail:'Model disederhanakan; bukan prediksi gempa.',place:'raka',done:p.completed},
+];

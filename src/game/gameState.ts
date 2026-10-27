@@ -1,3 +1,4 @@
+import {initialGeo,parseGeo,type GeoProgress} from './geoparkMission';
 import {initialPontoon,parsePontoon,type PontoonProgress} from './pontoonMission';
 import {initialSolid,parseSolid,type SolidProgress} from './solidMission';
 import {initialHydraulic,parseHydraulic,type HydraulicProgress} from './hydraulicMission';
@@ -12,24 +13,24 @@ import { initialRiver, parseRiver, type RiverProgress } from './riverMission';
 import { initialProgress, parseProgress, type Progress } from './mission';
 import { initialGarden, parseGarden, type GardenProgress } from './gardenMission';
 import { initialRimba, parseRimba, type RimbaProgress } from './rimbaMission';
-export type RegionId = 'town' | 'garden' | 'rimba' | 'river' | 'coast' | 'workshop';
-export type MissionId = 'M01' | 'M14' | 'W03-LOG01' | 'S13' | 'S14' | 'S15' | 'M17-E1' | 'M17-E2' | 'M17-E3' | 'S16' | 'M16-E1' | 'M16-E2' | 'M16-E3' | 'M16-E4';
+export type RegionId = 'town' | 'garden' | 'rimba' | 'river' | 'coast' | 'workshop' | 'geopark';
+export type MissionId = 'M01' | 'M14' | 'W03-LOG01' | 'S13' | 'S14' | 'S15' | 'M17-E1' | 'M17-E2' | 'M17-E3' | 'S16' | 'M16-E1' | 'M16-E2' | 'M16-E3' | 'M16-E4' | 'M13';
 export interface TravelState { region: RegionId; activeMission: MissionId; }
-export interface GameState { M01: Progress; M14: GardenProgress; Rimba: RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; M17E1:WorkshopProgress; M17E2:ElectromagnetProgress; M17E3:EnergyProgress; S16:CoastalProgress; M16E1:PressureProgress; M16E2:HydraulicProgress; M16E3:SolidProgress; M16E4:PontoonProgress; world: TravelState; }
-export interface Backup { version: 14; missions: { M01: Progress; M14: GardenProgress; 'W03-LOG01':RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; 'M17-E1':WorkshopProgress; 'M17-E2':ElectromagnetProgress; 'M17-E3':EnergyProgress; S16:CoastalProgress; 'M16-E1':PressureProgress; 'M16-E2':HydraulicProgress; 'M16-E3':SolidProgress; 'M16-E4':PontoonProgress }; world: TravelState; }
-export const initialGame = (): GameState => ({ M01: initialProgress(), M14: initialGarden(), Rimba:initialRimba(), S13:initialRiver(), S14:initialBuoyancy(), S15:initialIrrigation(), M17E1:initialWorkshop(), M17E2:initialElectromagnet(), M17E3:initialEnergy(), S16:initialCoastal(), M16E1:initialPressure(), M16E2:initialHydraulic(), M16E3:initialSolid(), M16E4:initialPontoon(), world: { region: 'town', activeMission: 'M01' } });
+export interface GameState { M01: Progress; M14: GardenProgress; Rimba: RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; M17E1:WorkshopProgress; M17E2:ElectromagnetProgress; M17E3:EnergyProgress; S16:CoastalProgress; M16E1:PressureProgress; M16E2:HydraulicProgress; M16E3:SolidProgress; M13:GeoProgress; M16E4:PontoonProgress; world: TravelState; }
+export interface Backup { version: 15; missions: { M01: Progress; M14: GardenProgress; 'W03-LOG01':RimbaProgress; S13: RiverProgress; S14:BuoyancyProgress; S15:IrrigationProgress; 'M17-E1':WorkshopProgress; 'M17-E2':ElectromagnetProgress; 'M17-E3':EnergyProgress; S16:CoastalProgress; 'M16-E1':PressureProgress; 'M16-E2':HydraulicProgress; 'M16-E3':SolidProgress; 'M16-E4':PontoonProgress; M13:GeoProgress }; world: TravelState; }
+export const initialGame = (): GameState => ({ M01: initialProgress(), M14: initialGarden(), Rimba:initialRimba(), S13:initialRiver(), S14:initialBuoyancy(), S15:initialIrrigation(), M17E1:initialWorkshop(), M17E2:initialElectromagnet(), M17E3:initialEnergy(), S16:initialCoastal(), M16E1:initialPressure(), M16E2:initialHydraulic(), M16E3:initialSolid(), M16E4:initialPontoon(), M13:initialGeo(), world: { region: 'town', activeMission: 'M01' } });
 export function parseTravel(raw: unknown): TravelState {
   if (!raw || typeof raw !== 'object') throw new Error('Keadaan wilayah tidak valid.');
   const w = raw as TravelState;
-  if (!['town', 'garden','rimba','river','coast','workshop'].includes(w.region) || !['M01', 'M14','W03-LOG01','S13','S14','S15','M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2','M16-E3','M16-E4'].includes(w.activeMission)) throw new Error('Keadaan wilayah tidak valid.');
+  if (!['town', 'garden','rimba','river','coast','workshop','geopark'].includes(w.region) || !['M01', 'M14','W03-LOG01','S13','S14','S15','M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2','M16-E3','M16-E4','M13'].includes(w.activeMission)) throw new Error('Keadaan wilayah tidak valid.');
   return { region: w.region, activeMission: w.activeMission };
 }
-export function makeBackup(p: GameState): Backup { return structuredClone<Backup>({ version: 14, missions: { M01: p.M01, M14: p.M14, 'W03-LOG01':p.Rimba, S13:p.S13, S14:p.S14, S15:p.S15, 'M17-E1':p.M17E1,'M17-E2':p.M17E2,'M17-E3':p.M17E3, S16:p.S16, 'M16-E1':p.M16E1, 'M16-E2':p.M16E2, 'M16-E3':p.M16E3, 'M16-E4':p.M16E4 }, world: p.world }); }
-export function importBackup(raw: unknown, current: GameState): { game: GameState; scope: 'M01' | 'both' | 'three' | 'four' | 'five' | 'six' | 'seven' | 'eight' | 'nine' | 'ten' | 'eleven' | 'twelve' | 'thirteen' | 'all' } {
+export function makeBackup(p: GameState): Backup { return structuredClone<Backup>({ version: 15, missions: { M01: p.M01, M14: p.M14, 'W03-LOG01':p.Rimba, S13:p.S13, S14:p.S14, S15:p.S15, 'M17-E1':p.M17E1,'M17-E2':p.M17E2,'M17-E3':p.M17E3, S16:p.S16, 'M16-E1':p.M16E1, 'M16-E2':p.M16E2, 'M16-E3':p.M16E3, 'M16-E4':p.M16E4, M13:p.M13 }, world: p.world }); }
+export function importBackup(raw: unknown, current: GameState): { game: GameState; scope: 'M01' | 'both' | 'three' | 'four' | 'five' | 'six' | 'seven' | 'eight' | 'nine' | 'ten' | 'eleven' | 'twelve' | 'thirteen' | 'fourteen' | 'all' } {
   if (!raw || typeof raw !== 'object') throw new Error('Berkas bukan cadangan Jelajah Sains.');
   const b = raw as {version:number;missions?:Record<string,unknown>;world:unknown};
   if (b.version === 1) return { game: { ...structuredClone(current), M01: parseProgress(raw) }, scope: 'M01' };
-  if (![2,3,4,5,6,7,8,9,10,11,12,13,14].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
+  if (![2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
   const garden = parseGarden(b.missions.M14);
   if (current.M14.reward === 100) {
     garden.reward = 100; garden.firstCompletedAt = current.M14.firstCompletedAt;
@@ -57,5 +58,7 @@ export function importBackup(raw: unknown, current: GameState): { game: GameStat
   if(current.M16E3.reward===50&&solid.reward===0){solid.reward=50;solid.firstCompletedAt=current.M16E3.firstCompletedAt;solid.rewardProof=structuredClone(current.M16E3.rewardProof);solid.epoch=Math.max(solid.epoch,current.M16E3.epoch,1);solid.revision=solid.epoch+solid.history.length;}
   const pontoon=b.version>=14?parsePontoon(b.missions['M16-E4']):structuredClone(current.M16E4);
   if(current.M16E4.reward===50&&pontoon.reward===0){pontoon.reward=50;pontoon.firstCompletedAt=current.M16E4.firstCompletedAt;pontoon.rewardProof=structuredClone(current.M16E4.rewardProof);pontoon.epoch=Math.max(pontoon.epoch,current.M16E4.epoch,1);pontoon.revision=pontoon.epoch+pontoon.history.length;}
-  return { game: { M01: parseProgress(b.missions.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), M16E3:parseSolid(solid), M16E4:parsePontoon(pontoon), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':b.version===12?'twelve':b.version===13?'thirteen':'all' };
+  const geo=b.version>=15?parseGeo(b.missions.M13):structuredClone(current.M13);
+  if(current.M13.reward===100&&geo.reward===0){geo.reward=100;geo.firstCompletedAt=current.M13.firstCompletedAt;geo.rewardProof=structuredClone(current.M13.rewardProof);geo.epoch=Math.max(geo.epoch,current.M13.epoch,1);geo.revision=geo.epoch+geo.history.length;}
+  return { game: { M01: parseProgress(b.missions.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), M16E3:parseSolid(solid), M16E4:parsePontoon(pontoon), M13:parseGeo(geo), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':b.version===12?'twelve':b.version===13?'thirteen':b.version===14?'fourteen':'all' };
 }

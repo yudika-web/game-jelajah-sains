@@ -241,3 +241,12 @@ Key IndexedDB baru M16-E3 tetap pada skema 1, store saves. Cadangan v13 berisi t
 W04 diperpanjang ke z=37, jalur penarik x=7/z=24…34. Navigasi darat membatasi air baru; perahu/kolam/irigasi lama tidak diubah. Seluruh aset dimiliki root wilayah dan dilepas bersama W04. Kamera detail memakai FollowCamera dan tidak mengubah preferensi pengguna. Batas 75%/1,2 m hanya latihan; tidak ada klaim keselamatan kapal nyata.
 
 Key M16-E4 ditambahkan ke transaksi empat belas misi, IndexedDB skema 1. Cadangan v14 menerima v1–v13 dan mempertahankan episode yang tidak tercakup. `m16ChapterStatus` hanya menggunakan completed E1/E2/E3/E4; reset satu episode menurunkan status bab, receipt XP tidak menggantikannya. M17 tetap tiga episode; S14/S17 terpisah. Laporan dan hasil final: [pontoon-buoyancy-review.md](pontoon-buoyancy-review.md).
+
+
+## W07 / M13 — Geopark
+
+Wilayah ketujuh terhubung melalui geoTerminal W06 / geoReturn W07. Tidak ada kendaraan atau renderer/input baru. Geopark memakai karakter Kak Raka pada rig enam balok bersama dan sumber daya root wilayah. Model data, pose, aturan misi, presentasi, visual dan UI dipisahkan dalam geoparkContent/Region/Model/Mission/Session/World/UI.
+
+Tiga checkpoint turunan dari bukti: urutan lapisan; tiga pengamatan meja; kedatangan sah setelah peta/penanda/pilihan jalur. Animasi sementara bukan bukti. Rute lama dibatalkan saat skenario mengaktifkan pagar; navigasi dan sweep memakai obstacle kondisi yang sama. Konfirmasi titik kumpul menerima koordinat sebenarnya dari World di main, bukan koordinat dari panel. Kembali ke pos tidak menghasilkan kedatangan.
+
+Key M13 ditambahkan dalam transaksi lima belas misi, tetap IndexedDB skema 1. Cadangan v15 menerima v1–v14; yang tidak dicakup dipertahankan. Parser mereplay riwayat, memvalidasi hasil/urutan/posisi/hadiah. Reset hanya M13 dengan konfirmasi; receipt hadiah pertama dipertahankan. M16 dan M17 tetap mengikuti empat/tiga completed saat ini, S19/S20/S21 tidak otomatis selesai. Lihat [geopark-review.md](geopark-review.md) untuk batas model, kendala akses sumber primer dan pemeriksaan akhir.

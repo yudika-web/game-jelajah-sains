@@ -1,0 +1,32 @@
+{
+  "checkedAtUTC": "2026-10-27T11:38:16.854Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "62",
+      "textures": "24",
+      "disposals": "3",
+      "models": "3",
+      "exercise": "true"
+    },
+    {
+      "roots": "1",
+      "geometries": "62",
+      "textures": "24",
+      "disposals": "5",
+      "models": "3",
+      "exercise": "true"
+    },
+    {
+      "roots": "1",
+      "geometries": "62",
+      "textures": "24",
+      "disposals": "7",
+      "models": "3",
+      "exercise": "true"
+    }
+  ],
+  "note": "Three workshop/geopark cycles; resource counts, not FPS or memory benchmark."
+}

@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**W07 / M13 — Pesan dari Geopark**: terminal kunjungan dari Bengkel, Kak Raka, penampang empat lapisan, tiga model batas lempeng dan latihan jalur setelah guncangan simulasi berhenti. Tiga checkpoint dalam satu misi; 100 XP sekali. Pilihan jalur memakai kondisi dan posisi nyata di titik kumpul. [Cara bermain, sumber, batas model dan bukti](docs/geopark-review.md).
+
 **W04 / M16-E4 — Ponton Pengangkut Peralatan**: tiga pengamatan neraca, tiga pengujian ponton dan pengiriman nyata dengan alat penarik dari darat. Bedakan apung aktual/maksimum, berat dan bacaan neraca; B memenuhi cadangan 75% dan gerbang 1,2 m. Hadiah 50 XP sekali. **M16 Tuntas hanya jika completed E1/E2/E3/E4 saat ini semuanya true**; reset salah satu mengubah status bab tanpa menggandakan XP. S14/S17 dan M17 tetap terpisah. [Cara bermain, rumus, bukti dan keterbatasan](docs/pontoon-buoyancy-review.md).
 
 **W03 / M16-E3 — Pijakan Aman Pos Rimba**: ukur tiga penopang, uji tekanan rata-rata dengan gaya tetap 400 N, lalu coba batas 6 kPa dan jalur maket 30 cm. A gagal tekanan, C tertahan lebar, B memenuhi kedua batas. Hadiah 50 XP sekali. M16-E4 gaya apung kini tersedia; status M16 mengikuti empat episode. [Cara bermain, model, pemeriksaan, screenshot dan cuplikan](docs/solid-pressure-review.md).
@@ -28,7 +30,7 @@ Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, at
 
 Patch karakter terbaru memakai avatar balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Enam wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba dan M16-E3 Pijakan Aman Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15**, **W05 Pesisir dan Laut / S16, M16-E1**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, M17-E3, dan M16-E2**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Tujuh wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota**, **W02 Kebun Kehidupan / M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba dan M16-E3 Pijakan Aman Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15, M16-E4**, **W05 Pesisir dan Laut / S16, M16-E1**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, M17-E3, dan M16-E2**, serta **W07 Geopark / M13 Pesan dari Geopark**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
@@ -36,7 +38,7 @@ Model acuan tiga sisi terdahulu dan perbandingannya tersedia pada [arsip pemerik
 
 Varian siswi dapat dimainkan dengan menambahkan `?avatar=siswi` pada alamat server (misalnya path `/?avatar=siswi`). Pilihan ini tidak mengubah progres; hilangkan parameter untuk memakai siswa. Tautan galeri mempertahankan varian ketika kembali ke permainan. Tidak ada onboarding avatar tambahan.
 
-Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari/Pak Damar/Kak Lestari/Kak Bima. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
+Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari/Pak Damar/Kak Lestari/Kak Bima/Kak Raka. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
 
 ## Menjalankan
 
@@ -70,7 +72,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3/M16-E4. Keempat belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3/M16-E4/M13. Kelima belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -241,9 +243,9 @@ Kirim dengan penarik virtual: Ke Dermaga Penerima, Berhenti/Lanjutkan atau Kemba
 
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, `M16-E1`, `M16-E2`, `M16-E3`, `M16-E4`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Keempat belas misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, `M16-E1`, `M16-E2`, `M16-E3`, `M16-E4`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Kelima belas misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 14** berisi empat belas episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Versi **12** memulihkan sampai M16-E2. Versi **13** memulihkan sampai M16-E3. Seluruh versi **1–13** mempertahankan M16-E4 yang tidak tercakup. Seluruh versi **1–12** mempertahankan M16-E3 yang tidak tercakup. Versi **11** memulihkan sampai M16-E1. Seluruh versi **1–11** mempertahankan M16-E2 yang tidak tercakup. Versi **10** memulihkan sampai S16, sedangkan semua versi **1–10** mempertahankan M16-E1 yang tidak tercakup. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 15** berisi lima belas episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Versi **12** memulihkan sampai M16-E2. Versi **13** memulihkan sampai M16-E3. Versi **14** memulihkan sampai M16-E4; seluruh versi **1–14** mempertahankan M13 yang tidak tercakup. Seluruh versi **1–13** mempertahankan M16-E4 yang tidak tercakup. Seluruh versi **1–12** mempertahankan M16-E3 yang tidak tercakup. Versi **11** memulihkan sampai M16-E1. Seluruh versi **1–11** mempertahankan M16-E2 yang tidak tercakup. Versi **10** memulihkan sampai S16, sedangkan semua versi **1–10** mempertahankan M16-E1 yang tidak tercakup. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -303,7 +305,7 @@ src/
   engine/boatModel.ts    lambung bersama W04/W05
   game/coastalMission.ts bukti berurutan, jaring, kasus, hadiah dan validasi
   game/coastalUI.ts      pengamatan, dua cara hubungan, jurnal dan refleksi
-  game/gameState.ts     keadaan wilayah, cadangan v14 dan kompatibilitas v1–v13
+  game/gameState.ts     keadaan wilayah, cadangan v15 dan kompatibilitas v1–v14
   data/electromagnetContent.ts dataset, enam ID klip, materi, terminal
   game/electromagnetModel.ts rangkaian alat terpisah dari M17-E1
   game/electromagnetUI.ts panel perakitan, pengujian dan jurnal
@@ -317,7 +319,7 @@ src/
   game/electromagnetMission.ts  aturan, bukti, parser M17-E2
   game/craneState.ts    transaksi enam klip dan state derek
   engine/electromagnetWorld.ts  model dan animasi lokal
-  game/storage.ts       transaksi IndexedDB atomik empat belas misi/episode
+  game/storage.ts       transaksi IndexedDB atomik lima belas misi/episode
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -341,3 +343,5 @@ Seluruh model dibuat dari geometri lokal orisinal; teks, font sistem, dan pustak
 ## Batas prototipe
 
 Belum mencakup wilayah di luar enam wilayah ini, melompat atau menyelam sebagai manusia, berenang di luar kolam, kendaraan selain gerobak/perahu/ROV latihan, audio, kustomisasi avatar selain siswa/siswi, mode guru/dasbor, pengiriman nilai, atau multiplayer. Browser tanpa WebGL 2 mendapat materi 2D dan petunjuk pemulihan; itu bukan petualangan 3D. Ukuran tombol, keterbacaan kelas, FPS, dan akses LAN perlu diperiksa pada HP serta panel IFP fisik sebelum penggunaan kelas. Tidak ada data siswa yang dikirim ke server.
+
+Perjalanan W07: **Kota → Bengkel → Terminal kunjungan Geopark**. Pilih M13 dari Kota bila ingin petunjuk perjalanan; pilihan ini tetap aktif saat melewati Bengkel. Pulang melalui **Terminal kembali ke Bengkel**; seluruh misi lama tetap dapat dilanjutkan. Pengaturan menyediakan **Ulangi M13 Geopark** dengan konfirmasi. Peta dan kartu misi mendukung navigasi sentuh. Penggunaan pertama Windows tetap melalui **SIAPKAN_ATAU_PERBARUI.bat**, lalu **JALANKAN_JELAJAH_SAINS.bat**; Node.js masih diperlukan.

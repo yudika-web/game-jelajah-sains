@@ -4,6 +4,7 @@ import {electromagnetPlaces,electromagnetObstacles} from './electromagnetRegion'
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const workshopPlaces:Place[]=[
+ {id:'geoTerminal',name:'Terminal kunjungan Geopark',short:'Ke Geopark',action:'Berangkat',x:8,z:15,color:'#688b8d'},
  ...hydraulicPlaces,
  ...energyPlaces,
  ...electromagnetPlaces,

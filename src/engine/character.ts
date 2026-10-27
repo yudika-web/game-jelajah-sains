@@ -1,7 +1,7 @@
 import type * as THREE from 'three';
 import { buildReferenceCharacter } from './characterModel';
 
-export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari' | 'damar' | 'lestari' | 'bima';
+export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari' | 'damar' | 'lestari' | 'bima' | 'raka';
 export interface ArmRig { shoulder: THREE.Group; elbow: THREE.Group; hand: THREE.Group; toolSocket: THREE.Group; }
 export interface LegRig { hip: THREE.Group; knee: THREE.Group; ankle: THREE.Group; }
 export interface CharacterRig {

@@ -1,3 +1,4 @@
+import {geoPlaces,geoNavigation} from './geoparkRegion';
 import {coastalPlaces,coastalNavigation} from './coastalRegion';
 import {workshopPlaces,workshopNavigation} from './workshopRegion';
 import { riverPlaces, riverNavigation } from './riverRegion';
@@ -26,6 +27,7 @@ export const gardenNavigation: NavigationArea = {
   ],
 };
 export const regions = {
+  geopark:{name:'Geopark',code:'W07',places:geoPlaces,navigation:geoNavigation(),spawn:{x:0,z:15},gate:'geoReturn' as PlaceId},
   coast:{name:'Pesisir dan Laut',code:'W05',places:coastalPlaces,navigation:coastalNavigation,spawn:{x:-3,z:12},gate:'coastReturn' as PlaceId},
   workshop:{name:'Bengkel dan Energi',code:'W06',places:workshopPlaces,navigation:workshopNavigation,spawn:{x:0,z:8},gate:'workshopTownGate' as PlaceId},
   river:{name:'Sungai dan Danau',code:'W04',places:riverPlaces,navigation:riverNavigation,spawn:{x:-2,z:9},gate:'riverTownGate' as PlaceId},
@@ -33,5 +35,5 @@ export const regions = {
   town: { name: 'Kota Sains', code: 'W01', places, navigation: { bounds, obstacles }, spawn: { x: -1, z: 6 }, gate: 'gardenGate' as PlaceId },
   garden: { name: 'Kebun Kehidupan', code: 'W02', places: gardenPlaces, navigation: gardenNavigation, spawn: { x: 0, z: 5.5 }, gate: 'townGate' as PlaceId },
 };
-export const regionOf = (id: PlaceId): RegionId => coastalPlaces.some(p=>p.id===id)?'coast':workshopPlaces.some(p=>p.id===id)?'workshop':riverPlaces.some(p=>p.id===id)?'river':rimbaPlaces.some(p=>p.id===id)?'rimba':gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
-export const allPlaces = [...coastalPlaces, ...places, ...gardenPlaces, ...rimbaPlaces, ...riverPlaces, ...workshopPlaces];
+export const regionOf = (id: PlaceId): RegionId => geoPlaces.some(p=>p.id===id)?'geopark':coastalPlaces.some(p=>p.id===id)?'coast':workshopPlaces.some(p=>p.id===id)?'workshop':riverPlaces.some(p=>p.id===id)?'river':rimbaPlaces.some(p=>p.id===id)?'rimba':gardenPlaces.some(p => p.id === id) ? 'garden' : 'town';
+export const allPlaces = [...geoPlaces,...coastalPlaces, ...places, ...gardenPlaces, ...rimbaPlaces, ...riverPlaces, ...workshopPlaces];

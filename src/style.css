@@ -450,3 +450,5 @@ body[data-mode=ifp] .crane-actions button { min-height: 64px; }
 .pontoon-modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .pontoon-modules button { min-width: 0; padding: 10px 6px; min-height: 54px; }
 .pontoon-modules button[aria-pressed="true"] { border: 2px solid #387b73; font-weight: bold; }
+
+.geo-map{width:100%;max-height:280px}.geo-section select,.geo-section button{min-height:46px}.geo-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.geo-section fieldset{min-width:0}.geo-section table{width:100%;font-size:.9em}.geo-section svg text{font-family:inherit}

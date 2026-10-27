@@ -68,7 +68,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     }));
     await page.goto(`${origin}/character.html?avatar=siswi`);
     await expect(page.locator('#gallery-character')).toBeVisible();
-    for (const value of ['explorerGirl', 'explorer', 'nara', 'wira', 'sari', 'damar', 'lestari', 'bima']) {
+    for (const value of ['explorerGirl', 'explorer', 'nara', 'wira', 'sari', 'damar', 'lestari', 'bima', 'raka']) {
       await page.locator('#gallery-character').selectOption(value);
       await expect(page.locator('canvas')).toHaveAttribute('data-character', value);
       if(value==='bima'&&viewport.width===1280&&process.env.CAPTURE_WORKSHOP_EVIDENCE)await page.screenshot({path:'docs/evidence/workshop/11-bima-gallery.png'});

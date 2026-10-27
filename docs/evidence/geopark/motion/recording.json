@@ -1,0 +1,20 @@
+{
+  "checkedAtUTC": "2026-10-27T11:38:27.543Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "SwiftShader",
+  "frames": 894,
+  "seconds": 55.67640495300293,
+  "checkpoint": "Fresh M13 imported from genuine v14 legacy fixture; layer/source preparation completed through actual production UI.",
+  "sequence": [
+    "exploration between all three tables",
+    "predict, run, observe, record each plate model",
+    "activate scenario after simulated shaking ended",
+    "read map and inspect A/B/C signs",
+    "choose B and walk to muster",
+    "confirm real position"
+  ],
+  "errors": [],
+  "external": []
+}
