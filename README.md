@@ -1,10 +1,12 @@
 # Jelajah Sains
 
-**W03 / M16-E3 — Pijakan Aman Pos Rimba**: ukur tiga penopang, uji tekanan rata-rata dengan gaya tetap 400 N, lalu coba batas 6 kPa dan jalur maket 30 cm. A gagal tekanan, C tertahan lebar, B memenuhi kedua batas. Hadiah 50 XP sekali. M16 tetap Dalam pengembangan karena pengayaan gaya apung belum tersedia. [Cara bermain, model, pemeriksaan, screenshot dan cuplikan](docs/solid-pressure-review.md).
+**W04 / M16-E4 — Ponton Pengangkut Peralatan**: tiga pengamatan neraca, tiga pengujian ponton dan pengiriman nyata dengan alat penarik dari darat. Bedakan apung aktual/maksimum, berat dan bacaan neraca; B memenuhi cadangan 75% dan gerbang 1,2 m. Hadiah 50 XP sekali. **M16 Tuntas hanya jika completed E1/E2/E3/E4 saat ini semuanya true**; reset salah satu mengubah status bab tanpa menggandakan XP. S14/S17 dan M17 tetap terpisah. [Cara bermain, rumus, bukti dan keterbatasan](docs/pontoon-buoyancy-review.md).
 
-**W06 / M16-E2 — Lift Hidraulik Pos Riset**: bandingkan tiga modul piston, amati gerak masuk/keluar, lalu angkat peti 100 N setinggi 5 cm dengan batas 50 N dan 12 cm. Gaya, gerak, volume dan usaha berasal dari model ideal yang sama. Hadiah 50 XP sekali; M16 masih Dalam pengembangan. [Panduan, rumus, pemeriksaan, gambar dan cuplikan](docs/hydraulic-lift-review.md).
+**W03 / M16-E3 — Pijakan Aman Pos Rimba**: ukur tiga penopang, uji tekanan rata-rata dengan gaya tetap 400 N, lalu coba batas 6 kPa dan jalur maket 30 cm. A gagal tekanan, C tertahan lebar, B memenuhi kedua batas. Hadiah 50 XP sekali. M16-E4 gaya apung kini tersedia; status M16 mengikuti empat episode. [Cara bermain, model, pemeriksaan, screenshot dan cuplikan](docs/solid-pressure-review.md).
 
-**W05 / M16-E1 — Ekspedisi Tekanan Bawah Air**: kendalikan ROV dari pos, periksa sensor dan nol relatif, lalu ukur A2/A4/A8/B4, kembali ke dok, dan simpulkan dari tabel/grafik. Hadiah 50 XP sekali. Bab M16 masih dalam pengembangan; S17 tidak otomatis selesai. [Panduan, rumus, hasil pemeriksaan, gambar dan cuplikan](docs/underwater-pressure-review.md).
+**W06 / M16-E2 — Lift Hidraulik Pos Riset**: bandingkan tiga modul piston, amati gerak masuk/keluar, lalu angkat peti 100 N setinggi 5 cm dengan batas 50 N dan 12 cm. Gaya, gerak, volume dan usaha berasal dari model ideal yang sama. Hadiah 50 XP sekali; status M16 mengikuti completed keempat episode. [Panduan, rumus, pemeriksaan, gambar dan cuplikan](docs/hydraulic-lift-review.md).
+
+**W05 / M16-E1 — Ekspedisi Tekanan Bawah Air**: kendalikan ROV dari pos, periksa sensor dan nol relatif, lalu ukur A2/A4/A8/B4, kembali ke dok, dan simpulkan dari tabel/grafik. Hadiah 50 XP sekali. Status M16 mengikuti completed E1/E2/E3/E4 saat ini; S17 tidak otomatis selesai. [Panduan, rumus, hasil pemeriksaan, gambar dan cuplikan](docs/underwater-pressure-review.md).
 
 **W05 / S16 — Jaring Kehidupan Pesisir**: berangkat dari dermaga W04, jelajahi pantai dan mangrove, amati lima kelompok melalui alat pembesaran/jendela, gunakan perahu lokal ke titik predator, susun lima panah energi, dan tinjau gangguan satu jalur. Hadiah 50 XP sekali. [Cara bermain, model, pengujian, gambar dan cuplikan](docs/coastal-foodweb-review.md). Penyelaman manusia bebas belum tersedia; episode ROV M16-E1 kini tersedia.
 
@@ -68,7 +70,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3. Ketiga belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3/M16-E4. Keempat belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -125,7 +127,7 @@ Penampang piston 3D diperbesar ×12 agar terbaca; gerak vertikal tetap 1:1 dalam
 2. Dekati **Pos kendali ROV** dan Kendalikan. Karakter tetap di pos; kamera mengikuti robot. Di dok 0 m pilih Stabilkan → Jalankan pembacaan → Catat. Ini pemeriksaan nol relatif, bukan tekanan total nol.
 3. Pilih variabel **kedalaman sensor**. Praktikkan gerak horizontal, perubahan kedalaman, stabilisasi dan Kembali ke Dok. Tujuan otomatis juga dapat dipakai untuk tutorial. Kendalikan kembali setelah tutorial.
 4. Pilih A2, A4, A8 atau B4 pada peta ROV; urutannya bebas. Tiba, pilih prediksi, Stabilkan, Jalankan pembacaan, amati angka, lalu Catat. Navigasi sendiri tidak menghasilkan bukti.
-5. Setelah empat data sah, Kembali ke Dok dan simpulkan bersama Kak Lestari. Simpan refleksi opsional di Jurnal. Hadiah pertama 50 XP; M16 tetap Dalam pengembangan.
+5. Setelah empat data sah, Kembali ke Dok dan simpulkan bersama Kak Lestari. Simpan refleksi opsional di Jurnal. Hadiah pertama 50 XP; status M16 mengikuti completed keempat episode.
 
 Laptop: Space menaikkan robot (target kedalaman berkurang 1 m), Q menurunkan robot (bertambah 1 m). Tombol tidak perlu ditahan. HP/IFP memiliki tombol Naik/Turun, Stabilkan, Berhenti dan Kembali ke Dok. WASD/analog bergerak horizontal relatif kamera. ROV tidak memakai kecepatan lari. Menu/fokus/pointercancel menghentikan gerak dan membatalkan pembacaan sementara. Reload mengembalikan robot ke dok dan pemain ke pos darat; data sah tetap ada.
 
@@ -231,11 +233,17 @@ Model menjaga arus **0,2 A**, memakai inti dan bentuk kumparan sama. Hasil **2/4
 
 Semua tindakan perlu mendekati objek; Peta dan kartu misi menyediakan perjalanan otomatis. Tab/Enter dapat mengoperasikan panel, dan terminal punya alternatif daftar tanpa drag. Model ini hanya listrik DC virtual 3 V, **bukan petunjuk memperbaiki instalasi rumah**. [Panduan, screenshot, dan keterbatasan](docs/workshop-circuit-review.md).
 
+## M16-E4: neraca, ponton dan pengiriman
+
+Di W04, pilih M16-E4 dan terima dari Kak Lestari. Baca Buku gaya apung serta Catatan ponton, kemudian menuju Neraca pegas. Periksa benda 2 kg/1 L; prediksi dan jalankan tiga kondisi, Amati, Catat, lalu Kembalikan alat. Di rak periksa massa 5 + 15 kg serta kebutuhan; bandingkan modul. Uji A/B/C di dermaga: pilih saat kosong, Pasang perlengkapan, prediksi, Jalankan pengapungan, Amati, Catat, Bongkar dan parkir.
+
+Kirim dengan penarik virtual: Ke Dermaga Penerima, Berhenti/Lanjutkan atau Kembali tersedia. A tidak memenuhi cadangan, C tertahan gerbang, B tiba; tekan Bongkar Muatan untuk mengesahkan. Avatar tetap di darat. Pulihkan Ponton menjaga catatan sah dan perlengkapan yang sudah diterima. Simpulkan bersama Kak Lestari; hadiah 50 XP sekali. Tombol/daftar memakai Tab, Enter atau sentuhan; tidak ada drag wajib. Detail: [laporan ponton](docs/pontoon-buoyancy-review.md).
+
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, `M16-E1`, `M16-E2`, `M16-E3`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Ketiga belas misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 1**, object store `saves`. Rekaman `M01` lama dipertahankan; rekaman `M14`, `W03-LOG01`, `S13`, `S14`, `S15`, `M17-E1`, `M17-E2`, `M17-E3`, `S16`, `M16-E1`, `M16-E2`, `M16-E3`, `M16-E4`, dan `world` menyimpan Kebun, logistik Rimba, serta wilayah/misi aktif. Keempat belas misi/episode ditulis dalam satu transaksi. Muat ulang mempertahankan hari, petak, air, data, dan hadiah; pemain ditempatkan pada pos aman wilayah terakhir. Preferensi kamera/kontrol tetap terpisah.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 13** berisi tiga belas episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Versi **12** memulihkan sampai M16-E2. Seluruh versi **1–12** mempertahankan M16-E3 yang tidak tercakup. Versi **11** memulihkan sampai M16-E1. Seluruh versi **1–11** mempertahankan M16-E2 yang tidak tercakup. Versi **10** memulihkan sampai S16, sedangkan semua versi **1–10** mempertahankan M16-E1 yang tidak tercakup. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
+**Pengaturan → Ekspor cadangan / Impor cadangan** menyediakan format cadangan **versi 14** berisi empat belas episode/misi dan wilayah. Versi cadangan berbeda dari versi skema IndexedDB. Cadangan M01 **versi 1** tetap diterima: impor menjelaskan bahwa hanya M01 dipulihkan dan M14/Rimba/S13 yang ada dipertahankan. Cadangan gabungan **versi 2** memulihkan M01/M14 dan wilayah, sambil mempertahankan Rimba/S13. Cadangan **versi 3** memulihkan tiga misi lama sambil mempertahankan S13/S14/S15. Versi **4** memulihkan sampai S13, versi **5** sampai S14; S15 yang tidak dicakup tetap ada. Cadangan **versi 6** memulihkan enam misi lama sambil mempertahankan M17-E1. Versi **7** memulihkan sampai M17-E1; versi **8** sampai M17-E2, sambil mempertahankan M17-E3 yang tidak tercakup. Versi **9** memulihkan sampai M17-E3 dan mempertahankan S16. Versi **12** memulihkan sampai M16-E2. Versi **13** memulihkan sampai M16-E3. Seluruh versi **1–13** mempertahankan M16-E4 yang tidak tercakup. Seluruh versi **1–12** mempertahankan M16-E3 yang tidak tercakup. Versi **11** memulihkan sampai M16-E1. Seluruh versi **1–11** mempertahankan M16-E2 yang tidak tercakup. Versi **10** memulihkan sampai S16, sedangkan semua versi **1–10** mempertahankan M16-E1 yang tidak tercakup. Semua versi **1–9** mempertahankan S16 yang tidak tercakup. Semua versi **1–7** mempertahankan M17-E2 yang tidak tercakup; semua versi **1–8** mempertahankan M17-E3 dan episode lain yang tidak dicakup. Impor diperiksa sebelum mengubah progres; nilai air negatif, melebihi kapasitas, data masa depan, neraca air/transfer yang tidak konsisten, atau hadiah yang tidak konsisten ditolak.
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -295,7 +303,7 @@ src/
   engine/boatModel.ts    lambung bersama W04/W05
   game/coastalMission.ts bukti berurutan, jaring, kasus, hadiah dan validasi
   game/coastalUI.ts      pengamatan, dua cara hubungan, jurnal dan refleksi
-  game/gameState.ts     keadaan wilayah, cadangan v13 dan kompatibilitas v1–v12
+  game/gameState.ts     keadaan wilayah, cadangan v14 dan kompatibilitas v1–v13
   data/electromagnetContent.ts dataset, enam ID klip, materi, terminal
   game/electromagnetModel.ts rangkaian alat terpisah dari M17-E1
   game/electromagnetUI.ts panel perakitan, pengujian dan jurnal
@@ -309,7 +317,7 @@ src/
   game/electromagnetMission.ts  aturan, bukti, parser M17-E2
   game/craneState.ts    transaksi enam klip dan state derek
   engine/electromagnetWorld.ts  model dan animasi lokal
-  game/storage.ts       transaksi IndexedDB atomik tiga belas misi/episode
+  game/storage.ts       transaksi IndexedDB atomik empat belas misi/episode
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP

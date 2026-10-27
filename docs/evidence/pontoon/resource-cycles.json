@@ -1,0 +1,32 @@
+{
+  "checkedAtUTC": "2026-10-26T23:08:17.526Z",
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "95",
+      "textures": "30",
+      "disposals": "3",
+      "loads": "1",
+      "cargo": "receiver"
+    },
+    {
+      "roots": "1",
+      "geometries": "95",
+      "textures": "30",
+      "disposals": "5",
+      "loads": "1",
+      "cargo": "receiver"
+    },
+    {
+      "roots": "1",
+      "geometries": "95",
+      "textures": "30",
+      "disposals": "7",
+      "loads": "1",
+      "cargo": "receiver"
+    }
+  ],
+  "productionBuild": true,
+  "physicalDevice": false,
+  "note": "Three town/river cycles. Object counts, not a performance benchmark."
+}

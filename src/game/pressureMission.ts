@@ -27,7 +27,7 @@ export function pressureTransition(p:PressureProgress,e:PressureEvent,now=()=>ne
  case'finishRead':if(p.trial?.phase!=='reading')return fail('Pembacaan belum berlangsung.');n.trial!.phase='result';break;
  case'record':if(p.trial?.phase!=='result')return fail('Jalankan dan amati pembacaan dahulu.');if(p.trial.point==='zero')n.zero=true;else n.records.push({point:p.trial.point,...p.trial.snapshot});n.trial=null;message='Satu pembacaan disahkan. Tekanan ini tambahan terhadap permukaan, bukan tekanan total.';break;
  case'cancel':if(!p.trial)return fail('Tidak ada pembacaan sementara.');n.trial=null;message='Pembacaan belum disahkan dibatalkan.';break;
- case'conclude':if(p.completed||p.deployed||!p.returned||p.records.length!==4||!p.zero||!p.plan||!pressureTutorialComplete(p)||!e.answers||!Object.keys(correctPressureAnswers).every(k=>typeof e.answers[k as keyof PressureAnswers]==='string'&&e.answers[k as keyof PressureAnswers].length<=60))return fail('Lengkapi empat pengukuran sah, lalu kembalikan ROV ke dok.');ok=Object.entries(correctPressureAnswers).every(([k,v])=>e.answers[k as keyof PressureAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E1 selesai · 50 XP pertama. Bab M16 masih dalam pengembangan; S17 tidak ikut selesai.':'Bandingkan kedalaman dan A4/B4 pada kondisi yang sama. Perbaiki kesimpulan; upaya awal disimpan.';break;
+ case'conclude':if(p.completed||p.deployed||!p.returned||p.records.length!==4||!p.zero||!p.plan||!pressureTutorialComplete(p)||!e.answers||!Object.keys(correctPressureAnswers).every(k=>typeof e.answers[k as keyof PressureAnswers]==='string'&&e.answers[k as keyof PressureAnswers].length<=60))return fail('Lengkapi empat pengukuran sah, lalu kembalikan ROV ke dok.');ok=Object.entries(correctPressureAnswers).every(([k,v])=>e.answers[k as keyof PressureAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E1 selesai · 50 XP pertama. M16 tuntas setelah empat episode selesai; S17 tetap terpisah.':'Bandingkan kedalaman dan A4/B4 pada kondisi yang sama. Perbaiki kesimpulan; upaya awal disimpan.';break;
  case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
  default:return fail('Tindakan tidak dikenal.');
  }
@@ -44,7 +44,7 @@ export function parsePressure(raw:unknown):PressureProgress{
 }
 export function settlePressure(p:PressureProgress,reason:'reload'|'leave'|'home'='reload'){return p.deployed?pressureTransition(p,{type:'return',reason}).progress:p.trial?pressureTransition(p,{type:'cancel'}).progress:p;}
 export const pressureSteps=(p:PressureProgress)=>[
- {title:'Terima Ekspedisi Tekanan',detail:'M16-E2 tersedia di Bengkel; bab M16 masih dikembangkan.',place:'coastLestari',done:p.accepted},
+ {title:'Terima Ekspedisi Tekanan',detail:'Empat episode tersedia; bab tuntas setelah semuanya selesai.',place:'coastLestari',done:p.accepted},
  {title:'Baca tekanan dan rencana',detail:'Sensor eksternal dan asumsi model.',place:p.sources.water?'pressureNotes':'pressureBook',done:Object.values(p.sources).every(Boolean)},
  {title:'Ambil dan periksa sensor',detail:'Uji fungsi sebelum pemeriksaan nol.',place:'pressureRack',done:p.sensorChecked},
  {title:'Periksa nol relatif di permukaan',detail:'Kendalikan ROV, Stabilkan di dok, baca lalu Catat.',place:'rovControl',done:p.zero},

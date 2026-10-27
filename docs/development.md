@@ -1,8 +1,8 @@
 # Catatan pengembangan prototipe 0.1
 
-Episode terbaru tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
+Episode terbaru tersedia di [M16-E4 / Ponton Pengangkut Peralatan](pontoon-buoyancy-review.md). Fondasi tekanan air tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v13**, dengan tiga belas misi/episode; rincian mutakhir ada pada bagian M16-E3.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v14**, dengan empat belas misi/episode; rincian mutakhir ada pada bagian M16-E4.
 
 ## Sumber dan keputusan implementasi
 
@@ -203,7 +203,7 @@ ROV beroperasi di volume terbatas W05, sementara akar pemain tetap di pos. Input
 
 `pressureModel.ts` menghitung h dari tinggi sensor eksternal sebenarnya, bukan kamera/dasar. Sensor memiliki offset vertikal 0,12 unit dari akar robot. Permukaan y=-0,175; p=1025×10×h Pa. `pressureMission.ts` memisahkan kalibrasi nol relatif, variabel, tutorial, prediksi, sesi pembacaan, empat rekaman, kembali dok dan kesimpulan. `pressureSampling.ts` memakai delta World aktif; pembacaan tidak memakai jam nyata atau loop kedua.
 
-Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara; preferensi Dekat/Normal/Jauh tetap. Renderer, Scene dan regionRoot tetap satu. Aset dasar laut dimiliki W05 dan dilepas bersama region; update berhenti di wilayah lain. Reload/keluar wilayah memarkir robot serta membatalkan pembacaan belum disahkan. Key M16-E1 ditambahkan pada IndexedDB skema 1, cadangan v11 menerima v1–v10. Bab M16 tetap Dalam pengembangan, status M17 tidak berubah. Bukti lengkap: [underwater-pressure-review.md](underwater-pressure-review.md).
+Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara; preferensi Dekat/Normal/Jauh tetap. Renderer, Scene dan regionRoot tetap satu. Aset dasar laut dimiliki W05 dan dilepas bersama region; update berhenti di wilayah lain. Reload/keluar wilayah memarkir robot serta membatalkan pembacaan belum disahkan. Key M16-E1 ditambahkan pada IndexedDB skema 1, cadangan v11 menerima v1–v10. Status M16 kini mengikuti completed keempat episode, status M17 tidak berubah. Bukti lengkap: [underwater-pressure-review.md](underwater-pressure-review.md).
 
 
 ## W06 / M16-E2 — Lift Hidraulik
@@ -216,7 +216,7 @@ Kamera FollowCamera yang sama mendapat tinggi target dan pengali jarak sementara
 
 Batas W06 diperpanjang ke z=36, tanah, jalur, peta serta obstacle ikut diperbarui. Titik pendekatan seluruh stasiun baru dan lama diuji. RegionRoot lama tetap dibersihkan oleh World; aset karakter bersama tidak dilepas. Tidak ada wilayah atau misi baru selain episode ini.
 
-IndexedDB tetap skema 1 dengan key M16-E2. Ekspor v12 berisi dua belas misi; v1–v11 tetap diterima dan mempertahankan episode yang tidak dicakup. Reset episode mempertahankan receipt hadiah pertama; M16 tetap Dalam pengembangan dan status M17 hanya memakai completed E1/E2/E3. Lihat [hydraulic-lift-review.md](hydraulic-lift-review.md).
+IndexedDB tetap skema 1 dengan key M16-E2. Ekspor v12 berisi dua belas misi; v1–v11 tetap diterima dan mempertahankan episode yang tidak dicakup. Reset episode mempertahankan receipt hadiah pertama; Status M16 kini mengikuti completed keempat episode dan status M17 hanya memakai completed E1/E2/E3. Lihat [hydraulic-lift-review.md](hydraulic-lift-review.md).
 
 
 ## W03 / M16-E3 — Pijakan Aman Pos Rimba
@@ -231,4 +231,13 @@ IndexedDB tetap skema 1 dengan key M16-E2. Ekspor v12 berisi dua belas misi; v1�
 
 Rimba diperpanjang sampai z=37; tanah, jalur, pagar, peta dan obstacle ikut diperbarui. Batas utara area api dan aturan jalur C logistik tetap. Navigasi diuji dengan radius karakter dan gerobak, memakai titik awal yang sah untuk masing-masing. Aturan air, kecepatan gerobak dan W03-LOG01 tidak diubah.
 
-Key IndexedDB baru M16-E3 tetap pada skema 1, store saves. Cadangan v13 berisi tiga belas misi/episode dan menerima v1–v12, sambil mempertahankan misi baru yang tidak dicakup. Hadiah 50 XP sekali. M16 tetap Dalam pengembangan; M17 masih diturunkan hanya dari completed M17-E1/E2/E3. Lihat [solid-pressure-review.md](solid-pressure-review.md).
+Key IndexedDB baru M16-E3 tetap pada skema 1, store saves. Cadangan v13 berisi tiga belas misi/episode dan menerima v1–v12, sambil mempertahankan misi baru yang tidak dicakup. Hadiah 50 XP sekali. Status M16 kini mengikuti completed keempat episode; M17 masih diturunkan hanya dari completed M17-E1/E2/E3. Lihat [solid-pressure-review.md](solid-pressure-review.md).
+
+
+## W04 / M16-E4 — gaya apung dan integrasi bab Tekanan
+
+`pontoonModel` menghitung berat, volume terendam, apung aktual/maksimum dan bacaan neraca dari parameter tunggal. `pontoonMission` memvalidasi replay persiapan, tiga neraca, tiga modul, pengiriman dan pembongkaran. `pontoonSession` memakai delta aktif World; `pontoonDelivery` mengelola jalur tetap dan envelope lambung, tanpa renderer/input baru. `pontoonWorld` memiliki satu benda uji 1 L, tiga modul dan satu perlengkapan ber-ID stabil. UI menyediakan daftar/tombol, penampang diperbesar, tabel dan jurnal.
+
+W04 diperpanjang ke z=37, jalur penarik x=7/z=24…34. Navigasi darat membatasi air baru; perahu/kolam/irigasi lama tidak diubah. Seluruh aset dimiliki root wilayah dan dilepas bersama W04. Kamera detail memakai FollowCamera dan tidak mengubah preferensi pengguna. Batas 75%/1,2 m hanya latihan; tidak ada klaim keselamatan kapal nyata.
+
+Key M16-E4 ditambahkan ke transaksi empat belas misi, IndexedDB skema 1. Cadangan v14 menerima v1–v13 dan mempertahankan episode yang tidak tercakup. `m16ChapterStatus` hanya menggunakan completed E1/E2/E3/E4; reset satu episode menurunkan status bab, receipt XP tidak menggantikannya. M17 tetap tiga episode; S14/S17 terpisah. Laporan dan hasil final: [pontoon-buoyancy-review.md](pontoon-buoyancy-review.md).

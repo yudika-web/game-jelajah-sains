@@ -1,6 +1,9 @@
 # W03 / M16-E3 — Pijakan Aman Pos Rimba
 
-27 Oktober 2026. Dikembangkan dari main `bb8ea22` tanpa mengembalikan branch ke versi lama. Tidak ditemukan AGENTS.md. Rancangan M16 mencakup luas pijakan, kedalaman, hidraulik dan gaya apung. Episode ini melengkapi tekanan padat melalui maket meja di pos aman. **M16 tetap Dalam pengembangan**, karena pengayaan gaya apung belum tersedia. M17 tetap mengikuti completed ketiga episodenya; tidak ada hadiah bab tambahan.
+> Pembaruan M16-E4: [Ponton Pengangkut Peralatan](pontoon-buoyancy-review.md) kini tersedia di W04. M16 hanya Tuntas jika completed E1/E2/E3/E4 saat ini semuanya true. Keterangan status/fitur pada laporan tahap di bawah merupakan catatan historis, bukan status bab mutakhir. S14 tetap terpisah.
+
+
+27 Oktober 2026. Dikembangkan dari main `bb8ea22` tanpa mengembalikan branch ke versi lama. Tidak ditemukan AGENTS.md. Rancangan M16 mencakup luas pijakan, kedalaman, hidraulik dan gaya apung. Episode ini melengkapi tekanan padat melalui maket meja di pos aman. **M16 kini mengikuti completed keempat episode**; pengayaan gaya apung M16-E4 tersedia di W04. M17 tetap mengikuti completed ketiga episodenya; tidak ada hadiah bab tambahan.
 
 ## Cara bermain
 
@@ -66,7 +69,7 @@ Fase: **running → preview → observed → recorded → recover**. Mulai atau 
 
 IndexedDB tetap **skema 1**, store `saves`, key baru **M16-E3**. Cadangan **v13** memuat tiga belas misi/episode dan menerima **semua v1–v12**. Cadangan lama mempertahankan episode yang tidak dicakup. Parser menghitung ulang dari model dan mereplay urutan tindakan, termasuk ukuran, persiapan media, gerbang dan bukti hadiah. Impor tidak valid ditolak sebelum perubahan disimpan. Reload mempertahankan hasil sah, membatalkan trial sementara dan memulihkan maket di pos aman. Reset serta impor percobaan lebih awal mempertahankan receipt 50 XP pertama.
 
-Aturan dan volume air, gerobak serta progres W03-LOG01 tidak menjadi bagian model tekanan padat. Status M17 tidak bergantung pada episode ini. M16 tetap Dalam pengembangan sampai pengayaan gaya apung tersedia.
+Aturan dan volume air, gerobak serta progres W03-LOG01 tidak menjadi bagian model tekanan padat. Status M17 tidak bergantung pada episode ini. M16-E4 kini tersedia; status bab mengikuti completed keempat episode saat ini.
 
 ## Hasil pemeriksaan
 
@@ -81,7 +84,7 @@ Aturan dan volume air, gerobak serta progres W03-LOG01 tidak menjadi bagian mode
 
 Unit test memeriksa luas dan konversi, nilai 10/5/2,5 kPa, gaya tetap, rasio luas/tekanan, penggantian aman, data belum diperoleh, urutan C/A/B, pembatalan tiga fase, klik ganda, A gagal tekanan, B memenuhi dua batas, C gagal lebar tanpa tekanan kontak, reset/pengulangan hadiah, validasi replay serta semua dua belas format cadangan lama. Geometry test memeriksa satu beban, tiga penopang ber-ID tetap, rasio bentuk, faktor ×3, batas gerbang dan mesh yang tidak bertambah per frame. Navigasi seluruh stasiun lama/baru diuji pada jalur C terbuka/tertutup, dengan radius karakter maupun gerobak.
 
-Alur IFP penuh memulai dari Kota, menerima tugas, membaca sumber di lokasi, memeriksa 400 N, mengukur A/B/C, memperbaiki variabel keliru, menjalankan C/A/B, memperbaiki prediksi setelah pembatalan, mencoba A/C/B pada jalur, memperbaiki kesimpulan, menyimpan refleksi, reload, menolak impor hasil palsu, mengimpor v1–v12, reset dengan hadiah pertama tetap dan kembali ke Kota. Seluruh dua belas progres sebelumnya dibandingkan, termasuk **W03-LOG01 selesai dengan sumber 16 L**; hanya timestamp penyimpanan M01 yang boleh berubah. Status M17 Tuntas tetap benar, sementara M16 tetap Dalam pengembangan.
+Alur IFP penuh memulai dari Kota, menerima tugas, membaca sumber di lokasi, memeriksa 400 N, mengukur A/B/C, memperbaiki variabel keliru, menjalankan C/A/B, memperbaiki prediksi setelah pembatalan, mencoba A/C/B pada jalur, memperbaiki kesimpulan, menyimpan refleksi, reload, menolak impor hasil palsu, mengimpor v1–v12, reset dengan hadiah pertama tetap dan kembali ke Kota. Seluruh dua belas progres sebelumnya dibandingkan, termasuk **W03-LOG01 selesai dengan sumber 16 L**; hanya timestamp penyimpanan M01 yang boleh berubah. Status M17 Tuntas tetap benar, sementara Status M16 kini mengikuti completed keempat episode.
 
 Laptop memeriksa Enter pada tombol, jeda fokus, reload pratinjau, pemulihan kamera dan input diam setelah penutupan panel. Viewport sentuh **390×844, 844×390 dan 1920×1080** memeriksa C tertahan, B berhasil, pemulihan serta tabel tanpa overflow. Ini simulasi browser, bukan perangkat fisik.
 

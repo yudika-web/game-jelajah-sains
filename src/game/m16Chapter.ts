@@ -1,0 +1,1 @@
+export const m16ChapterStatus=(e1:{completed:boolean},e2:{completed:boolean},e3:{completed:boolean},e4:{completed:boolean})=>e1.completed&&e2.completed&&e3.completed&&e4.completed?'Tuntas':'Dalam pengembangan';

@@ -25,7 +25,7 @@ export function hydraulicTransition(p:HydraulicProgress,e:HydraulicEvent,now=()=
  case'observe':if(p.trial?.phase!=='preview')return fail('Tunggu indikator, lalu amati kedua piston.');n.trial!.phase='observed';break;
  case'record':if(p.trial?.phase!=='observed')return fail('Jalankan uji dan amati sebelum mencatat.');if(p.trial.result.challenge)n.attempts.push(structuredClone(p.trial.result));else n.records.push(structuredClone(p.trial.result));n.trial!.phase='recorded';message='Satu hasil sah dicatat. Kembalikan platform sebelum mengganti modul.';break;
  case'recover':if(!p.trial)return fail('Alat sudah aman; peti tersangga.');n.trial=null;message='Alat kembali aman. Peti yang sama tersangga; bukti sah tetap ada.';break;
- case'conclude':if(p.completed||p.trial||p.records.length!==3||!hydraulicChallengeWon(p)||!e.answers||!Object.keys(correctHydraulicAnswers).every(k=>typeof e.answers[k as keyof HydraulicAnswers]==='string'&&e.answers[k as keyof HydraulicAnswers].length<=60))return fail('Catat tiga percobaan, berhasil mengangkat pada tantangan, lalu pulihkan alat.');ok=Object.entries(correctHydraulicAnswers).every(([k,v])=>e.answers[k as keyof HydraulicAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E2 selesai · 50 XP pertama. M16 tetap Dalam pengembangan.':'Bandingkan gaya, gerak dan usaha. Pertimbangkan kedua batas; upaya awal disimpan.';break;
+ case'conclude':if(p.completed||p.trial||p.records.length!==3||!hydraulicChallengeWon(p)||!e.answers||!Object.keys(correctHydraulicAnswers).every(k=>typeof e.answers[k as keyof HydraulicAnswers]==='string'&&e.answers[k as keyof HydraulicAnswers].length<=60))return fail('Catat tiga percobaan, berhasil mengangkat pada tantangan, lalu pulihkan alat.');ok=Object.entries(correctHydraulicAnswers).every(([k,v])=>e.answers[k as keyof HydraulicAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E2 selesai · 50 XP pertama. M16 tuntas setelah keempat episode selesai.':'Bandingkan gaya, gerak dan usaha. Pertimbangkan kedua batas; upaya awal disimpan.';break;
  case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
  default:return fail('Tindakan tidak dikenal.');
  }
@@ -46,7 +46,7 @@ export function parseHydraulic(raw:unknown):HydraulicProgress{
 }
 export const settleHydraulic=(p:HydraulicProgress)=>p.trial?hydraulicTransition(p,{type:'recover'}).progress:p;
 export const hydraulicSteps=(p:HydraulicProgress)=>[
- {title:'Terima Lift Hidraulik',detail:'M16-E2; bab Tekanan masih Dalam pengembangan.',place:'bima',done:p.accepted},
+ {title:'Terima Lift Hidraulik',detail:'M16-E2; satu dari empat episode bab Tekanan.',place:'bima',done:p.accepted},
  {title:'Baca buku dan kebutuhan',detail:'Tekanan, gaya, gerak dan batas alat.',place:p.sources.pressure&&p.sources.tradeoff?'hydraulicNotes':'hydraulicBook',done:Object.values(p.sources).every(Boolean)},
  {title:'Periksa peti dan rencanakan',detail:'Berat 100 N, target 5 cm; ubah luas keluaran.',place:'hydraulicLoad',done:p.inspected&&p.plan},
  {title:`Catat tiga modul · ${p.records.length}/3`,detail:'Pasang, prediksi, uji, amati, catat, kembalikan.',place:'hydraulicBench',done:p.records.length===3},

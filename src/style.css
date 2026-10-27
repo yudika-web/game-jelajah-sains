@@ -442,3 +442,11 @@ body[data-mode=ifp] .crane-actions button { min-height: 64px; }
 .hydraulic-modules{display:flex;gap:8px;flex-wrap:wrap}.hydraulic-modules button{min-height:48px;flex:1 1 90px}.hydraulic-modules [aria-pressed=true]{outline:3px solid #b9964f;background:#e5d9b3}.hydraulic-detail{margin:12px 0;background:#edf3e9;border-radius:14px;padding:10px}.hydraulic-detail svg{display:block;width:100%;height:auto;max-height:200px}.hydraulic-detail figcaption{font-size:13px;min-height:40px;line-height:1.5}#hydraulic-data{font-size:12px}#hydraulic-data td,#hydraulic-data th{padding:8px 4px}#panel-content:has(#hydraulic-phase) button{min-height:46px}#panel-content:has(#hydraulic-phase) fieldset{margin-bottom:10px}@media(max-width:700px){#hydraulic-data{font-size:11px}#hydraulic-data td,#hydraulic-data th{padding:7px 3px}.hydraulic-detail svg{max-height:155px}}
 
 .solid-modules{display:flex;gap:8px;flex-wrap:wrap}.solid-modules button{min-height:48px;flex:1 1 90px}.solid-modules [aria-pressed=true]{outline:3px solid #b9964f;background:#e5d9b3}.solid-detail{margin:12px 0;background:#edf3e9;border-radius:14px;padding:10px}.solid-detail svg{display:block;width:100%;height:auto;max-height:200px}.solid-detail figcaption{font-size:13px;min-height:40px;line-height:1.5}#solid-data{font-size:12px}#solid-data td,#solid-data th{padding:8px 4px}#panel-content:has(#solid-phase) button{min-height:46px}@media(max-width:700px){#solid-data{font-size:11px}#solid-data td,#solid-data th{padding:7px 3px}.solid-detail svg{max-height:155px}}
+
+/* M16-E4: a readable cross-section complements the actual world waterline. */
+.pontoon-section { margin: 12px 0; }
+.pontoon-section svg { display: block; width: 100%; height: auto; max-height: 160px; }
+.pontoon-section figcaption { font-size: .9rem; line-height: 1.5; }
+.pontoon-modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pontoon-modules button { min-width: 0; padding: 10px 6px; min-height: 54px; }
+.pontoon-modules button[aria-pressed="true"] { border: 2px solid #387b73; font-weight: bold; }

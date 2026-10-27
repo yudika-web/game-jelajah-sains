@@ -1,0 +1,8 @@
+import {initialPontoon,pontoonTransition,type PontoonProgress,type PontoonEvent} from '../../src/game/pontoonMission';
+import {immersionConditions,pontoonModules,correctPontoonAnswers} from '../../src/data/pontoonContent';
+export function pontoonAct(p:PontoonProgress,e:PontoonEvent){const r=pontoonTransition(p,e,()=> '2026-10-27T00:00:00.000Z');if(!r.ok)throw Error(r.message);return r.progress;}
+export function inspectedPontoon(){let p=pontoonAct(initialPontoon(),{type:'accept'});for(const source of ['up','scale','reserve'] as const)p=pontoonAct(p,{type:'read',source});return pontoonAct(p,{type:'inspect'});}
+export function preparedPontoon(){let p=inspectedPontoon();for(const condition of immersionConditions){p=pontoonAct(p,{type:'predict',test:'spring',key:condition,choice:'15 N'});for(const e of [{type:'startSpring',condition},{type:'finish'},{type:'observe'},{type:'record'},{type:'park'}] as PontoonEvent[])p=pontoonAct(p,e);}p=pontoonAct(p,{type:'needs'});return pontoonAct(p,{type:'plan',variable:'module'});}
+export function testedPontoon(){let p=preparedPontoon();for(const module of pontoonModules){p=pontoonAct(p,{type:'select',module});p=pontoonAct(p,{type:'predict',test:'pontoon',key:module,choice:'200 N; 20 L'});for(const e of [{type:'load'},{type:'startPontoon'},{type:'finish'},{type:'observe'},{type:'record'},{type:'park'}] as PontoonEvent[])p=pontoonAct(p,e);}return p;}
+export function deliveredPontoon(){let p=pontoonAct(testedPontoon(),{type:'select',module:'B'});for(const e of [{type:'load'},{type:'ship'},{type:'arrive'},{type:'unload'},{type:'recover'}] as PontoonEvent[])p=pontoonAct(p,e);return p;}
+export const finishedPontoon=()=>pontoonAct(deliveredPontoon(),{type:'conclude',answers:correctPontoonAnswers});

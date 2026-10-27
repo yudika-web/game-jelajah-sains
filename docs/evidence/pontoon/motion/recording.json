@@ -1,0 +1,21 @@
+{
+  "checkedAtUTC": "2026-10-26T23:08:46.309Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "SwiftShader",
+  "frames": 413,
+  "seconds": 25.337733030319214,
+  "checkpoint": "prepared-v14.json from actual UI gameplay: sources, three spring readings and plan; no pontoon results.",
+  "sequence": [
+    "C/A/B flotation, observe and record",
+    "A rejected: no reserve",
+    "C travels and stops before gate",
+    "B sails, stops, resumes, arrives once",
+    "unload single cargo at receiver",
+    "recover keeps received cargo",
+    "journal from actual records"
+  ],
+  "errors": [],
+  "external": []
+}

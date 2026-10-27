@@ -26,7 +26,7 @@ export function solidTransition(p:SolidProgress,e:SolidEvent,now=()=>new Date().
  case'observe':if(p.trial?.phase!=='preview')return fail('Tunggu indikator, lalu amati bidang kontak.');n.trial!.phase='observed';break;
  case'record':if(p.trial?.phase!=='observed')return fail('Jalankan uji dan amati sebelum mencatat.');if(p.trial.result.challenge)n.attempts.push(structuredClone(p.trial.result));else n.records.push(structuredClone(p.trial.result));n.trial!.phase='recorded';message='Satu hasil sah dicatat. Angkat beban dan siapkan ulang media sebelum mengganti penopang.';break;
  case'recover':if(!p.trial)return fail('Maket sudah aman; beban terangkat dan media siap.');n.trial=null;message='Maket pulih: beban yang sama terangkat dan media disiapkan ulang; bukti sah tetap ada.';break;
- case'conclude':if(p.completed||p.trial||p.records.length!==3||!solidChallengeWon(p)||!e.answers||!Object.keys(correctSolidAnswers).every(k=>typeof e.answers[k as keyof SolidAnswers]==='string'&&e.answers[k as keyof SolidAnswers].length<=60))return fail('Catat tiga percobaan, berhasil memasang penopang pada tantangan, lalu pulihkan alat.');ok=Object.entries(correctSolidAnswers).every(([k,v])=>e.answers[k as keyof SolidAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E3 selesai · 50 XP pertama. M16 tetap Dalam pengembangan.':'Gaya tetap, luas mengubah tekanan rata-rata. Pertimbangkan tekanan dan lebar; upaya awal disimpan.';break;
+ case'conclude':if(p.completed||p.trial||p.records.length!==3||!solidChallengeWon(p)||!e.answers||!Object.keys(correctSolidAnswers).every(k=>typeof e.answers[k as keyof SolidAnswers]==='string'&&e.answers[k as keyof SolidAnswers].length<=60))return fail('Catat tiga percobaan, berhasil memasang penopang pada tantangan, lalu pulihkan alat.');ok=Object.entries(correctSolidAnswers).every(([k,v])=>e.answers[k as keyof SolidAnswers]===v);n.answers.push({...e.answers,correct:ok});n.completed=ok;if(ok&&!p.firstCompletedAt){n.reward=50;n.firstCompletedAt=now();}message=ok?'M16-E3 selesai · 50 XP pertama. M16 tuntas setelah keempat episode selesai.':'Gaya tetap, luas mengubah tekanan rata-rata. Pertimbangkan tekanan dan lebar; upaya awal disimpan.';break;
  case'reflect':if(typeof e.text!=='string')return fail('Refleksi tidak valid.');n.reflection=e.text.slice(0,1000);break;
  default:return fail('Tindakan tidak dikenal.');
  }
@@ -47,7 +47,7 @@ export function parseSolid(raw:unknown):SolidProgress{
 }
 export const settleSolid=(p:SolidProgress)=>p.trial?solidTransition(p,{type:'recover'}).progress:p;
 export const solidSteps=(p:SolidProgress)=>[
- {title:'Terima Pijakan Aman Pos Rimba',detail:'M16-E3; bab Tekanan masih Dalam pengembangan.',place:'damar',done:p.accepted},
+ {title:'Terima Pijakan Aman Pos Rimba',detail:'M16-E3; satu dari empat episode bab Tekanan.',place:'damar',done:p.accepted},
  {title:'Baca buku dan kebutuhan',detail:'Gaya, luas kontak dan dua batas model.',place:p.sources.force&&p.sources.area?'solidNotes':'solidBook',done:Object.values(p.sources).every(Boolean)},
  {title:'Periksa gaya 400 N',detail:'Gaya alat virtual, bukan berat karakter.',place:'solidForce',done:p.inspected},
  {title:'Ukur dan rencanakan',detail:'Ukur lebar/panjang A/B/C; bandingkan luas kontak.',place:'solidRack',done:p.plan&&Object.values(p.measured).every(Boolean)},

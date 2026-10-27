@@ -1,8 +1,11 @@
 # W06 / M16-E2 — Lift Hidraulik Pos Riset
 
-> Keadaan terkini menambahkan [M16-E3 Pijakan Aman Pos Rimba](solid-pressure-review.md), cadangan v13 dan key ketiga belas. Laporan di bawah mendokumentasikan tahap sebelumnya; aturan serta bukti historisnya dipertahankan.
+> Pembaruan M16-E4: [Ponton Pengangkut Peralatan](pontoon-buoyancy-review.md) kini tersedia di W04. M16 hanya Tuntas jika completed E1/E2/E3/E4 saat ini semuanya true. Keterangan status/fitur pada laporan tahap di bawah merupakan catatan historis, bukan status bab mutakhir. S14 tetap terpisah.
 
-26 Oktober 2026. Dibangun di atas `9745c05`, tanpa mengembalikan branch ke commit lama. Tidak ditemukan AGENTS.md. Rancangan bab M16 mencakup tekanan zat padat, kedalaman, hidraulik dan gaya apung. Tahap ini menambahkan episode hidraulik di W06; ROV M16-E1 tetap tersedia di W05. **M16 tetap Dalam pengembangan**, karena tekanan zat padat dan pengayaan gaya apung belum dicakup. Status M17 hanya berasal dari completed ketiga episode M17; tidak ada penyelesaian S17 atau hadiah bab otomatis.
+
+> Tahap E3 sebelumnya menambahkan [M16-E3 Pijakan Aman Pos Rimba](solid-pressure-review.md), cadangan v13 dan key ketiga belas. Laporan di bawah mendokumentasikan tahap sebelumnya; aturan serta bukti historisnya dipertahankan.
+
+26 Oktober 2026. Dibangun di atas `9745c05`, tanpa mengembalikan branch ke commit lama. Tidak ditemukan AGENTS.md. Rancangan bab M16 mencakup tekanan zat padat, kedalaman, hidraulik dan gaya apung. Tahap ini menambahkan episode hidraulik di W06; ROV M16-E1 tetap tersedia di W05. **M16 kini mengikuti completed E1/E2/E3/E4**; tekanan padat dan ponton tersedia pada versi mutakhir. Status M17 hanya berasal dari completed ketiga episode M17; tidak ada penyelesaian S17 atau hadiah bab otomatis.
 
 ## Cara bermain
 

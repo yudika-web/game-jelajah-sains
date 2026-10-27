@@ -52,7 +52,7 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   b(1.8,.12,.5,'#9b7b54',-2,.8,7.4);for(const x of [-2.6,-1.4]){b(.09,1.6,.09,'#5a6d55',x,1.2,7.4);b(.08,.3,.08,'#ba975f',x,.50,7.4);}
   for(const x of [-3.8,-.2])b(.25,3.2,.25,'#8b7957',x,1.6,15);b(4,.4,.4,'#578f8d',-2,3.3,15);
   npc(-6,9);
-  for(const p of riverPlaces){if(p.id!=='lestari')label(p.short,p.x,p.id==='rodRack'?2.5:2.35,p.z,p.id);const disc=new THREE.Mesh(new THREE.RingGeometry(.62,.73,24),new THREE.MeshBasicMaterial({color:p.color,side:THREE.DoubleSide}));disc.rotation.x=-Math.PI/2;disc.position.set(p.x,.125,p.z);disc.userData.place=p.id;root.add(disc);}
+  for(const p of riverPlaces.filter(p=>!['springBench','pontoonRack','pontoonDock','pontoonReceiver','pontoonBook','pontoonNotes'].includes(p.id))){if(p.id!=='lestari')label(p.short,p.x,p.id==='rodRack'?2.5:2.35,p.z,p.id);const disc=new THREE.Mesh(new THREE.RingGeometry(.62,.73,24),new THREE.MeshBasicMaterial({color:p.color,side:THREE.DoubleSide}));disc.rotation.x=-Math.PI/2;disc.position.set(p.x,.125,p.z);disc.userData.place=p.id;root.add(disc);}
   const pool=buildPool(root,b);
   const irrigation=buildIrrigation(root,b);
   const waterLines:THREE.Mesh[]=[];

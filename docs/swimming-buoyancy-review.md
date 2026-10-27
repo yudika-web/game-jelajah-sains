@@ -1,5 +1,8 @@
 # Kolam latihan dan S14 — Terapung atau Tenggelam?
 
+> Pembaruan M16-E4: [Ponton Pengangkut Peralatan](pontoon-buoyancy-review.md) kini tersedia di W04. M16 hanya Tuntas jika completed E1/E2/E3/E4 saat ini semuanya true. Keterangan status/fitur pada laporan tahap di bawah merupakan catatan historis, bukan status bab mutakhir. S14 tetap terpisah.
+
+
 > Tahap mandiri ini memakai cadangan v5. Integrasi perahu/S15 sesudahnya memakai v6 dan tetap menerima v1–v5.
 
 Tahap mandiri sebelum integrasi perahu/S15, 24 Oktober 2026. Branch lokal work dan remote main awal sama-sama pada 51a2b22; seluruh remote branch diperiksa dan tidak ada kode berenang/S14. Pengguna mengarahkan pembuatan tahap ini dahulu. Perubahan perahu/S15 dipertahankan melalui Git stash untuk integrasi sesudah commit S14.

@@ -63,7 +63,7 @@ test('IFP one-pointer mission: measurements, experiment, correction, save/resume
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#export').click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v13.json');
+  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v14.json');
   const backup = await download.path();
   expect(backup).toBeTruthy();
   await page.locator('#import-file').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
