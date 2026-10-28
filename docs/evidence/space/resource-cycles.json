@@ -1,0 +1,32 @@
+{
+  "checkedAtUTC": "2026-10-28T05:46:46.394Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "60",
+      "textures": "17",
+      "disposals": "3",
+      "models": "3",
+      "earthView": "false"
+    },
+    {
+      "roots": "1",
+      "geometries": "60",
+      "textures": "17",
+      "disposals": "5",
+      "models": "3",
+      "earthView": "false"
+    },
+    {
+      "roots": "1",
+      "geometries": "60",
+      "textures": "17",
+      "disposals": "7",
+      "models": "3",
+      "earthView": "false"
+    }
+  ],
+  "note": "Three town/space cycles include Points cleanup and one active region. Counts, not a physical-device performance benchmark."
+}

@@ -1,0 +1,18 @@
+{
+  "checkedAtUTC": "2026-10-28T05:47:17.265Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "SwiftShader",
+  "frames": 769,
+  "seconds": 35.30227208137512,
+  "checkpoint": "prepared-v16.json from actual UI mission acceptance and four sources; no fabricated astronomy observations.",
+  "sequence": [
+    "actual rotation and night/day observations",
+    "four actual orbital positions and a full turn",
+    "four Moon geometry views and observations from Earth",
+    "journal from confirmed data"
+  ],
+  "errors": [],
+  "external": []
+}

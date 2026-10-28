@@ -1,3 +1,7 @@
+import {disposeRegion} from './disposeRegion';
+import {buildSpace} from './spaceWorld';
+import {initialSpace,type SpaceProgress} from '../game/spaceMission';
+import type {SpaceStage} from '../data/spaceContent';
 import {buildGeopark} from './geoparkWorld';
 import {geoNavigation} from '../data/geoparkRegion';
 import {initialGeo,type GeoProgress} from '../game/geoparkMission';
@@ -155,6 +159,9 @@ export class World {
   onRimbaMotion:(distance:number,seconds:number,position:Point)=>void=()=>{};
   private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
   private gardenView: GardenView | null = null;
+  private spaceView:ReturnType<typeof buildSpace>|null=null;private spaceProgress=initialSpace();
+  spaceFocus:SpaceStage|null=null;spaceEarthView=false;spaceAngle=0;onSpaceFrame:(dt:number,active:boolean)=>void=()=>{};
+  setSpace(p:SpaceProgress){this.spaceProgress=p;}
   private geoView:ReturnType<typeof buildGeopark>|null=null;
   private geoProgress=initialGeo();geoFraction=0;geoFocus:PlateId|'earth'|null=null;
   private geoCameraPoint=new THREE.Vector3();onGeoFrame:(dt:number,active:boolean)=>void=()=>{};
@@ -268,7 +275,7 @@ export class World {
       { x: -9, z: -9, w: 8, d: 6, h: 4.2, color: '#f0dfb4', roof: '#587d6d', label: 'SEKOLAH SAINS' },
       { x: -12, z: 6, w: 5, d: 5, h: 3.3, color: '#f1c2a4', roof: '#bd7359', label: 'RUMAH WARGA' },
       { x: -5, z: 13, w: 5, d: 4, h: 3.4, color: '#c5d6d3', roof: '#587d6d', label: 'LABORATORIUM' },
-      { x: 2, z: -13, w: 4, d: 4, h: 3.2, color: '#e1d8b9', roof: '#b38a52', label: 'POS PENGAMATAN' },
+      { x: 2, z: -13, w: 4, d: 4, h: 3.2, color: '#e1d8b9', roof: '#b38a52', label: 'OBSERVATORIUM' },
     ];
     for (const house of buildings) {
       b(house.w, house.h, house.d, house.color, house.x, house.h / 2, house.z);
@@ -283,6 +290,8 @@ export class World {
       this.label(house.label, house.x, house.h + 1, house.z, undefined, true);
       this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x - house.w / 2, 0, house.z - house.d / 2), new THREE.Vector3(house.x + house.w / 2, house.h + 0.5, house.z + house.d / 2)));
     }
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(1.25,16,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:'#8aa5bc'}));dome.position.set(2,3.45,-13);this.regionRoot.add(dome);
+    const telescope=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,1.6),new THREE.MeshLambertMaterial({color:'#415f7a'}));telescope.position.set(2.2,4.05,-12.7);telescope.rotation.x=-.45;this.regionRoot.add(telescope);
     // Repeated trees are merged per material to keep the scene inexpensive.
     for (const [x, z] of [[-16, -14], [-16, -2], [-16, 13], [-9, 14], [5, 13], [7, 7], [5, -8], [-5, -16], [-17, 4], [19, -10], [19, 2], [19, 12], [-7, -1]]) {
       b(0.45, 2.4, 0.45, '#957858', x, 1.1, z);
@@ -332,22 +341,16 @@ export class World {
     if (this.region === region) return;
     this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
-    const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
-    this.regionRoot.traverse(node => {
-      if (node instanceof THREE.Mesh || node instanceof THREE.Sprite || node instanceof THREE.Line) {
-        if ((node instanceof THREE.Mesh || node instanceof THREE.Line) && !node.userData.sharedGeometry && !node.geometry.userData.shared) geometries.add(node.geometry);
-        for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
-          if (material.userData.shared) continue;
-          materials.add(material);
-          const map = (material as THREE.MeshBasicMaterial).map; if (map) textures.add(map);
-        }
-      }
-    });
-    geometries.forEach(g => g.dispose()); textures.forEach(t => t.dispose()); materials.forEach(m => m.dispose());
+    disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
-    this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
-    this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
+    this.spaceView=null;this.spaceFocus=null;this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);(this.scene.fog as THREE.Fog).color.set(sky);this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
+    else if(region==='space'){
+      const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
+      this.spaceView=buildSpace({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{const rig=createCharacter('nara','spaceNara');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);this.npcs.push({id:'spaceNara',rig,animator:new CharacterAnimator(rig,1.8),timer:0});this.npcLabels.set('spaceNara',this.label('Bu Nara',x,rig.labelSocket.position.y,z,'spaceNara'));}});
+      this.collisionBoxes=this.navigation.obstacles.filter(o=>o.depth!==11).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,1.3,o.z+o.depth/2)));
+    }
     else if(region==='geopark'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
       this.geoView=buildGeopark({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{const rig=createCharacter('raka','raka');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);this.npcs.push({id:'raka',rig,animator:new CharacterAnimator(rig,2.1),timer:0});this.npcLabels.set('raka',this.label('Kak Raka',x,rig.labelSocket.position.y,z,'raka'));}});
@@ -410,6 +413,7 @@ export class World {
     if(fromGate&&region==='river'&&previous==='coast')this.boat.recover();
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
     if(fromGate && region === 'town') { this.position.set(previous==='workshop'?-15:previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='workshop'?-3:previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
+    if(fromGate&&region==='town'&&previous==='space'){this.position.set(2,0,-8.4);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
     if(fromGate&&region==='river'&&previous==='coast'){this.position.set(0,0,12);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
   }
@@ -425,7 +429,7 @@ export class World {
     const gauge=this.playerRig.tools.bucket.getObjectByName('bucket-fill-indicator')!;gauge.scale.y=Math.max(.01,p.bucket/4000);gauge.visible=p.bucket>0;
     const water=this.playerRig.tools.bucket.getObjectByName('bucket-water')!;water.visible=p.bucket>0;water.position.y=-.49+.36*p.bucket/4000;
     if(this.region==='rimba'&&opened)this.updateRimbaCamera();
-    const color=this.region==='rimba'?(p.report?'#d3dfce':'#cbb59a'):'#d9e9e3';
+    const color=this.region==='space'?'#081426':this.region==='rimba'?(p.report?'#d3dfce':'#cbb59a'):'#d9e9e3';
     (this.scene.background as THREE.Color).set(color);(this.scene.fog as THREE.Fog).color.set(color);
     this.canvas.dataset.cartRepaired=String(p.repaired);this.canvas.dataset.cartWater=String(p.cart);this.canvas.dataset.bucketWater=String(p.bucket);
     this.canvas.dataset.rimbaSource=String(p.source);this.canvas.dataset.rimbaTargets=JSON.stringify(p.targets);
@@ -531,6 +535,7 @@ export class World {
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
       this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
+    this.onSpaceFrame(dt,this.region==='space'&&!document.hidden&&document.hasFocus());this.spaceView?.frame(this.spaceProgress,this.spaceAngle,this.spaceFocus);this.canvas.dataset.spaceFocus=this.spaceFocus??'';this.canvas.dataset.spaceEarthView=String(this.spaceEarthView);this.canvas.dataset.spaceAngle=String(this.spaceAngle);this.canvas.dataset.spaceModels=this.spaceView?'3':'0';
     this.onGeoFrame(dt,this.region==='geopark'&&!document.hidden&&document.hasFocus());this.geoView?.frame(this.geoProgress,this.geoFraction);this.canvas.dataset.geoExercise=String(this.geoProgress.exercise);this.canvas.dataset.geoModels=this.geoView?'3':'0';
     this.onPontoonFrame(dt,this.region==='river'&&!document.hidden&&document.hasFocus());this.pontoonView?.frame(this.pontoonProgress,this.pontoonFraction,this.pontoonZ);if(this.pontoonView){this.canvas.dataset.pontoonZ=String(this.pontoonZ);this.canvas.dataset.pontoonLoads='1';this.canvas.dataset.pontoonObjectY=String(this.regionRoot.userData.pontoonObjectY);}
     this.onSolidFrame(dt,this.region==='rimba'&&!document.hidden&&document.hasFocus());this.solidView?.frame(this.solidProgress,this.solidFraction);if(this.solidView){this.canvas.dataset.solidLoads='1';this.canvas.dataset.solidPressure=String(this.regionRoot.userData.solidPressure??'');this.canvas.dataset.solidLoadY=String(this.regionRoot.userData.solidLoadY);this.canvas.dataset.solidSlide=String(this.regionRoot.userData.solidSlide);this.canvas.dataset.solidApplied=String(this.regionRoot.userData.solidApplied);}
@@ -550,9 +555,10 @@ export class World {
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
     if(this.geoFocus){const focus=this.geoFocus;const p=this.places.find(p=>p.id===(focus==='earth'?'geoEarth':plateModels[focus].place));if(p)this.geoCameraPoint.set(p.x,1,p.z-.8);}
     this.pontoonCameraPoint.set(this.pontoonFocus==='spring'?-6:7,this.pontoonFocus==='spring'?1:0,this.pontoonFocus==='spring'?23.2:this.pontoonZ);
-    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:(this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
-    this.followCamera.inspectionWidth=this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    this.followCamera.update(this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:(this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
+    this.followCamera.inspectionWidth=this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
+    this.followCamera.update(this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(this.region==='space'&&this.spaceFocus==='phases'&&this.spaceEarthView&&this.spaceView){this.camera.layers.set(3);this.camera.position.copy(this.spaceView.earthObserver);this.camera.lookAt(this.spaceView.moonTarget);}else this.camera.layers.set(0);
     this.onPressureFrame(dt,this.region==='coast'&&!document.hidden&&document.hasFocus());
     this.pressureView?.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.rov);
     if(this.rov.active){(this.scene.background as THREE.Color).set('#86b7b6');const f=this.scene.fog as THREE.Fog;f.color.set('#86b7b6');f.near=8;f.far=38;}
@@ -583,6 +589,7 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
+    if(this.region==='space')for(const label of this.regionLabels)label.visible=!this.spaceFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
     if(this.region==='geopark')for(const label of this.regionLabels)label.visible=!this.geoFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
     if(this.region==='workshop')for(const label of this.regionLabels)label.visible=!this.hydraulicFocus;
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
