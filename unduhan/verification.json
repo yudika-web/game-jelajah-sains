@@ -1,0 +1,27 @@
+{
+  "checkedAtUTC": "2026-10-28T22:07:38.832050+00:00",
+  "gameSourceCommit": "4d2611f776108989fb29afed315052db04312e4c",
+  "bytes": 374809,
+  "sha256": "214a43ee88d80ba073e129ec688eb76b5e59128d5eb1e4a5f81e5e58333594ac",
+  "members": 17,
+  "maxMemberLength": 37,
+  "crc": "passed",
+  "launcherTests": 16,
+  "browserTests": 2,
+  "browserViewports": [
+    [
+      1280,
+      900
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "extractedInUnicodeSpacedFolder": true,
+  "npmRequiredForPlayer": false,
+  "nodeRequired": ">=22.12.0",
+  "distMatchesVisualStage02Release": true,
+  "gameplayCodeChanged": false,
+  "physicalWindowsExplorerTested": false
+}

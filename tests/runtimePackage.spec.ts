@@ -1,0 +1,17 @@
+import {test,expect} from '@playwright/test';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import type {Server} from 'node:http';
+let folder:string,server:Server,origin:string;
+test.beforeAll(async()=>{folder=await mkdtemp(path.join(tmpdir(),'Paket IPA é & siswa '));const unzip=spawnSync('python3',['-c','import zipfile,sys;zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])',path.resolve('unduhan/JS-Windows.zip'),folder],{encoding:'utf8'});expect(unzip.status,unzip.stderr).toBe(0);const root=path.join(folder,'JS');const {createStaticServer}=await import(pathToFileURL(path.join(root,'scripts/local/static-server.mjs')).href);({server}=await createStaticServer({root:path.join(root,'dist'),appRoot:root}));await new Promise<void>(r=>server.listen(0,'127.0.0.1',r));origin=`http://127.0.0.1:${(server.address() as {port:number}).port}`;});
+test.afterAll(async()=>{await new Promise<void>(r=>{server.close(()=>r());server.closeAllConnections();});await rm(folder,{recursive:true,force:true});});
+for(const[width,height]of [[1280,900],[390,844]])test(`short ready ZIP runs offline game, v17 save and gallery ${width}x${height}`,async({page,context})=>{
+ const errors:string[]=[],external:string[]=[],failed:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)failed.push(r.url());});await page.setViewportSize({width,height});await context.route('**/*',r=>{const u=r.request().url();if(u.startsWith(origin+'/')||u.startsWith('data:')||u.startsWith('blob:'))return r.continue();external.push(u);return r.abort();});
+ await page.goto(origin);await expect(page.locator('#world')).toHaveAttribute('data-ready','true');await page.locator('#input-mode').selectOption(width===390?'hp':'ifp');await page.locator('#start').click();await expect(page.locator('#world')).toHaveAttribute('data-town-actors','3');
+ await page.locator('#settings').click();await page.locator('#import-file').setInputFiles({name:'v17.json',mimeType:'application/json',buffer:readFileSync('docs/evidence/market/completed-v17.json')});await expect(page.locator('#settings-feedback')).toContainText('Cadangan valid');await page.locator('#close-panel').click();await expect(page.locator('#garden-status')).toContainText('950');
+ await page.reload();await page.locator('#start').click();await expect(page.locator('#garden-status')).toContainText('950');await page.goto(`${origin}/character.html`);for(const c of ['explorer','explorerGirl','nara','wira','sari','damar','lestari','bima','raka']){await page.locator('#gallery-character').selectOption(c);await expect(page.locator('canvas')).toHaveAttribute('data-character',c);}expect(errors).toEqual([]);expect(external).toEqual([]);expect(failed).toEqual([]);
+});

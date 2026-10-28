@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**Windows: [unduh paket siap main dengan folder pendek](https://github.com/yudika-web/game-jelajah-sains/raw/refs/heads/fix/windows-package-path/unduhan/JS-Windows.zip)** untuk menghindari `Path too long` saat ekstraksi. Ekstrak ke `C:\Game`, buka folder `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Build sudah tersedia; Node.js masih diperlukan. [Rincian paket](unduhan/README.md).
+
 **Visual tahap 02 — Kota Sains**: sekolah/perpustakaan, pasar, observatorium, menara air, taman dan benda interaksi kini lebih terbaca; warga membaca, menyapu dan berjalan pada rute pendek. Label tampil dekat, Peta tetap lengkap. Pengaturan Rendah mengurangi detail opsional. [Laporan, perbandingan dan cuplikan](docs/visual-stage-02-review.md). Tidak ada misi, toko atau koin baru.
 
 **Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 02 kini tersedia; tahap 03 dan seterusnya belum dikerjakan.
