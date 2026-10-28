@@ -1,3 +1,4 @@
+import {addGround,groundSlabs} from './groundLayout';
 import * as THREE from 'three';
 import { cartParking, rimbaCartConfig, rimbaPlaces, forestTrees } from '../data/rimbaRegion';
 import { depotZone, rimbaCapacity, type RimbaProgress } from '../game/rimbaMission';
@@ -19,7 +20,7 @@ export function buildRimba({root,box:b,label,npc}:Builder):RimbaView {
   const material=(color:string)=>{if(!mats.has(color))mats.set(color,new THREE.MeshLambertMaterial({color}));return mats.get(color)!;};
   const mesh=(g:THREE.BufferGeometry,c:string,x:number,y:number,z:number,parent:THREE.Object3D=root)=>{const m=new THREE.Mesh(g,material(c));m.position.set(x,y,z);parent.add(m);return m;};
   const box=(w:number,h:number,d:number,c:string,x:number,y:number,z:number,parent:THREE.Object3D=root)=>mesh(new THREE.BoxGeometry(w,h,d),c,x,y,z,parent);
-  b(42,.8,43,'#738361',0,-.45,1);b(29,.05,4,'#bcaa80',0,.01,7);
+  addGround(b,groundSlabs.rimba);b(29,.05,4,'#bcaa80',0,.01,7);
   b(4,.07,30,'#c5b38d',0,.02,0);b(26,.06,4,'#bcaa80',-1,.03,-1);
   b(16,.05,3,'#b4a77f',5,.02,-6);
   for(const x of [-18.8,18.8])for(let z=-14;z<38;z+=2){b(.15,1,.15,'#6e5b40',x,.5,z);b(.12,.12,2.1,'#957e51',x,.75,z);}

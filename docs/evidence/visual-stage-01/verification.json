@@ -1,0 +1,92 @@
+{
+  "checkedAtUTC": "2026-10-28T16:28:41.519261+00:00",
+  "baselineCommit": "41fae903a1f425c88ab87e17e16fd34884523a04",
+  "scope": "Visual stage 01 only",
+  "commands": [
+    {
+      "command": "npm test",
+      "passed": 705,
+      "files": 22
+    },
+    {
+      "command": "npm run test:launcher",
+      "passed": 14
+    },
+    {
+      "command": "CAPTURE_VISUAL_EVIDENCE=1 npm run test:e2e -- tests/visualStage01.spec.ts tests/production.spec.ts tests/solid.spec.ts tests/hydraulic.spec.ts tests/running.spec.ts tests/rimba.spec.ts -g 'stage 01|production build loads|M16-E3 IFP complete|M16-E2 full IFP|keyboard: actual running|HP toggle|laptop cart'",
+      "passed": 14,
+      "minutes": 5.8
+    },
+    {
+      "command": "npm run build",
+      "result": "passed; existing large-chunk warning"
+    },
+    {
+      "command": "npm run prepare:local",
+      "result": "passed; previous build preserved until replacement succeeded"
+    }
+  ],
+  "browserTests": [
+    "tests/hydraulic.spec.ts:16:1 \u203a M16-E2 full IFP expedition: real world sources, three experiments, all challenge limits, conclusion, v12 and legacy backups (1.3m)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 1280x900 (10.5s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 390x844 (7.8s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 844x390 (8.6s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 1920x1080 (13.5s)",
+    "tests/rimba.spec.ts:87:1 \u203a laptop cart: real wheel distance, controlled Shift speed, enlarged collision, park restores normal running (11.1s)",
+    "tests/running.spec.ts:31:1 \u203a keyboard: actual running distance, both Shift keys, release to walk, diagonal normalization (8.9s)",
+    "tests/running.spec.ts:123:1 \u203a HP toggle, proportional analog and a second camera finger work in portrait and landscape (8.0s)",
+    "tests/solid.spec.ts:17:1 \u203a M16-E3 IFP complete: force, real size measurements, C/A/B experiments, A/C/B challenge, saved evidence and all old formats (1.3m)",
+    "tests/visualStage01.spec.ts:8:72 \u203a stage 01 quality persists separately from all v17 progress 1440x960 (9.1s)",
+    "tests/visualStage01.spec.ts:8:72 \u203a stage 01 quality persists separately from all v17 progress 390x844 (4.3s)",
+    "tests/visualStage01.spec.ts:8:72 \u203a stage 01 quality persists separately from all v17 progress 844x390 (4.5s)",
+    "tests/visualStage01.spec.ts:8:72 \u203a stage 01 quality persists separately from all v17 progress 1920x1080 (11.8s)",
+    "tests/visualStage01.spec.ts:20:1 \u203a stage 01 joined ground: real routes, moving camera, one active root, repeatable resource disposal, old progress unchanged (1.5m)"
+  ],
+  "qualityViewports": [
+    [
+      1440,
+      960
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      844,
+      390
+    ],
+    [
+      1920,
+      1080
+    ]
+  ],
+  "qualityTestDeviceScaleFactor": 2,
+  "fixedBeforeAfterViewport": [
+    1440,
+    960
+  ],
+  "fixedDeviceScaleFactor": 1,
+  "depthBits": 24,
+  "antialiasSamples": 4,
+  "physicalDevice": false,
+  "windowsBATTestedDirectly": false,
+  "physicalLANTested": false,
+  "allBrowserTestsRun": false,
+  "progressComparison": "all 17 mission records, except M01.savedAt normal autosave timestamp; completion/reward receipts and evidence compared unchanged",
+  "initialTestCorrections": [
+    "stable load IDs corrected in a new unit test",
+    "browser save-status assertion accepts resumed-save label",
+    "progress comparison excludes normal M01.savedAt timestamp only"
+  ],
+  "sourceFilesVerified": 134,
+  "buildFiles": {
+    "assets/character-DsxQkyDf.css": "572d7927a41fc3d92559ec8e1ee5de81c0b93a10ebe701276bd79a8c8233968d",
+    "assets/character-MUgywDdv.js": "7987eb7d878add5ab0ab253bf82c87ede3051e943834bc74e0d81ce1e3ca01fb",
+    "assets/character-QT6Q6VXu.js": "82ad7c2446ea3a29542618b5bb13cbb6b576b51b7e26854638ce961e7d1a3df2",
+    "assets/game-CvRR6mpa.css": "e1662122ca7b44fd4075b21ec74ac59ba5e2f7e126ee09103905734b59fee758",
+    "assets/game-DBDqLxBU.js": "d240cce7025d8049938a4fb3b64d925ba06f76470b1e436427368c0ebe77b17d",
+    "character.html": "3f99833c895af1175782b350dc789be0ad6f4462b97363a3d32f3cb77400ac5b",
+    "favicon.svg": "094d7ae4d2b40a2f3ab49d6cd02a7acd20f39086a3e540660642cf047f1c1c2f",
+    "index.html": "a2f882c612baf6e75e0612a6efeda3187c9955d0401b6a2bf220acdf1878b260"
+  }
+}

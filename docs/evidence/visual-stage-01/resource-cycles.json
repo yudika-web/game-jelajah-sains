@@ -1,0 +1,19 @@
+{
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "215",
+      "textures": "74",
+      "disposals": "3",
+      "quality": "normal"
+    },
+    {
+      "roots": "1",
+      "geometries": "215",
+      "textures": "74",
+      "disposals": "7",
+      "quality": "normal"
+    }
+  ]
+}

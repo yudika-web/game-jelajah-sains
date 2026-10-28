@@ -1,0 +1,90 @@
+{
+  "after-rimba-fixed.png": {
+    "bytes": 200382,
+    "sha256": "f99662a6cd3ec8fe648f13ebd781d8486e303913c8364643d96b6709b16e4e3f"
+  },
+  "after-rimba-rotated.png": {
+    "bytes": 175630,
+    "sha256": "bc3c4cadafe56d8a6a79586a96d17b90990c8171095d58d984e4490e3bb67cee"
+  },
+  "after-rimba.webm": {
+    "bytes": 812140,
+    "sha256": "b0cd087e66c1dc712efab2e925b6d33838bf062f3a5877c3d41f2ee65e0dc3ce"
+  },
+  "after-town-fixed.png": {
+    "bytes": 190614,
+    "sha256": "9aed23cba74c3c393c07c87e22e9807d012e8088af6eab4340a24eb6bfa4d1fe"
+  },
+  "after-town-rotated.png": {
+    "bytes": 192900,
+    "sha256": "ce3eace14dd8507bdc91aee6931ab76b8c392a8c06dfbf1fd63bb05391576057"
+  },
+  "after-town.webm": {
+    "bytes": 856626,
+    "sha256": "ddee7f52417f8407d5e513b97857c78660b9f54f859be2e40eff91eb5b7c5d32"
+  },
+  "after-workshop-fixed.png": {
+    "bytes": 246700,
+    "sha256": "019a7a8cd28b339ede731f517f958f1d7edb0b9b883620c91fbaa2470357b10b"
+  },
+  "after-workshop-rotated.png": {
+    "bytes": 182581,
+    "sha256": "da766d087fc9813fd5354b3f6d5452d564874d5e04853eb29148ec7804758fbf"
+  },
+  "after-workshop.webm": {
+    "bytes": 893741,
+    "sha256": "9076c5e46a24729a51eeba07c6aca51b627dbf778a331285f314115e5fe00192"
+  },
+  "before-rimba-fixed.png": {
+    "bytes": 200450,
+    "sha256": "a7d04f95c37f3979b67d0d1f47ad6bafb7fd6b322ca17b5b0be754ae8f6702b6"
+  },
+  "before-rimba-rotated.png": {
+    "bytes": 176964,
+    "sha256": "c1ca1feea303113ed313fe928b2e4a8d68fdea55d00038bd8349b073f17fca72"
+  },
+  "before-rimba.webm": {
+    "bytes": 789938,
+    "sha256": "1b8ffae6b830ae499f56ac21eb482d98ee1b207c153460c5242472568b8d9541"
+  },
+  "before-town-fixed.png": {
+    "bytes": 190882,
+    "sha256": "706293d1668930cafb0fec44db568f2a74969121eb9f0952734b32ea61de08f9"
+  },
+  "before-town-rotated.png": {
+    "bytes": 192489,
+    "sha256": "ce59466fa368161b636ea566d450b351c7e11e306fbbee23402daa7fe48187b9"
+  },
+  "before-town.webm": {
+    "bytes": 871863,
+    "sha256": "e0af419d96e09f9cddfd31e574da941a140717e5c9e3b44031774a7cfd7c7632"
+  },
+  "before-workshop-fixed.png": {
+    "bytes": 237011,
+    "sha256": "ff182f363360e3f04642444f6ac76fafef97abce8db344e79ef8194a748fe118"
+  },
+  "before-workshop-rotated.png": {
+    "bytes": 184958,
+    "sha256": "46f5f748c4bfff7bcf419ad4b99a1dbdb0bbcba14d17a963caf1269a01ff13a9"
+  },
+  "before-workshop.webm": {
+    "bytes": 543141,
+    "sha256": "a9c013e12acaeda559fd00c0bf476f9a7cf955fe83bf7a5e6e07ae2f5765f32c"
+  },
+  "quality-low-1440x960.png": {
+    "bytes": 1133890,
+    "sha256": "0e06d5b535d5fb1c4fd85099e8b050b38988862dd7669c2349987bddd01a052e"
+  },
+  "quality-low-1920x1080.png": {
+    "bytes": 1599093,
+    "sha256": "dce0fc12d9d7bde0065aad3e61188beffaa9cd5d4c1bfd027254264c2286a67d"
+  },
+  "quality-low-390x844.png": {
+    "bytes": 253515,
+    "sha256": "5266b5429d3e5dc332e676b8f8400fc63a62d17445195dcc5141665304e7c056"
+  },
+  "quality-low-844x390.png": {
+    "bytes": 271249,
+    "sha256": "2fbea1706c9661ea404bfa8b6e12719c4a01576261f22386386913a0bbdcc5cb"
+  }
+}

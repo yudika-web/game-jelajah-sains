@@ -1,3 +1,4 @@
+import {addGround,groundSlabs} from './groundLayout';
 import * as THREE from 'three';
 import {hydraulicPlaces} from '../data/hydraulicRegion';
 import {hydraulicConfig,outputAreas} from '../data/hydraulicContent';
@@ -6,7 +7,7 @@ import type {HydraulicProgress} from '../game/hydraulicMission';
 import type {PlaceId} from '../data/content';
 interface Builder{root:THREE.Group;box(w:number,h:number,d:number,c:string,x:number,y:number,z:number):void;label(text:string,x:number,y:number,z:number,id?:PlaceId,building?:boolean):void;}
 export function buildHydraulic({root,box:b,label}:Builder){
- b(40,.9,19,'#9aab97',0,-.5,28);b(4,.08,22,'#dfd1b3',0,.035,26);b(24,.08,3,'#dfd1b3',0,.04,29);b(18,.08,2,'#dfd1b3',-4,.045,33);
+ addGround(b,groundSlabs.hydraulic);b(4,.08,22,'#dfd1b3',0,.035,26);b(24,.08,3,'#dfd1b3',0,.04,29);b(18,.08,2,'#dfd1b3',-4,.045,33);
  label('HIDRAULIK · MODEL IDEAL',0,4.3,35,undefined,true);
  const apparatus=new THREE.Group();apparatus.name='hydraulic-apparatus';apparatus.position.set(8,0,26.2);root.add(apparatus);
  const mat=(c:string)=>new THREE.MeshLambertMaterial({color:c});

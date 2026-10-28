@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap berikutnya belum dikerjakan.
+
 **W01 / M02 — Persediaan Es Pasar**: amati mencair dan menguap dengan model partikel, ukur tiga sampel massa/volume, uji tiga sistem dinding, lalu bawa satu paket es melalui jalan pasar. Pak Wira memberi tugas; Bu Nara menerima kiriman. Tiga checkpoint, satu hadiah 100 XP. [Cara bermain, model, sumber dan bukti](docs/market-ice-review.md).
 
 **W08 / M07 — Catatan dari Observatorium**: akses dari Observatorium Kota ke simulasi Antariksa, mentor Bu Nara, penanda siang–malam, empat posisi dan satu revolusi penuh, serta empat fase Bulan dengan pandangan posisi dan pengamat di Bumi. Tiga checkpoint, satu hadiah 100 XP. Semua gerak/cahaya berasal dari model yang sama. [Cara bermain, geometri, sumber dan bukti](docs/space-observatory-review.md).

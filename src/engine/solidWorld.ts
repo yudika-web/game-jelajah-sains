@@ -1,3 +1,4 @@
+import {addGround,groundSlabs} from './groundLayout';
 import * as THREE from 'three';
 import {solidModules,supportSizes,solidConfig} from '../data/solidContent';
 import {solidPlaces} from '../data/solidRegion';
@@ -6,7 +7,7 @@ import type {SolidProgress} from '../game/solidMission';
 import type {PlaceId} from '../data/content';
 interface Builder{root:THREE.Group;box(w:number,h:number,d:number,c:string,x:number,y:number,z:number):void;label(text:string,x:number,y:number,z:number,id?:PlaceId,building?:boolean):void;}
 export function buildSolid({root,box:b,label}:Builder){
- b(38,.8,20,'#81936d',0,-.45,28);b(4,.07,21,'#c5b38d',0,.02,27);b(25,.06,3,'#bcaa80',-1,.03,30);b(17,.06,2,'#bcaa80',-3,.03,34);
+ addGround(b,groundSlabs.solid);b(4,.07,21,'#c5b38d',0,.02,27);b(25,.06,3,'#bcaa80',-1,.03,30);b(17,.06,2,'#bcaa80',-3,.03,34);
  label('MAKET PIJAKAN · BUKAN JALAN KARAKTER',-3,4.3,36,undefined,true);
  const lab=new THREE.Group();lab.position.set(-5,0,26.2);lab.name='solid-pressure-apparatus';root.add(lab);
  const material=(c:string)=>new THREE.MeshLambertMaterial({color:c});const wood=material('#aa895d'),metal=material('#8caaa4'),soil=material('#9c815a'),supportMat=material('#518d87');

@@ -1,3 +1,4 @@
+import {configureEnvironment,environmentMaterial,environmentStyle,qualityPixelRatio} from './environmentStyle';
 import {buildMarket,createMarketParcel} from './marketWorld';
 import {initialMarket,type MarketProgress} from '../game/marketMission';
 import {marketPlaces,marketObstacles} from '../data/marketRegion';
@@ -60,7 +61,7 @@ import { characterConfig, environmentDimensions, playerVariant } from './charact
 export type InputMode = 'laptop' | 'hp' | 'ifp';
 export class World {
   readonly scene = new THREE.Scene();
-  readonly camera = new THREE.PerspectiveCamera(48, 1, 0.1, 110);
+  readonly camera = new THREE.PerspectiveCamera(environmentStyle.camera.fov, 1, environmentStyle.camera.near, environmentStyle.camera.far);
   readonly renderer: THREE.WebGLRenderer;
   readonly playerRig = createCharacter(playerVariant(new URLSearchParams(location.search).get('avatar')));
   readonly player = this.playerRig.root;
@@ -200,15 +201,7 @@ export class World {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'low-power' });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.scene.background = new THREE.Color('#d9e9e3');
-    this.scene.fog = new THREE.Fog('#d9e9e3', 48, 100);
-    this.scene.add(new THREE.HemisphereLight('#fff9e8', '#6b9274', 1.6));
-    const sun = new THREE.DirectionalLight('#fff0cf', 2.2);
-    sun.position.set(-15, 25, 10); this.scene.add(sun);
+    configureEnvironment(this.renderer,this.scene,devicePixelRatio);
     this.scene.add(this.regionRoot);
     this.buildTown();
     this.followCamera = new FollowCamera(this.camera, this.collisionBoxes);
@@ -226,6 +219,11 @@ export class World {
     this.renderer.setAnimationLoop(() => this.frame());
     canvas.dataset.ready = 'true';
   }
+  setLowQuality(low:boolean){
+    this.renderer.setPixelRatio(qualityPixelRatio(low,devicePixelRatio));
+    this.canvas.dataset.quality=low?'low':'normal';
+    this.canvas.dataset.pixelRatio=String(this.renderer.getPixelRatio());
+  }
   private box(parent: THREE.Group | THREE.Scene, w: number, h: number, d: number, color: string, x: number, y: number, z: number, staticMesh = false) {
     const geometry = new THREE.BoxGeometry(w, h, d);
     if (staticMesh) {
@@ -235,13 +233,13 @@ export class World {
       bucket.push(geometry); this.staticGeometry.set(c, bucket);
       return;
     }
-    const mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color }));
+    const mesh = new THREE.Mesh(geometry, environmentMaterial(color));
     mesh.position.set(x, y, z); parent.add(mesh); return mesh;
   }
   private flushStatic() {
     for (const [color, geometries] of this.staticGeometry) {
       const geometry = mergeGeometries(geometries);
-      this.regionRoot.add(new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color })));
+      this.regionRoot.add(new THREE.Mesh(geometry, environmentMaterial(color)));
       geometries.forEach(g => g.dispose());
     }
     this.staticGeometry.clear();

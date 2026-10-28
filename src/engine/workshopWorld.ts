@@ -1,3 +1,4 @@
+import {addGround,groundSlabs} from './groundLayout';
 import * as THREE from 'three';
 import { workshopPlaces } from '../data/workshopRegion';
 import type { PlaceId } from '../data/content';
@@ -8,7 +9,7 @@ interface Builder { root:THREE.Group;box(w:number,h:number,d:number,c:string,x:n
 export interface WorkshopView { update(p:WorkshopProgress):void; }
 export function buildWorkshop({root,box:b,label,npc}:Builder):WorkshopView {
  const mesh=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(x,y,z);root.add(m);return m;};
- b(40,.9,40,'#92a494',0,-.5,0);b(4,.08,34,'#e0d3b5',0,.02,1);b(30,.08,4,'#e0d3b5',0,.025,6);b(29,.08,3,'#d7c9aa',0,.03,-2);
+ addGround(b,groundSlabs.workshop);b(4,.08,34,'#e0d3b5',0,.02,1);b(30,.08,4,'#e0d3b5',0,.025,6);b(29,.08,3,'#d7c9aa',0,.03,-2);
  for(const [x,z,w,d,title] of [[-11,-11,8,5,'BENGKEL KAK BIMA'],[10,-12,7,5,'POS RISET · 3 V']] as const){
   b(w,3.5,d,'#e4d3af',x,1.75,z);b(w+.5,.45,d+.5,'#52777b',x,3.65,z);
   b(environmentDimensions.door.width,environmentDimensions.door.height,.14,'#725f49',x,environmentDimensions.door.height/2,z+d/2+.08);
