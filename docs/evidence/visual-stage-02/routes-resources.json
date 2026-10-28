@@ -1,0 +1,46 @@
+{
+  "physicalDevice": false,
+  "reached": [
+    "marketPhase",
+    "marketDensity",
+    "marketRack",
+    "marketPack",
+    "marketBook",
+    "marketNotes",
+    "observatory",
+    "workshopGate",
+    "riverGate",
+    "rimbaGate",
+    "gardenGate",
+    "nara",
+    "warga",
+    "book",
+    "rain",
+    "sampleA",
+    "sampleB",
+    "barrier"
+  ],
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "57",
+      "textures": "31",
+      "actors": "3",
+      "disposals": "4"
+    },
+    {
+      "roots": "1",
+      "geometries": "57",
+      "textures": "31",
+      "actors": "3",
+      "disposals": "6"
+    },
+    {
+      "roots": "1",
+      "geometries": "57",
+      "textures": "31",
+      "actors": "3",
+      "disposals": "8"
+    }
+  ]
+}

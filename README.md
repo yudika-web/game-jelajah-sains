@@ -1,6 +1,8 @@
 # Jelajah Sains
 
-**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap berikutnya belum dikerjakan.
+**Visual tahap 02 — Kota Sains**: sekolah/perpustakaan, pasar, observatorium, menara air, taman dan benda interaksi kini lebih terbaca; warga membaca, menyapu dan berjalan pada rute pendek. Label tampil dekat, Peta tetap lengkap. Pengaturan Rendah mengurangi detail opsional. [Laporan, perbandingan dan cuplikan](docs/visual-stage-02-review.md). Tidak ada misi, toko atau koin baru.
+
+**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 02 kini tersedia; tahap 03 dan seterusnya belum dikerjakan.
 
 **W01 / M02 — Persediaan Es Pasar**: amati mencair dan menguap dengan model partikel, ukur tiga sampel massa/volume, uji tiga sistem dinding, lalu bawa satu paket es melalui jalan pasar. Pak Wira memberi tugas; Bu Nara menerima kiriman. Tiga checkpoint, satu hadiah 100 XP. [Cara bermain, model, sumber dan bukti](docs/market-ice-review.md).
 

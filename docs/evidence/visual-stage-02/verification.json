@@ -1,0 +1,79 @@
+{
+  "checkedAtUTC": "2026-10-28T17:05:07.289909+00:00",
+  "baselineCommit": "53aa11ef198deb7285578e1815e5be510608b9fc",
+  "stage": 2,
+  "scope": "Town visual environment only; all gameplay/progress retained",
+  "commands": [
+    {
+      "command": "npm test",
+      "passed": 710,
+      "files": 23
+    },
+    {
+      "command": "npm run test:launcher",
+      "passed": 14
+    },
+    {
+      "command": "npm run test:e2e -- tests/visualStage02.spec.ts tests/game.spec.ts tests/market.spec.ts tests/characters.spec.ts tests/running.spec.ts tests/production.spec.ts",
+      "passed": 27,
+      "minutes": 8.2
+    },
+    {
+      "command": "npm run build",
+      "result": "passed; existing large-chunk warning remains"
+    },
+    {
+      "command": "npm run prepare:local",
+      "result": "passed after final code; production build replaced safely"
+    }
+  ],
+  "browserTests": [
+    "tests/characters.spec.ts:32:1 \u203a NPC label raycast starts a real approach, greeting and relaxed recovery (6.3s)",
+    "tests/characters.spec.ts:50:1 \u203a old M01 save resumes, camera preferences survive separately, mission can finish (16.9s)",
+    "tests/characters.spec.ts:74:1 \u203a actual displacement drives gait at a wall; blur cancels input; manual camera is retained (13.0s)",
+    "tests/game.spec.ts:16:1 \u203a IFP one-pointer mission: measurements, experiment, correction, save/resume, backup (44.7s)",
+    "tests/game.spec.ts:77:1 \u203a laptop: WASD, keyboard journal pauses movement, camera reset (2.8s)",
+    "tests/game.spec.ts:93:1 \u203a HP: simultaneous analog and camera, pointer cancel stops movement, portrait layout (2.7s)",
+    "tests/game.spec.ts:117:1 \u203a WebGL unavailable: accessible material fallback (566ms)",
+    "tests/market.spec.ts:17:1 \u203a M02 complete: real Town approaches, mass/particles, density, fair containers, failed A, one actual C delivery and all legacy progress (1.5m)",
+    "tests/market.spec.ts:30:1 \u203a laptop market: keyboard, paused animation, cancellation/reload and fresh movement input (12.9s)",
+    "tests/market.spec.ts:33:70 \u203a market touch 390x844: real package route, one handoff, readable evidence and recovery (13.1s)",
+    "tests/market.spec.ts:33:70 \u203a market touch 844x390: real package route, one handoff, readable evidence and recovery (14.4s)",
+    "tests/market.spec.ts:33:70 \u203a market touch 1920x1080: real package route, one handoff, readable evidence and recovery (21.7s)",
+    "tests/market.spec.ts:37:1 \u203a carried M02 package recovers once across Town/Garden travel while prior evidence is preserved (24.3s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 1280x900 (11.0s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 390x844 (7.8s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 844x390 (8.7s)",
+    "tests/production.spec.ts:28:3 \u203a production build loads game and every gallery model without internet 1920x1080 (13.3s)",
+    "tests/running.spec.ts:31:1 \u203a keyboard: actual running distance, both Shift keys, release to walk, diagonal normalization (9.0s)",
+    "tests/running.spec.ts:54:1 \u203a panels, editable fields, blur, hidden tab and mode switch clear run and require fresh input (7.6s)",
+    "tests/running.spec.ts:83:1 \u203a IFP runs a map route exactly, cancels by stop/manual input, and resets on region travel (16.0s)",
+    "tests/running.spec.ts:113:1 \u203a running into the school wall cannot tunnel or keep the gait moving (9.1s)",
+    "tests/running.spec.ts:123:1 \u203a HP toggle, proportional analog and a second camera finger work in portrait and landscape (8.4s)",
+    "tests/visualStage02.spec.ts:8:1 \u203a stage 02: all Town destinations require real arrival; three region cycles preserve all v17 evidence and resources (1.8m)",
+    "tests/visualStage02.spec.ts:16:72 \u203a stage 02 ambient pause, reduced motion, Low and input recovery 1440x960 (8.1s)",
+    "tests/visualStage02.spec.ts:16:72 \u203a stage 02 ambient pause, reduced motion, Low and input recovery 390x844 (5.7s)",
+    "tests/visualStage02.spec.ts:16:72 \u203a stage 02 ambient pause, reduced motion, Low and input recovery 844x390 (6.1s)",
+    "tests/visualStage02.spec.ts:16:72 \u203a stage 02 ambient pause, reduced motion, Low and input recovery 1920x1080 (9.6s)"
+  ],
+  "physicalDevice": false,
+  "windowsBATTestedDirectly": false,
+  "physicalLANTested": false,
+  "browser": "Chromium 154 / SwiftShader / Linux",
+  "fullBrowserSuiteRun": false,
+  "sourceFilesVerified": 135,
+  "progressComparison": "all 17 mission records unchanged, excluding normal autosave M01.savedAt only",
+  "allTownDestinations": 18,
+  "oldBackupFormat": 17,
+  "newBackupFormat": 17,
+  "buildFiles": {
+    "assets/character-CS_nbzME.js": "9ac12cbf2ad91cf89c396d8286d83de01cc512161c0b9482479e5e7e78c96885",
+    "assets/character-DGY-gpP6.js": "13d37f81463da2b0fc741365380ba01594bc278c92474c0bae83a1d8e5ac2dc9",
+    "assets/character-DsxQkyDf.css": "572d7927a41fc3d92559ec8e1ee5de81c0b93a10ebe701276bd79a8c8233968d",
+    "assets/game-5oyVlXlT.js": "ff6248f2885bfac9384048cca6f3ae61416c1fb9358b05508b62a741b305009d",
+    "assets/game-CvRR6mpa.css": "e1662122ca7b44fd4075b21ec74ac59ba5e2f7e126ee09103905734b59fee758",
+    "character.html": "4029a9fc259a4de8f612c668beaa67b80a0e8c7128e312a21c06924e1d013c70",
+    "favicon.svg": "094d7ae4d2b40a2f3ab49d6cd02a7acd20f39086a3e540660642cf047f1c1c2f",
+    "index.html": "9f22e5d99455e8c020137b9e9b8a81948d31d23931da009d01dd3fbecb450c53"
+  }
+}

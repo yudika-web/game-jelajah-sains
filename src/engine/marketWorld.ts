@@ -33,6 +33,7 @@ export function buildMarket(root:THREE.Group){
  const received=new THREE.Group();received.position.set(-3.25,0,3);g.add(received);const deliveredBox=box(received,.42,.3,.35,'#c69d53',0,.18);deliveredBox.name='M02-ICE-001-receiver';
  const book=stations.get('marketBook')!;box(book,.55,.07,.4,'#527e8d',0,.95);box(book,.5,.035,.36,'#fff3cf',0,1.0);
  const notes=stations.get('marketNotes')!;box(notes,.65,.05,.45,'#fff0cd',0,.94);
+ for(const p of marketPlaces)stations.get(p.id)!.traverse(n=>{n.userData.place=p.id;});
  let time=0;
  return{root:g,particles:molecules,frame(p:MarketProgress,fraction:number,dt:number,reduced:boolean){
   if(Number.isFinite(dt))time+=Math.max(0,Math.min(dt,.1));

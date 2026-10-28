@@ -1,3 +1,4 @@
+import {buildTownEnvironment,townBuildings,townLabelRange,townTableCamera} from './townEnvironment';
 import {configureEnvironment,environmentMaterial,environmentStyle,qualityPixelRatio} from './environmentStyle';
 import {buildMarket,createMarketParcel} from './marketWorld';
 import {initialMarket,type MarketProgress} from '../game/marketMission';
@@ -197,6 +198,9 @@ export class World {
   private npcLabels = new Map<PlaceId, THREE.Sprite>();
   private projectedLabel = new THREE.Vector3();
   private regionLabels: THREE.Sprite[] = [];
+  private townView:ReturnType<typeof buildTownEnvironment>|null=null;
+  private townIndicators:THREE.Mesh[]=[];
+  private lowQuality=false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -220,6 +224,7 @@ export class World {
     canvas.dataset.ready = 'true';
   }
   setLowQuality(low:boolean){
+    this.lowQuality=low;
     this.renderer.setPixelRatio(qualityPixelRatio(low,devicePixelRatio));
     this.canvas.dataset.quality=low?'low':'normal';
     this.canvas.dataset.pixelRatio=String(this.renderer.getPixelRatio());
@@ -277,39 +282,8 @@ export class World {
     }
     b(5, 0.07, 9, '#bb9570', 8.7, 0.02, -11);
     for (let i = 0; i < 5; i++) b(2.2, 0.05, 0.12, '#987557', 8.4, 0.08, -14 + i * 1.4);
-    const buildings = [
-      { x: -9, z: -9, w: 8, d: 6, h: 4.2, color: '#f0dfb4', roof: '#587d6d', label: 'SEKOLAH SAINS' },
-      { x: -12, z: 6, w: 5, d: 5, h: 3.3, color: '#f1c2a4', roof: '#bd7359', label: 'RUMAH WARGA' },
-      { x: -5, z: 13, w: 5, d: 4, h: 3.4, color: '#c5d6d3', roof: '#587d6d', label: 'PASAR SAINS · ES' },
-      { x: 2, z: -13, w: 4, d: 4, h: 3.2, color: '#e1d8b9', roof: '#b38a52', label: 'OBSERVATORIUM' },
-    ];
-    for (const house of buildings) {
-      b(house.w, house.h, house.d, house.color, house.x, house.h / 2, house.z);
-      b(house.w + 0.55, 0.5, house.d + 0.55, house.roof, house.x, house.h + 0.12, house.z);
-      b(house.w + 0.15, 0.2, house.d + 0.15, '#f7eed4', house.x, house.h - 0.4, house.z);
-      b(environmentDimensions.door.width, environmentDimensions.door.height, 0.12, '#5b6b5e', house.x, environmentDimensions.door.height/2, house.z + house.d / 2 + 0.08);
-      for (const dx of [-house.w * 0.3, house.w * 0.3]) {
-        b(1.15, 1.25, 0.16, '#f7f1dd', house.x + dx, 2.1, house.z + house.d / 2 + 0.1);
-        b(0.89, 0.99, 0.18, '#739da4', house.x + dx, 2.1, house.z + house.d / 2 + 0.12);
-        b(0.07, 1, 0.2, '#e9e4d3', house.x + dx, 2.1, house.z + house.d / 2 + 0.15);
-      }
-      this.label(house.label, house.x, house.h + 1, house.z, undefined, true);
-      this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x - house.w / 2, 0, house.z - house.d / 2), new THREE.Vector3(house.x + house.w / 2, house.h + 0.5, house.z + house.d / 2)));
-    }
-    const dome=new THREE.Mesh(new THREE.SphereGeometry(1.25,16,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:'#8aa5bc'}));dome.position.set(2,3.45,-13);this.regionRoot.add(dome);
-    const telescope=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,1.6),new THREE.MeshLambertMaterial({color:'#415f7a'}));telescope.position.set(2.2,4.05,-12.7);telescope.rotation.x=-.45;this.regionRoot.add(telescope);
-    // Repeated trees are merged per material to keep the scene inexpensive.
-    for (const [x, z] of [[-16, -14], [-16, -2], [-16, 13], [-9, 14], [5, 13], [7, 7], [5, -8], [-5, -16], [-17, 4], [19, -10], [19, 2], [19, 12], [-7, -1]]) {
-      b(0.45, 2.4, 0.45, '#957858', x, 1.1, z);
-      b(2.3, 2.4, 2.3, '#548260', x, 3, z);
-      b(1.6, 1.1, 1.6, '#73965f', x + 0.35, 4.3, z);
-    }
-    // Planters and benches decorate the edges, leaving main navigation open.
-    for (const [x, z] of [[-8, 10], [4, 1], [-3, -3]]) {
-      b(1.8, .16, .7, '#a97b4f', x, environmentDimensions.benchSeat-.08, z);
-      b(1.8, .65, .18, '#a97b4f', x, .86, z - 0.35);
-      for (const dx of [-0.65, 0.65]) b(.14,.42,.55,'#525c4f',x+dx,.21, z);
-    }
+    this.townView=buildTownEnvironment(s);
+    for(const house of townBuildings)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
     for (const place of places) {
       if (place.id === 'nara' || place.id === 'warga') {
         const rig = createCharacter(place.id === 'nara' ? 'nara' : 'wira', place.id);
@@ -319,25 +293,17 @@ export class World {
       } else if (place.id === 'gardenGate'||place.id==='rimbaGate'||place.id==='riverGate'||place.id==='workshopGate') {
         for(const dx of [-1.8,1.8]) b(.3,3.5,.3,'#98784f',place.x+dx,1.75,place.z);
         b(4.2,.5,.5,'#6d8d5c',place.x,3.6,place.z);
-      } else if (place.id === 'sampleA' || place.id === 'sampleB') {
-        b(1.1, 0.15, 1.4, '#d2ba8b', place.x, 0.14, place.z);
-        b(0.4, 0.6, 0.4, place.color, place.x, 0.55, place.z);
-        b(0.28, 0.12, 0.28, '#f1efdb', place.x, 0.91, place.z);
-      } else if(!marketPlaces.some(p=>p.id===place.id)) {
-        b(0.15, 1.3, 0.15, '#8b7356', place.x, 0.65, place.z);
-        b(1.4, 0.9, 0.15, place.color, place.x, 1.4, place.z);
-        if (place.id === 'book') b(0.7, 0.12, 0.6, '#f9ecd2', place.x, 1.92, place.z);
       }
-      const disc = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.77, 28), new THREE.MeshBasicMaterial({ color: place.color, side: THREE.DoubleSide }));
-      disc.rotation.x = -Math.PI / 2; disc.position.set(place.x, 0.13, place.z); s.add(disc);
+      const disc = new THREE.Mesh(new THREE.RingGeometry(0.47, 0.54, 24), new THREE.MeshBasicMaterial({ color: place.color, side: THREE.DoubleSide }));
+      disc.rotation.x = -Math.PI / 2; disc.position.set(place.x, 0.13, place.z); disc.userData.place=place.id;s.add(disc);this.townIndicators.push(disc);
       const npc = this.npcs.find(n => n.id === place.id);
       if (npc) {
         npc.rig.root.updateMatrixWorld(true);
         npc.rig.labelSocket.getWorldPosition(this.npcLabelPosition);
         this.npcLabels.set(place.id, this.label(place.short, place.x, this.npcLabelPosition.y, place.z, place.id));
-      } else this.label(place.short, place.x, 2.4, place.z, place.id);
+      } else this.label(place.id==='observatory'?'Observatorium':place.short, place.x, 2.1, place.z, place.id);
     }
-    this.marketView=buildMarket(s);for(const o of marketObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,1.4,o.z+o.depth/2)));
+    this.marketView=buildMarket(s);for(const o of marketObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,townTableCamera.minY,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,townTableCamera.maxY,o.z+o.depth/2)));
     // Stylized distant hills, all local geometry.
     for (let i = 0; i < 7; i++) {
       const hill = new THREE.Mesh(new THREE.ConeGeometry(8 + i % 3, 9 + i % 4, 4), new THREE.MeshLambertMaterial({ color: i % 2 ? '#97b49a' : '#abc1a2' }));
@@ -350,7 +316,7 @@ export class World {
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
-    this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);(this.scene.fog as THREE.Fog).color.set(sky);this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='space'){
@@ -527,7 +493,9 @@ export class World {
     this.playerAnimator.update(dt, travelled, this.reducedMotion);
     this.iceParcel.visible=this.region==='town'&&this.marketProgress.parcel.state==='carried'&&!['measure','sample','water','ruler','plant','fishCast','fishWait','fishPull'].includes(this.playerAnimator.pose);if(this.iceParcel.visible){this.playerRig.rightArm.shoulder.rotation.x=-.45;for(const key of ['meter','sample','wateringCan','ruler','rod'] as const)this.playerRig.tools[key].visible=false;}this.canvas.dataset.marketParcelVisible=String(this.iceParcel.visible);
     this.onMarketFrame(dt,this.region==='town'&&!document.hidden&&document.hasFocus());this.canvas.dataset.marketFraction=this.marketFraction.toFixed(3);this.marketView?.frame(this.marketProgress,this.marketFraction,document.hidden||!document.hasFocus()||this.paused&&!this.marketFocus?0:dt,this.reducedMotion);
+    this.townView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus(),this.reducedMotion,this.lowQuality,this.position);
     for (const npc of this.npcs) {
+      if(this.region==='town'&&npc.id==='nara')npc.animator.setPose(this.interacting==='nara'?'none':'read');
       const x = this.position.x - npc.rig.root.position.x, z = this.position.z - npc.rig.root.position.z;
       const nearby = this.interacting === npc.id || Math.hypot(x, z) < 7;
       npc.timer += dt;
@@ -539,6 +507,7 @@ export class World {
       npc.rig.root.rotation.y = turnToward(npc.rig.root.rotation.y, bodyYaw, npcDt, 3);
       npc.animator.lookAt(nearby ? Math.atan2(Math.sin(targetYaw - npc.rig.root.rotation.y), Math.cos(targetYaw - npc.rig.root.rotation.y)) : 0);
       npc.animator.update(npcDt, 0, this.reducedMotion);
+      if(this.region==='town'&&npc.id==='warga'&&this.interacting!=='warga'&&!this.paused&&!this.reducedMotion){npc.rig.rightArm.shoulder.rotation.x=-.45+Math.sin(this.elapsed*1.5)*.10;}
     }
     if(this.riverView){
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
@@ -599,7 +568,19 @@ export class World {
         this.canvas.setAttribute(`data-${id}-label-y`, ((-.5*this.projectedLabel.y+.5)*innerHeight).toFixed(1));
       }
     }
-    if(this.region==='town')for(const label of this.regionLabels)label.visible=!this.marketFocus;
+    if(this.region==='town'){
+      for(const label of this.regionLabels){
+        const near=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
+        label.visible=!this.marketFocus&&(near<townLabelRange||this.interacting===label.userData.place);
+        const distance=label.position.distanceTo(this.camera.position),pixels=Math.min(158,innerWidth*.34);
+        const width=Math.min(2.7,distance*2*Math.tan(this.camera.fov*Math.PI/360)*pixels/innerHeight);
+        label.scale.set(width,width/(512/96),1);
+      }
+      for(const disc of this.townIndicators)disc.visible=!this.marketFocus&&Math.hypot(disc.position.x-this.position.x,disc.position.z-this.position.z)<5;
+      this.canvas.dataset.townActors=String(this.lowQuality?2:3);
+      this.canvas.dataset.townAmbientTime=String(this.townView?.root.userData.ambientTime??0);
+      this.canvas.dataset.townLabels=String(this.regionLabels.filter(l=>l.visible).length);
+    }
     if(this.region==='space')for(const label of this.regionLabels)label.visible=!this.spaceFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
     if(this.region==='geopark')for(const label of this.regionLabels)label.visible=!this.geoFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
     if(this.region==='workshop')for(const label of this.regionLabels)label.visible=!this.hydraulicFocus;

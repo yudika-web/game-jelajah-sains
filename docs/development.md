@@ -1,5 +1,9 @@
 # Catatan pengembangan prototipe 0.1
 
+## Visual tahap 02
+
+`townEnvironment.ts` membangun detail Kota, batching statis, objek ber-ID dan tiga kegiatan dekoratif. Dipanggil satu kali saat membangun Kota dan diperbarui oleh loop World; tidak mengubah aturan misi. Kamera meja memakai slab tabletop; collider navigasi tetap. Label Kota dibatasi jarak dan piksel. Kualitas Rendah menyembunyikan satu pejalan dan bunga opsional; reduced motion/jeda membekukan aktivitas. [Laporan](visual-stage-02-review.md) memuat bukti dan batas pemeriksaan. Cadangan tetap v17.
+
 ## Visual tahap 01
 
 Lihat [laporan diagnosis dan bukti](visual-stage-01-review.md) serta [arah visual dan urutan tahap](visual-upgrade-plan.md). `groundLayout.ts` menetapkan sambungan tanah W03/W06 tanpa dua permukaan atas koplanar. `environmentStyle.ts` memusatkan nilai cahaya/material lama dan batas DPR Normal/Rendah. Tidak ada perubahan format cadangan v17, IndexedDB, data misi, ukuran dunia, kamera, atau kepemilikan cache avatar. Untuk reproduksi: build baseline 41fae90 lalu `node scripts/capture-visual-stage-01.mjs before`; build patch lalu jalankan dengan `after`. Perintah menangkap build `dist`, bukan dev server. Jangan menimpa bukti before dengan build after.
