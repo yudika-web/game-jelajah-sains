@@ -1,0 +1,20 @@
+{
+  "checkedAtUTC": "2026-10-28T11:12:32.191Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "SwiftShader",
+  "frames": 510,
+  "seconds": 46.324074029922485,
+  "checkpoint": "prepared-v17.json: accepted M02 and four sources from actual UI; no fabricated market experiment records.",
+  "sequence": [
+    "closed melt and tared mass",
+    "open evaporation and particle model",
+    "three real density readings",
+    "three fixed-interval container trials",
+    "one package carried, checked, handed over and concluded",
+    "journal from confirmed evidence"
+  ],
+  "errors": [],
+  "external": []
+}

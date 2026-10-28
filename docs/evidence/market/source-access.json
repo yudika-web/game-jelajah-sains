@@ -1,0 +1,18 @@
+{
+  "checkedAtUTC": "2026-10-28T10:25:06.758966+00:00",
+  "contentReviewDateAsiaBangkok": "2026-10-28",
+  "sources": [
+    {
+      "url": "https://www.usgs.gov/water-science-school/science/water-density",
+      "access": "CONNECT tunnel rejected with 403; no page response body retrieved",
+      "verifiedCurrentContent": false
+    },
+    {
+      "url": "https://www.usgs.gov/water-science-school/science/evaporation-and-water-cycle",
+      "access": "CONNECT tunnel rejected with 403; no page response body retrieved",
+      "verifiedCurrentContent": false
+    }
+  ],
+  "datasets": "Density approximations and container numbers follow the user specification; no claim that product measurements were obtained from USGS.",
+  "assets": "Procedural local geometry; no new third-party asset or CDN."
+}

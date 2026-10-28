@@ -1,0 +1,32 @@
+{
+  "checkedAtUTC": "2026-10-28T11:12:01.028Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "roots": "1",
+      "geometries": "46",
+      "textures": "19",
+      "disposals": "2",
+      "parcel": "delivered",
+      "parcelVisible": "false"
+    },
+    {
+      "roots": "1",
+      "geometries": "46",
+      "textures": "19",
+      "disposals": "4",
+      "parcel": "delivered",
+      "parcelVisible": "false"
+    },
+    {
+      "roots": "1",
+      "geometries": "46",
+      "textures": "19",
+      "disposals": "6",
+      "parcel": "delivered",
+      "parcelVisible": "false"
+    }
+  ],
+  "note": "Three Town/Garden cycles retain exactly one delivered parcel. Counts are not a physical-device performance measurement."
+}
