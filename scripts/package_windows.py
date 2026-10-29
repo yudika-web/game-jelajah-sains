@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create a short-path ready-to-play ZIP. Python is only required by the packager."""
 from pathlib import Path, PurePosixPath
-import argparse, hashlib, json, subprocess, zipfile
+import argparse, hashlib, json, re, subprocess, zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
 PREFIX = 'JS/'
@@ -45,7 +45,7 @@ def package(output):
     ).encode('utf-8')
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     manifest = {'gameSourceCommit': commit, 'prefix': PREFIX, 'node': '>=22.12.0',
-                'backupFormat': 17, 'files': {n: hashlib.sha256(b).hexdigest() for n,b in sorted(files.items())}}
+                'backupFormat': int(re.search(r'export const BACKUP_VERSION\s*=\s*(\d+)', (ROOT/'src/game/gameState.ts').read_text(encoding='utf-8')).group(1)), 'files': {n: hashlib.sha256(b).hexdigest() for n,b in sorted(files.items())}}
     files['PAKET.json'] = (json.dumps(manifest, indent=2) + '\n').encode()
     for name in files:
         member = PREFIX + name

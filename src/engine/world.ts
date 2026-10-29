@@ -1,3 +1,7 @@
+import {setTemporaryEquipment} from './character';
+import {WardrobePreview} from './wardrobePreview';
+import {appearanceKey,parseAppearance,type Appearance} from '../game/appearance';
+import {disposeRegion as releaseAvatar} from './disposeRegion';
 import {buildTownEnvironment,townBuildings,townLabelRange,townTableCamera} from './townEnvironment';
 import {configureEnvironment,environmentMaterial,environmentStyle,qualityPixelRatio} from './environmentStyle';
 import {buildMarket,createMarketParcel} from './marketWorld';
@@ -64,9 +68,9 @@ export class World {
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(environmentStyle.camera.fov, 1, environmentStyle.camera.near, environmentStyle.camera.far);
   readonly renderer: THREE.WebGLRenderer;
-  readonly playerRig = createCharacter(playerVariant(new URLSearchParams(location.search).get('avatar')));
-  readonly player = this.playerRig.root;
-  readonly playerAnimator = new CharacterAnimator(this.playerRig);
+  playerRig = createCharacter(playerVariant(new URLSearchParams(location.search).get('avatar')));
+  player = this.playerRig.root;
+  playerAnimator = new CharacterAnimator(this.playerRig);
   readonly position = new THREE.Vector3(-1, 0, 6);
   readonly canvas: HTMLCanvasElement;
   mode: InputMode = 'laptop';
@@ -198,6 +202,31 @@ export class World {
   private npcLabels = new Map<PlaceId, THREE.Sprite>();
   private projectedLabel = new THREE.Vector3();
   private regionLabels: THREE.Sprite[] = [];
+  private wardrobePreview:WardrobePreview|null=null;
+  private wardrobeStage:HTMLElement|null=null;
+  private wardrobeClear=new THREE.Color();
+  showWardrobe(a:Appearance,stage:HTMLElement){
+    if(!this.wardrobePreview){this.renderer.getClearColor(this.wardrobeClear);this.wardrobePreview=new WardrobePreview(a);}else this.wardrobePreview.setAppearance(a);
+    this.wardrobeStage=stage;this.canvas.dataset.wardrobe='true';
+  }
+  rotateWardrobe(angle:number){this.wardrobePreview?.rotate(angle);}
+  closeWardrobe(){this.wardrobePreview?.dispose();this.wardrobePreview=null;this.wardrobeStage=null;this.renderer.setClearColor(this.wardrobeClear);this.canvas.dataset.wardrobe='false';delete this.canvas.dataset.previewAppearance;this.stop();}
+  setPlayerAppearance(value:Appearance){
+    const a=parseAppearance(value,value);
+    if(appearanceKey(a)!==appearanceKey(this.playerRig.appearance!)){
+      this.stop();const old=this.playerRig;
+      this.playerRig=createCharacter(a.base==='student-girl'?'explorerGirl':'explorer',undefined,a);
+      this.player=this.playerRig.root;this.player.position.copy(old.root.position);this.player.rotation.copy(old.root.rotation);
+      this.playerRig.rightArm.toolSocket.add(this.iceParcel);
+      this.scene.remove(old.root);releaseAvatar(old.root);this.scene.add(this.player);
+      setTemporaryEquipment(this.playerRig,old.cosmetics?.mode??'none');
+      this.playerAnimator=new CharacterAnimator(this.playerRig);this.playerAnimator.pushing=this.pushing;
+      this.setRimba(this.rimbaProgress);
+      if(this.boat.aboard){this.playerAnimator.boating=true;this.boatAppearance(true);}else if(this.swimming)this.swimAppearance(true);
+    }
+    this.canvas.dataset.appearance=JSON.stringify(a);
+  }
+
   private townView:ReturnType<typeof buildTownEnvironment>|null=null;
   private townIndicators:THREE.Mesh[]=[];
   private lowQuality=false;
@@ -283,6 +312,7 @@ export class World {
     b(5, 0.07, 9, '#bb9570', 8.7, 0.02, -11);
     for (let i = 0; i < 5; i++) b(2.2, 0.05, 0.12, '#987557', 8.4, 0.08, -14 + i * 1.4);
     this.townView=buildTownEnvironment(s);
+    this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-11.125,0,-.30),new THREE.Vector3(-9.875,2.1,.30)));
     for(const house of townBuildings)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
     for (const place of places) {
       if (place.id === 'nara' || place.id === 'warga') {
@@ -559,7 +589,7 @@ export class World {
       this.canvas.dataset.cameraDistance = this.cameraDistance;
       this.canvas.dataset.cameraYaw = this.yaw.toFixed(3);
       this.canvas.dataset.reducedMotion = String(this.reducedMotion);
-      this.canvas.dataset.regionRoots=String(this.scene.children.filter(o=>o.name==='active-region').length);this.canvas.dataset.regionDisposals=String(this.regionDisposals);this.canvas.dataset.geometries=String(this.renderer.info.memory.geometries);this.canvas.dataset.textures=String(this.renderer.info.memory.textures);
+      this.canvas.dataset.avatarRoots=String(this.scene.children.filter(o=>o.name.startsWith('character-')).length);this.canvas.dataset.regionRoots=String(this.scene.children.filter(o=>o.name==='active-region').length);this.canvas.dataset.regionDisposals=String(this.regionDisposals);this.canvas.dataset.geometries=String(this.renderer.info.memory.geometries);this.canvas.dataset.textures=String(this.renderer.info.memory.textures);
       this.canvas.dataset.drawCalls = String(this.renderer.info.render.calls);
       this.canvas.dataset.triangles = String(this.renderer.info.render.triangles);
       for (const [id, label] of this.npcLabels) {
@@ -597,6 +627,6 @@ export class World {
     this.canvas.dataset.playerHeight = this.playerRig.dimensions.height.toFixed(3);
     this.canvas.dataset.playerScale = this.playerRig.visual.scale.y.toFixed(6);
     this.canvas.dataset.avatar = this.playerRig.kind;
-    this.renderer.render(this.scene, this.camera);
+    if(this.wardrobePreview&&this.wardrobeStage)this.wardrobePreview.render(this.renderer,this.wardrobeStage.getBoundingClientRect());else this.renderer.render(this.scene, this.camera);
   }
 }

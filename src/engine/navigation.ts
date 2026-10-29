@@ -4,6 +4,7 @@ export interface Point { x: number; z: number; }
 export interface Obstacle { x: number; z: number; width: number; depth: number; }
 export const obstacles: Obstacle[] = [
   ...marketObstacles,
+  {x:-10.5,z:0,width:1.25,depth:.6}, // actual wardrobe cabinet, not a whole new building
   {x:-2.8,z:-6,width:.3,depth:.3},{x:.8,z:-6,width:.3,depth:.3}, // W04 gate
 
   {x:6.2,z:15,width:.3,depth:.3}, {x:9.8,z:15,width:.3,depth:.3}, // W03 gate pillars

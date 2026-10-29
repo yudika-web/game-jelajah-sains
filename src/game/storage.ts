@@ -1,3 +1,4 @@
+import {parseAppearance} from './appearance';
 import {parseMarket} from './marketMission';
 import {parseSpace} from './spaceMission';
 import {parseGeo} from './geoparkMission';
@@ -52,8 +53,9 @@ export async function loadProgress(): Promise<Progress | null> {
 }
 export async function saveProgress(p: Progress): Promise<void> { await writeKeys([['M01', p]]); }
 export async function loadGame(): Promise<GameState> {
-  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1', 'M17-E2', 'M17-E3', 'S16', 'M16-E1', 'M16-E2', 'M16-E3', 'M16-E4', 'M13', 'M07', 'M02', 'world']);
+  const values = await readKeys(['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1', 'M17-E2', 'M17-E3', 'S16', 'M16-E1', 'M16-E2', 'M16-E3', 'M16-E4', 'M13', 'M07', 'M02', 'appearance', 'world']);
   const game = initialGame();
+  if(values.appearance!=null)game.appearance=parseAppearance(values.appearance);
   if (values.M01 !== undefined) game.M01 = parseProgress(values.M01);
   if (values.M14 !== undefined) game.M14 = parseGarden(values.M14);
   if (values['W03-LOG01'] !== undefined) game.Rimba = parseRimba(values['W03-LOG01']);
@@ -74,4 +76,7 @@ export async function loadGame(): Promise<GameState> {
   if (values.world !== undefined) game.world = parseTravel(values.world);
   return game;
 }
-export async function saveGame(p: GameState): Promise<void> { await writeKeys([['M02',p.M02], ['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['M17-E1',p.M17E1], ['M17-E2',p.M17E2], ['M17-E3',p.M17E3], ['S16',p.S16], ['M16-E1',p.M16E1], ['M16-E2',p.M16E2], ['M16-E3',p.M16E3], ['M16-E4',p.M16E4], ['M13',p.M13], ['M07',p.M07], ['world', p.world]]); }
+export async function saveGame(p: GameState): Promise<void> { await writeKeys([['appearance',p.appearance??null],['M02',p.M02], ['M01', p.M01], ['M14', p.M14], ['W03-LOG01',p.Rimba], ['S13',p.S13], ['S14',p.S14], ['S15',p.S15], ['M17-E1',p.M17E1], ['M17-E2',p.M17E2], ['M17-E3',p.M17E3], ['S16',p.S16], ['M16-E1',p.M16E1], ['M16-E2',p.M16E2], ['M16-E3',p.M16E3], ['M16-E4',p.M16E4], ['M13',p.M13], ['M07',p.M07], ['world', p.world]]); }
+
+/** Gallery needs only the personal record; reading it never modifies mission saves. */
+export async function loadAppearance(){const values=await readKeys(['appearance']);return values.appearance==null?null:parseAppearance(values.appearance);}

@@ -1,3 +1,5 @@
+import {defaultAppearance,parseAppearance,type Appearance} from '../game/appearance';
+import {cosmetic,cosmeticSlotRules} from '../data/appearanceCatalog';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
@@ -42,8 +44,12 @@ function drawing(key: string, paint: (c: CanvasRenderingContext2D) => void, fall
   }
   return materials.get(key)!;
 }
-export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): CharacterRig {
-  const p = palettes[kind], girl = (kind === 'explorerGirl'||kind==='lestari'), student = kind === 'explorer' || kind==='explorerGirl';
+export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, selected?:Appearance): CharacterRig {
+  const studentKind=kind==='explorer'||kind==='explorerGirl';
+  const appearance=studentKind?parseAppearance(selected??defaultAppearance(kind==='explorerGirl'?'student-girl':'student-boy')):null;
+  if(appearance)kind=appearance.base==='student-girl'?'explorerGirl':'explorer';
+  const outfit=appearance?cosmetic(appearance.outfit)!.visual:null;
+  const p = {...palettes[kind],...(appearance?{hair:cosmetic(appearance.hair)!.visual.color??palettes[kind].hair,bag:cosmetic(appearance.backpack)!.visual.color??palettes[kind].bag}:{}),...(outfit?{coat:outfit.coat!,shirt:outfit.shirt!,pants:outfit.pants!,boots:outfit.boots!}:{})}, girl = (kind === 'explorerGirl'||kind==='lestari'), student = kind === 'explorer' || kind==='explorerGirl';
   const root = new THREE.Group(); root.name = `character-${kind}`;
   const group = (name: string, parent: THREE.Object3D, x=0,y=0,z=0) => { const g=new THREE.Group();g.name=name;g.position.set(x,y,z);parent.add(g);return g; };
   const visual = group('visual',root), bodyMeshes: THREE.Mesh[] = [], core: THREE.Mesh[] = [];
@@ -53,12 +59,12 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     o.userData.sharedGeometry=!!g.userData.shared;if(body)bodyMeshes.push(o);return o;
   };
   const box = (parent:THREE.Object3D,size:[number,number,number],c:string,x:number,y:number,z:number,body=true,r=.025) => mesh(parent,boxGeometry(...size,r),color(c),x,y,z,body);
-  const hull = (parent:THREE.Object3D,key:string,points:number[][],c:string) => mesh(parent,geometry(`hull/${key}`,()=>new ConvexGeometry(points.map(v=>new THREE.Vector3(...v as [number,number,number])))),color(c));
+  const hull = (parent:THREE.Object3D,key:string,points:number[][],c:string,body=true) => mesh(parent,geometry(`hull/${key}`,()=>new ConvexGeometry(points.map(v=>new THREE.Vector3(...v as [number,number,number])))),color(c),0,0,0,body);
   const texturedBox = (parent:THREE.Object3D,size:[number,number,number],base:string,front:THREE.Material,x:number,y:number,z:number,name:string) => {
     const m=color(base), o=mesh(parent,boxGeometry(...size),[m,m,m,m,front,m],x,y,z,true,name);core.push(o);return o;
   };
-  const torso=group('torso',visual,0,2.0), head=group('head',torso,0,1.125), eyes=group('eyes',head,0,0,.416);
-  const headBox=mesh(head,boxGeometry(1.03,.95,.82,.045),color(p.skin),0,0,0,true,'head-block');core.push(headBox);
+  const torso=group('torso',visual,0,2.0), head=group('head',torso,0,1.125), eyes=group('eyes',head,0,0,student?.436:.416);
+  const headBox=mesh(head,boxGeometry(student?1.08:1.03,student?.98:.95,student?.86:.82,.045),color(p.skin),0,0,0,true,'head-block');core.push(headBox);
   const faceMaterial=drawing(`face/${kind}`,c=> {
     c.strokeStyle='#24221f';c.fillStyle='#24221f';c.lineCap='round';c.lineJoin='round';
     c.lineWidth=14;
@@ -68,9 +74,42 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     if(kind==='wira') {c.beginPath();c.moveTo(174,314);c.bezierCurveTo(193,274,238,275,256,298);c.bezierCurveTo(279,275,319,275,339,314);c.quadraticCurveTo(296,337,256,313);c.quadraticCurveTo(216,337,174,314);c.fill();}
   },'#24221f',true);
   const plane=geometry('face-plane',()=>new THREE.PlaneGeometry(.94,.86));
-  mesh(head,plane,faceMaterial,0,0,.415,true,'flat-face');
-  const eyeMaterial=drawing(`eyes/${girl?'girl':'classic'}`,c=> {c.fillStyle='#151a19';for(const side of [-1,1]) {c.beginPath();c.ellipse(256+side*100,girl?242:246,18,girl?35:38,0,0,Math.PI*2);c.fill();}},'#151a19',true);
+  mesh(head,plane,faceMaterial,0,0,student?.435:.415,true,'flat-face');
+  const eyeMaterial=drawing(`eyes/${student?'student':'npc'}/${girl?'girl':'classic'}`,c=> {c.fillStyle='#151a19';for(const side of [-1,1]) {c.beginPath();c.ellipse(256+side*100,girl?242:246,student?21:18,girl?35:38,0,0,Math.PI*2);c.fill();}},'#151a19',true);
   mesh(eyes,plane,eyeMaterial,0,0,.002,true,'flat-oval-eyes');
+  let cosmetics:CharacterRig['cosmetics'];
+  const hair=group('cosmetic-hair',head),headwear=group('cosmetic-headwear',head),facewear=group('cosmetic-facewear',head),equipment=group('temporary-equipment',head);
+  let crown:THREE.Object3D=hair,fringe:THREE.Object3D=hair;
+  if(appearance){
+    const style=cosmetic(appearance.hair)!.visual.style;
+    const cap=geometry('student-hair-cap',()=>{
+      const pieces=[new THREE.BoxGeometry(1.10,.55,.16).translate(0,.24,-.44),new THREE.BoxGeometry(.12,.53,.60).translate(-.49,.24,-.10),new THREE.BoxGeometry(.12,.53,.60).translate(.49,.24,-.10)];
+      const merged=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());return merged;
+    });
+    mesh(hair,cap,color(p.hair),0,0,0,false,'hair-rear-cap');
+    crown=box(hair,[1.10,.22,.94],p.hair,0,.51,-.035,false);crown.name='hair-crown';
+    fringe=hull(hair,`student-fringe-${style}`,style==='crop'?[[-.55,.28,.38],[-.55,.56,.30],[.45,.56,.30],[.52,.34,.40],[-.1,.34,.47],[-.55,.28,.46]]:[[-.55,.22,.38],[-.55,.56,.33],[.16,.68,.25],[.45,.54,.30],[.45,.29,.39],[-.05,.37,.52],[-.55,.22,.52]],p.hair,false);fringe.name='hair-fringe';
+    if(style==='shoulder'){
+      box(hair,[1.12,.95,.22],p.hair,0,-.02,-.47,false).name='shoulder-hair';
+      for(const x of [-.50,.50])box(hair,[.16,.90,.44],p.hair,x,-.04,-.15,false);
+    }
+    if(style==='tied'){
+      const pony=box(hair,[.40,.86,.42],p.hair,0,-.04,-.62,false);pony.name='ponytail';pony.rotation.x=-.13;
+      box(hair,[.42,.09,.44],p.bag,0,.20,-.62,false).name='hair-tie';
+    }
+    if(cosmetic(appearance.headwear)!.visual.style==='cap'){
+      crown.visible=!cosmeticSlotRules.cap.hideCrown;fringe.scale.y=cosmeticSlotRules.cap.fringeScale;
+      box(headwear,[1.17,.27,1.01],cosmetic(appearance.headwear)!.visual.color??'#b38a43',0,.58,-.03,false).name='explorer-cap';
+      box(headwear,[1.25,.075,1.16],'#d4b463',0,.44,.11,false).name='explorer-brim';
+    }
+    if(cosmetic(appearance.facewear)!.visual.style==='glasses'){
+      const glasses=drawing(`student-glasses/${appearance.facewear}`,c=>{c.lineWidth=10;c.strokeStyle=cosmetic(appearance.facewear)!.visual.color??'#334e4c';for(const x of [156,356]){c.beginPath();c.ellipse(x,244,66,72,0,0,Math.PI*2);c.stroke();}c.beginPath();c.moveTo(222,238);c.quadraticCurveTo(256,215,290,238);c.stroke();},'#334e4c',true);
+      mesh(facewear,plane,glasses,0,0,.442,false,'student-glasses');
+    }
+    // A provision for later activities: one helmet overrides head slots, not personal data.
+    box(equipment,[1.23,.29,1.07],'#d9e5e3',0,.61,0,false).name='equipment-helmet';
+    box(equipment,[1.31,.08,1.17],'#527a86',0,.44,.04,false);equipment.visible=false;
+  }else{
   // Three large hair forms: a U-shaped rear/temple cap, a crown, and a solid swept fringe.
   const hairCap=geometry('hair-cap',()=> {
     const parts=[new THREE.BoxGeometry(1.10,.62,.17).translate(0,.25,-.43),new THREE.BoxGeometry(.13,.62,.65).translate(-.49,.25,-.10),new THREE.BoxGeometry(.13,.62,.65).translate(.49,.25,-.10)].map(g=>g.toNonIndexed());
@@ -85,24 +124,28 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     const band=drawing('hair-band',c=>{c.fillStyle=p.bag;c.fillRect(0,0,512,512);},p.bag);
     mesh(pony,geometry('band-plane',()=>new THREE.PlaneGeometry(.40,.10)),band,0,.22,-.213).rotation.y=Math.PI;
   } else if(kind==='nara'||kind==='sari') box(head,[.46,.43,.43],p.hair,.07,.25,-.65).name='hair-bun';
+  }
   if(kind==='bima'||kind==='raka') {box(head,[1.18,.30,1.0],'#e3b344',0,.67,-.02).name='technician-helmet';box(head,[1.25,.08,1.12],'#f2cd69',0,.54,.04).name='helmet-brim';}
   if(kind==='wira'||kind==='sari'||kind==='damar') {
     const hat=kind==='damar'?'#596c44':kind==='wira'?'#5a6745':'#ccb16d', brim=kind==='wira'?'#73805b':'#e3c78b';
     box(head,[1.12,.32,.94],hat,0,.62,-.03).name='hat-crown';box(head,[1.24,.09,1.08],brim,0,.48,.045).name='hat-brim';
   }
-  const coat=drawing(`coat/${kind}`,c=> {
+  const coat=drawing(`coat/${kind}/${appearance?.outfit??'npc'}/${appearance?.backpack??'npc'}`,c=> {
     c.fillStyle=p.coat;c.fillRect(0,0,512,512);c.fillStyle=p.shirt;c.fillRect(186,0,140,512);
     // Shirt collar, jacket opening and vest pockets remain flat markings.
     c.strokeStyle=kind==='wira'?'#8e7f64':p.coat;c.lineWidth=6;
     c.beginPath();c.moveTo(187,0);c.lineTo(218,62);c.lineTo(256,24);c.lineTo(295,62);c.lineTo(325,0);c.stroke();
-    if(student) {c.fillStyle=p.bag;for(const x of [72,400]){c.fillRect(x,0,33,372);c.fillStyle='#604b2a';c.fillRect(x-4,147,41,39);c.fillStyle=p.bag;c.fillRect(x+5,156,22,21);} }
+    if(student&&appearance?.backpack!=='back-none') {c.fillStyle=p.bag;for(const x of [72,400]){c.fillRect(x,0,33,372);c.fillStyle='#604b2a';c.fillRect(x-4,147,41,39);c.fillStyle=p.bag;c.fillRect(x+5,156,22,21);} }
     if(kind==='bima'||kind==='raka') {c.fillStyle='#ece6ca';c.fillRect(54,0,30,470);c.fillRect(428,0,30,470);c.fillStyle='#475e63';c.fillRect(94,155,74,90);c.fillRect(344,155,74,90);}
     if(kind==='wira'||kind==='damar') {c.strokeStyle='#8b7858';c.lineWidth=8;for(const x of [37,359])for(const y of [160,340]){c.strokeRect(x,y,114,116);c.beginPath();c.moveTo(x,y+28);c.lineTo(x+114,y+28);c.stroke();} }
     if(kind==='nara') {c.fillStyle='#b39970';for(const y of [164,266,368]){c.beginPath();c.arc(256,y,6,0,Math.PI*2);c.fill();}}
     if(kind==='sari') {c.fillStyle=p.bag;c.fillRect(75,100,362,412);c.strokeStyle='#9b814b';c.lineWidth=8;c.strokeRect(152,278,208,130);c.fillRect(96,0,25,128);c.fillRect(391,0,25,128);}
+    if(student){c.strokeStyle='#ffffff66';c.lineWidth=7;for(const x of [40,350]){c.strokeRect(x,310,122,102);}c.fillStyle=p.shirt;c.beginPath();c.moveTo(150,0);c.lineTo(220,75);c.lineTo(188,0);c.fill();c.beginPath();c.moveTo(324,0);c.lineTo(292,75);c.lineTo(362,0);c.fill();}
   },p.coat);
-  texturedBox(torso,[1.32,1.30,.65],p.coat,coat,0,0,0,'torso-block');
-  if(student) {box(torso,[.85,.94,.32],p.bag,0,-.04,-.50).name='backpack';box(torso,[.57,.33,.10],'#dbab48',0,-.25,-.70).name='backpack-pocket';}
+  texturedBox(torso,[student?1.28:1.32,1.30,.65],p.coat,coat,0,0,0,'torso-block');
+  const backpack=group('cosmetic-backpack',torso);
+  if(student&&appearance?.backpack!=='back-none'){box(backpack,[.85,.94,.32],p.bag,0,-.04,-.50,false).name='backpack';box(backpack,[.57,.33,.10],'#dbab48',0,-.25,-.70,false).name='backpack-pocket';}
+  if(appearance)cosmetics={hair,headwear,facewear,backpack,equipment,crown,fringe,mode:'none'};
   if(kind==='raka'){box(torso,[.40,.46,.09],'#e8ddb6',.38,-.15,.39).name='field-notebook';box(torso,[.05,.46,.11],'#375c72',.16,-.15,.39).name='notebook-spine';}
   if(kind==='nara') {
     const skirt=geometry('nara-skirt',()=> {
@@ -112,15 +155,15 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
     });mesh(torso,skirt,color(p.pants),0,-.91,0,true,'one-trapezoid-skirt');
   }
   const sleeve=kind==='wira'?p.shirt:p.coat;
-  const armMaterial=drawing(`arm/${kind}`,c=> {c.fillStyle=sleeve;c.fillRect(0,0,512,512);c.fillStyle=p.skin;c.fillRect(0,388,512,124);},sleeve);
+  const armMaterial=drawing(`arm/${kind}/${appearance?.outfit??'npc'}`,c=> {c.fillStyle=sleeve;c.fillRect(0,0,512,512);c.fillStyle=p.skin;c.fillRect(0,388,512,124);if(student){c.fillStyle=p.shirt;c.fillRect(0,358,512,26);}},sleeve);
   const arm=(side:number):ArmRig=> {
-    const shoulder=group(side<0?'left-shoulder':'right-shoulder',torso,side*.925,.61);
+    const shoulder=group(side<0?'left-shoulder':'right-shoulder',torso,side*(student?.84:.925),.61);
     shoulder.rotation.z=side*.035;
     const elbow=group('elbow-socket',shoulder,0,-.65),hand=group('hand-socket',elbow,0,-.50),toolSocket=group('tool-socket',hand,0,-.04,.04);
     const m=mesh(shoulder,boxGeometry(.46,1.30,.62),[armMaterial,armMaterial,color(sleeve),color(p.skin),armMaterial,armMaterial],0,-.65,0,true,side<0?'left-arm-block':'right-arm-block');core.push(m);
     return {shoulder,elbow,hand,toolSocket};
   };
-  const legMaterial=drawing(`leg/${kind}`,c=>{c.fillStyle=kind==='nara'?p.skin:p.pants;c.fillRect(0,0,512,512);c.fillStyle=p.boots;c.fillRect(0,420,512,92);},p.pants);
+  const legMaterial=drawing(`leg/${kind}/${appearance?.outfit??'npc'}`,c=>{c.fillStyle=kind==='nara'?p.skin:p.pants;c.fillRect(0,0,512,512);c.fillStyle=p.boots;c.fillRect(0,420,512,92);if(student){c.fillStyle='#463b32';c.fillRect(0,491,512,21);}},p.pants);
   const leg=(side:number):LegRig=> {
     const hip=group(side<0?'left-hip':'right-hip',visual,side*.335,1.35),knee=group('knee-socket',hip,0,-.68),ankle=group('ankle-socket',knee,0,-.67);
     const m=mesh(hip,boxGeometry(.62,1.35,.60),[legMaterial,legMaterial,color(p.pants),color(p.boots),legMaterial,legMaterial],0,-.675,0,true,side<0?'left-leg-block':'right-leg-block');core.push(m);
@@ -149,7 +192,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   const tools={notebook,meter,sample,wateringCan,ruler,bucket,rod,vest};Object.values(tools).forEach(t=>t.visible=false);
   // Measure only neutral body geometry; neither attachments nor a label can alter height.
   root.updateMatrixWorld(true);
-  const bounds=new THREE.Box3();for(const body of bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));
+  const bounds=new THREE.Box3();for(const body of student?core:bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));
   const baseHeight=bounds.max.y-bounds.min.y, height=characterConfig.heights[kind], scale=height/baseHeight;
   visual.scale.setScalar(scale);visual.position.y=characterConfig.groundY-bounds.min.y*scale;
   const labelSocket=group('label-socket',root,0,characterConfig.groundY+height+characterConfig.labelGap);
@@ -159,7 +202,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string): 
   const headBounds=new THREE.Box3().setFromObject(headBox);
   const dimensions={baseHeight,height,scale,groundY:characterConfig.groundY,visualY:visual.position.y,headCenter:headBounds.getCenter(new THREE.Vector3()).y,headHeight:headBounds.max.y-headBounds.min.y};
   if(placeId)root.traverse(node=>{node.userData.place=placeId;});
-  return {kind,root,visual,torso,head,eyes,leftArm,rightArm,leftLeg,rightLeg,labelSocket,tools,bodyMeshes,core,dimensions};
+  return {kind,appearance,cosmetics,root,visual,torso,head,eyes,leftArm,rightArm,leftLeg,rightLeg,labelSocket,tools,bodyMeshes,core,dimensions};
 }
 function colorShadow() {
   if(!materials.has('contact-shadow')) {const m=new THREE.MeshBasicMaterial({color:'#344b36',transparent:true,opacity:.17,depthWrite:false});m.userData.shared=true;materials.set('contact-shadow',m);}
@@ -168,5 +211,5 @@ function colorShadow() {
 /** Geometry-based world bounds, excluding tools, labels and contact shadow even if visible. */
 export function characterBodyBounds(rig: CharacterRig) {
   rig.root.updateMatrixWorld(true);const bounds=new THREE.Box3();
-  for(const body of rig.bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));return bounds;
+  for(const body of rig.appearance?rig.core:rig.bodyMeshes)bounds.union(new THREE.Box3().setFromObject(body));return bounds;
 }

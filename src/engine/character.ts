@@ -1,3 +1,5 @@
+import type {Appearance} from '../game/appearance';
+import type {TemporaryEquipment} from '../data/appearanceCatalog';
 import type * as THREE from 'three';
 import { buildReferenceCharacter } from './characterModel';
 
@@ -6,6 +8,8 @@ export interface ArmRig { shoulder: THREE.Group; elbow: THREE.Group; hand: THREE
 export interface LegRig { hip: THREE.Group; knee: THREE.Group; ankle: THREE.Group; }
 export interface CharacterRig {
   kind: CharacterKind;
+  appearance:Appearance|null;
+  cosmetics?:{hair:THREE.Group;headwear:THREE.Group;facewear:THREE.Group;backpack:THREE.Group;equipment:THREE.Group;crown:THREE.Object3D;fringe:THREE.Object3D;mode:TemporaryEquipment};
   /** Navigation/interaction root: visual animation never translates this group. */
   root: THREE.Group;
   visual: THREE.Group;
@@ -24,6 +28,13 @@ export interface CharacterRig {
   tools: { notebook: THREE.Group; meter: THREE.Group; sample: THREE.Group; wateringCan: THREE.Group; ruler: THREE.Group; bucket:THREE.Group; rod:THREE.Group; vest:THREE.Group };
 }
 
-export function createCharacter(kind: CharacterKind, placeId?: string): CharacterRig {
-  return buildReferenceCharacter(kind, placeId);
+export function createCharacter(kind: CharacterKind, placeId?: string, appearance?:Appearance): CharacterRig {
+  return buildReferenceCharacter(kind, placeId, appearance);
+}
+
+/** Equipment is transient. It never writes to the personal selection or ownership. */
+export function setTemporaryEquipment(rig:CharacterRig,mode:TemporaryEquipment){
+ const c=rig.cosmetics;if(!c||!rig.appearance)return;
+ c.mode=mode;c.equipment.visible=mode!=='none';c.hair.visible=mode==='none';c.headwear.visible=mode==='none';c.facewear.visible=mode==='none';c.backpack.visible=mode==='none';
+ rig.root.userData.equipment=mode;
 }

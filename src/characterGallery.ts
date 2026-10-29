@@ -1,3 +1,7 @@
+import {environmentStyle} from './engine/environmentStyle';
+import {loadAppearance} from './game/storage';
+import {appearanceKey,defaultAppearance} from './game/appearance';
+import {disposeRegion} from './engine/disposeRegion';
 import * as THREE from 'three';
 import { createCharacter, type CharacterKind, type CharacterRig } from './engine/character';
 import './characterGallery.css';
@@ -23,29 +27,31 @@ const detailButton = document.querySelector<HTMLButtonElement>('#gallery-detail'
 const selector = document.querySelector<HTMLSelectElement>('#gallery-character')!;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#faf7ef');
-scene.add(new THREE.HemisphereLight('#fffaf0', '#b7a996', 2));
-const key = new THREE.DirectionalLight('#fff4df', 2.7); key.position.set(-3, 6, 5); scene.add(key);
-const fill = new THREE.DirectionalLight('#dcebf5', .7); fill.position.set(5, 3, -3); scene.add(fill);
+scene.add(new THREE.HemisphereLight(environmentStyle.hemisphere.sky,environmentStyle.hemisphere.ground,environmentStyle.hemisphere.intensity));
+const key = new THREE.DirectionalLight(environmentStyle.sun.color,environmentStyle.sun.intensity); key.position.set(...environmentStyle.sun.position); scene.add(key);
+
 const cameras = [0, Math.PI / 2, Math.PI].map(yaw => {
   const c = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 30);
   c.position.set(Math.sin(yaw) * 9, 1.5, Math.cos(yaw) * 9);
   return c;
 });
+const personal=await loadAppearance().catch(()=>null);
 let rig: CharacterRig, detail = false;
 function selectCharacter(kind: CharacterKind) {
   if (rig) {
     scene.remove(rig.root);
-    rig.root.traverse(child => { if (child instanceof THREE.Mesh && !child.userData.sharedGeometry) child.geometry.dispose(); });
+    disposeRegion(rig.root);
   }
-  rig = createCharacter(kind);
+  const a=kind==='explorer'||kind==='explorerGirl'?(personal?{...personal,base:kind==='explorerGirl'?'student-girl' as const:'student-boy' as const}:defaultAppearance(kind==='explorerGirl'?'student-girl':'student-boy')):undefined;
+  rig = createCharacter(kind,undefined,a);canvas.dataset.appearance=rig.appearance?appearanceKey(rig.appearance):'npc';
   // The same neutral factory pose and uniform scale as gameplay.
   scene.add(rig.root); selector.value=kind; canvas.dataset.character = kind;
 }
 try {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1;
-  selectCharacter(playerVariant(new URLSearchParams(location.search).get('avatar')));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = environmentStyle.exposure;
+  selectCharacter(personal?(personal.base==='student-girl'?'explorerGirl':'explorer'):playerVariant(new URLSearchParams(location.search).get('avatar')));
   function draw() {
     const width = stage.clientWidth, height = stage.clientHeight;
     renderer.setSize(width, height, false); renderer.setScissorTest(true);
