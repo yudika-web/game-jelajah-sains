@@ -1,0 +1,14 @@
+import {evaBounds,exteriorObstacles,expeditionConfig as c,type Vector3Data as V} from '../data/spaceExpedition';
+export const distance3=(a:V,b:V)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+export function evaWalkable(p:V){for(const a of ['x','y','z'] as const)if(!Number.isFinite(p[a])||p[a]<evaBounds.min[a]+c.body[a]||p[a]>evaBounds.max[a]-c.body[a])return false;return !exteriorObstacles.some(o=>p.x>o.min.x-c.body.x&&p.x<o.max.x+c.body.x&&p.y>o.min.y-c.body.y&&p.y<o.max.y+c.body.y&&p.z>o.min.z-c.body.z&&p.z<o.max.z+c.body.z);}
+export function evaSegmentClear(a:V,b:V){const n=Math.ceil(distance3(a,b)/.10);for(let i=0;i<=n;i++){const t=n?i/n:0;if(!evaWalkable({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:a.z+(b.z-a.z)*t}))return false;}return true;}
+export function sweepEva(p:V,axis:'x'|'y'|'z',delta:number){let end=Math.max(evaBounds.min[axis]+c.body[axis],Math.min(evaBounds.max[axis]-c.body[axis],p[axis]+delta));const other=(['x','y','z'] as const).filter(a=>a!==axis);for(const b of exteriorObstacles){if(other.some(a=>p[a]<=b.min[a]-c.body[a]||p[a]>=b.max[a]+c.body[a]))continue;if(delta>0&&p[axis]<=b.min[axis]-c.body[axis])end=Math.min(end,b.min[axis]-c.body[axis]-1e-7);if(delta<0&&p[axis]>=b.max[axis]+c.body[axis])end=Math.max(end,b.max[axis]+c.body[axis]+1e-7);}return end;}
+/** Six-neighbour 3D A*: neither a ground route nor a straight line through a module. */
+export function findEvaPath(start:V,end:V):V[]{
+ if(!evaWalkable(start)||!evaWalkable(end))return [];if(evaSegmentClear(start,end))return [{...end}];
+ const cell=(p:V)=>{const list:V[]=[];for(let x=Math.floor(p.x);x<=Math.ceil(p.x);x++)for(let y=Math.floor(p.y);y<=Math.ceil(p.y);y++)for(let z=Math.floor(p.z);z<=Math.ceil(p.z);z++){const v={x,y,z};if(evaWalkable(v)&&evaSegmentClear(p,v))list.push(v);}return list.sort((a,b)=>distance3(p,a)-distance3(p,b))[0];};
+ const first=cell(start),last=cell(end);if(!first||!last)return [];const key=(p:V)=>`${p.x},${p.y},${p.z}`,open=[first],parent=new Map<string,V|null>([[key(first),null]]),cost=new Map([[key(first),0]]);let iterations=0;
+ while(open.length&&iterations++<14000){let best=0;for(let i=1;i<open.length;i++)if(cost.get(key(open[i]))!+distance3(open[i],last)<cost.get(key(open[best]))!+distance3(open[best],last))best=i;const current=open.splice(best,1)[0];if(key(current)===key(last)){const raw:V[]=[{...end}];let at:V|null=current;while(at){raw.unshift(at);at=parent.get(key(at))??null;}const path:V[]=[];let prev=start,i=0;while(i<raw.length){let j=i;while(j+1<raw.length&&evaSegmentClear(prev,raw[j+1]))j++;path.push(raw[j]);prev=raw[j];i=j+1;}return path;}
+ for(const a of ['x','y','z'] as const)for(const sign of [-1,1]){const n={...current,[a]:current[a]+sign},k=key(n),next=cost.get(key(current))!+1;if(evaWalkable(n)&&next<(cost.get(k)??Infinity)){cost.set(k,next);parent.set(k,current);if(!open.some(v=>key(v)===k))open.push(n);}}
+ }return [];
+}

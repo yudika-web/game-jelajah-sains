@@ -51,7 +51,7 @@ Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar
 2. **Perbaiki Kota Sains sebagai contoh kualitas** — variasi atap/kusen/kanopi, tiga siluet pohon, benda interaksi, label dekat dan aktivitas warga. **Diimplementasikan tahap 02**, lihat [laporan](visual-stage-02-review.md); interior belum tersedia.
 3. **Buat avatar modular dan lemari** — **diimplementasikan tahap 03**: dua outfit, empat rambut, slot topi/kacamata/tas, Coba/Terapkan/Batal, satu pembangun dan renderer. Ukuran tubuh tanpa kosmetik, penyimpanan v18 serta override perlengkapan sementara tersedia. [Laporan](visual-stage-03-review.md).
 4. **Perbaiki visual astronomi dan stasiun** — **diimplementasikan tahap 04**: ruang konsol, peta lokal Bumi, permukaan Matahari/Bulan, detail kamera dan petunjuk opsional, LOD dan ownership resource. Cahaya/gerak/fase tetap berasal dari model ilmiah yang sama. [Laporan](visual-stage-04-review.md).
-5. **Tambahkan perjalanan dan aktivitas astronot** — lingkup tersendiri, tidak mengklaim perjalanan simulasi sebagai fisika nyata.
+5. **Tambahkan perjalanan dan aktivitas astronot** — **diimplementasikan tahap 05**: persiapan, kendaraan, docking, perlengkapan sementara, airlock dan EVA terbatas. [Laporan](visual-stage-05-review.md). — lingkup tersendiri, tidak mengklaim perjalanan simulasi sebagai fisika nyata.
 6. **Perbaiki bawah laut dan aktivitas menyelam** — baca ulang izin gerak air, kamera, keselamatan model dan kompatibilitas ROV.
 7. **Tambahkan koin hadiah misi** — tentukan transaksi dan receipt sekali; jangan mengubah XP historis atau menggandakan hadiah.
 8. **Tambahkan toko kosmetik** — transaksi atomik, kepemilikan dan migrasi diuji setelah sistem koin tersedia.
@@ -62,7 +62,7 @@ Setiap tahap memiliki commit/review sendiri, bukti dari game aktual, build dan p
 
 ## Keadaan setelah tahap 02
 
-Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04 tersedia; tahap 05 dan seterusnya menunggu permintaan berikutnya.
+Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04 dan 05 tersedia; tahap 06 dan seterusnya menunggu permintaan berikutnya.
 
 ## Keadaan setelah tahap 03
 
@@ -71,3 +71,8 @@ Siswa/siswi berbagi tubuh netral 1,60 unit tanpa rambut, topi atau tas dalam pen
 ## Keadaan setelah tahap 04
 
 W08 memiliki ruang observasi dengan atap potongan terbuka, tiga konsol berbeda dan alat detail kamera pada renderer yang sama. Daratan berasal dari Natural Earth lokal; awan dan kawah ilustratif. Tampilan dan input tetap terpisah dari bukti M07. Format cadangan tetap v18. Sumber NASA dicoba namun ditolak CONNECT 403; telaah halaman primer masih terbatas. Tidak ada perjalanan astronot, docking atau tahap 05 baru.
+
+
+## Keadaan setelah tahap 05
+
+Perjalanan kendaraan dan docking dapat dimainkan pergi/pulang; perlengkapan gratis mempertahankan kostum pribadi. Airlock memiliki penguncian dua pintu. Zona luar stasiun memakai navigasi dan tabrakan tiga dimensi, penambat terbatas dan stabilisasi aktif. Renderer/loop, delapan wilayah, seluruh misi, XP dan format cadangan v18 dipertahankan. Tidak ada kegiatan menyelam, ekonomi atau toko pada tahap ini. Pernyataan tahap 04 tentang belum adanya docking merupakan catatan baseline historis.

@@ -11,7 +11,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
   let analog = { x: 0, z: 0 };
   const refresh = () => {
     if (world.paused) { world.move = { x: 0, z: 0 }; world.running = false; return; }
-    if (world.mode === 'laptop') world.running = shifts.size > 0;
+    if (world.mode === 'laptop') world.running = !(world.region==='space'&&!world.expedition.landControls)&&shifts.size > 0;
     world.setMovementInput({
       x: (keys.has('d') || keys.has('arrowright') ? 1 : 0) - (keys.has('a') || keys.has('arrowleft') ? 1 : 0) + analog.x,
       z: (keys.has('s') || keys.has('arrowdown') ? 1 : 0) - (keys.has('w') || keys.has('arrowup') ? 1 : 0) + analog.z,
@@ -29,6 +29,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
       return;
     }
     const key = e.key.toLowerCase();
+    if(world.region==='space'&&world.expedition.outside&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.expedition.eva.changeHeight(e.code==='Space'?1:-1);return;}
     if(world.rov.active&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.rovDepth(e.code==='Space'?-1:1);return;}
     if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
       e.preventDefault(); if (!world.paused && (!e.repeat || keys.has(key))) { keys.add(key); refresh(); }
@@ -81,7 +82,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
     cameraPointer = null;
     if (!dragged && !world.paused) tap(e.clientX, e.clientY);
   });
-  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; if(world.boat.aboard||world.rov.active)clear(); });
+  world.canvas.addEventListener('pointercancel', e => { if (e.pointerId === cameraPointer) cameraPointer = null; if(world.boat.aboard||world.rov.active||world.expedition.outside)clear(); });
   world.canvas.addEventListener('lostpointercapture', e => { if (e.pointerId === cameraPointer) cameraPointer = null; });
   return clear;
 }

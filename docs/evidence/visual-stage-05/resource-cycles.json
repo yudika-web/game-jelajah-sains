@@ -1,0 +1,26 @@
+{
+  "cycles": [
+    {
+      "geometries": "106",
+      "textures": "57",
+      "roots": "1",
+      "avatars": "1",
+      "shuttles": "1"
+    },
+    {
+      "geometries": "106",
+      "textures": "57",
+      "roots": "1",
+      "avatars": "1",
+      "shuttles": "1"
+    },
+    {
+      "geometries": "105",
+      "textures": "57",
+      "roots": "1",
+      "avatars": "1",
+      "shuttles": "1"
+    }
+  ],
+  "physicalDevice": false
+}

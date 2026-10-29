@@ -1,3 +1,7 @@
+import {SpaceExpedition,type ExpeditionAction} from '../game/spaceExpedition';
+import {buildSpaceExpeditionWorld} from './spaceExpeditionWorld';
+import {preparationPlaces,preparationNavigation,evaPlaceList,evaPoints,exteriorObstacles,safeSpaceSpawn,type EvaPointId,type Vector3Data} from '../data/spaceExpedition';
+import {evaWalkable} from './evaNavigation';
 import {spaceCameraBoxes} from './spaceStation';
 import {SpaceInstrumentCamera} from './spaceInstrumentCamera';
 import {setTemporaryEquipment} from './character';
@@ -175,6 +179,12 @@ export class World {
   onMarketFrame:(dt:number,active:boolean)=>void=()=>{};onMarketMotion:(distance:number)=>void=()=>{};private trackMarketStep=(distance:number)=>this.onMarketMotion(distance);
   setMarketFocus(id:PlaceId|null){const prior=this.marketFocus;this.marketFocus=id;if(this.region!=='town'||!id&&!prior)return;const p=marketPlaces.find(p=>p.id===id);const point=p?new THREE.Vector3(p.x,.5,p.z-1):null;this.followCamera.setObstacles(point?this.collisionBoxes.filter(b=>!b.containsPoint(point)):this.collisionBoxes);}
   setMarket(p:MarketProgress){this.marketProgress=p;this.canvas.dataset.marketTrial=p.trial?.kind??'';this.canvas.dataset.marketPhase=p.trial?.phase??'idle';this.canvas.dataset.marketParcel=p.parcel.state;this.canvas.dataset.marketParcelId=p.parcel.id;this.canvas.dataset.marketIceG=String(p.parcel.iceG);this.canvas.dataset.marketLiquidG=String(p.parcel.liquidG);}
+  readonly expedition=new SpaceExpedition();private expeditionView:ReturnType<typeof buildSpaceExpeditionWorld>|null=null;private spaceInterior:THREE.Group|null=null;
+  onExpeditionChange:()=>void=()=>{};onExpeditionFrame:()=>void=()=>{};onEvaArrive:(id:EvaPointId)=>void=()=>{};
+  private expeditionCamera=new THREE.Vector3();private expeditionTarget=new THREE.Vector3();private tetherPoint=new THREE.Vector3();private expeditionPreviousPosition=new THREE.Vector3();private evaCameraBefore:{yaw:number;pitch:number}|null=null;
+  beginPreparation(){if(this.region!=='space')return;this.expedition.prepare();this.position.set(0,0,15);this.followCamera.setObstacles(preparationNavigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,3,o.z+o.depth/2))));this.followCamera.update(this.position,.016,this.reducedMotion,true);}
+  expeditionAction(action:ExpeditionAction,revision=this.expedition.revision){if(this.region!=='space')return false;const was=this.expedition.controlledPose;const ok=this.expedition.act(action,this.position,revision);if(ok){this.endInteraction();if(was||this.expedition.controlledPose)this.position.set(this.expedition.pose.x,this.expedition.pose.y,this.expedition.pose.z);}return ok;}
+  recoverExpedition(){this.expedition.reset();setTemporaryEquipment(this.playerRig,'none');this.playerAnimator.floating=false;this.playerAnimator.boating=this.boat.aboard;if(this.region==='space'){this.position.set(safeSpaceSpawn.x,0,safeSpaceSpawn.z);this.followCamera.setObstacles(spaceCameraBoxes());}}
   private spaceView:ReturnType<typeof buildSpace>|null=null;private spaceProgress=initialSpace();
   spaceDetail=false;spaceGuides:SpaceGuides={labels:true,orbits:true,light:true};readonly spaceInstrumentCamera=new SpaceInstrumentCamera();
   spaceFocus:SpaceStage|null=null;spaceEarthView=false;spaceAngle=0;onSpaceFrame:(dt:number,active:boolean)=>void=()=>{};
@@ -183,8 +193,8 @@ export class World {
   private geoProgress=initialGeo();geoFraction=0;geoFocus:PlateId|'earth'|null=null;
   private geoCameraPoint=new THREE.Vector3();onGeoFrame:(dt:number,active:boolean)=>void=()=>{};
   setGeopark(p:GeoProgress){const changed=this.geoProgress.exercise!==p.exercise;this.geoProgress=p;if(this.region==='geopark'&&changed){this.stop();this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.4:1.2,o.z+o.depth/2)));this.followCamera.setObstacles(this.collisionBoxes);if(!walkable(this.position,this.navigation))this.resetPosition();}}
-  get places() { return regions[this.region].places; }
-  get navigation() { if(this.region==='geopark')return geoNavigation(this.geoProgress.exercise);if(this.boat.aboard)return this.region==='coast'?coastalBoatNavigation:boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
+  get places() {return this.region==='space'&&this.expedition.phase==='preparation'?preparationPlaces:this.region==='space'&&this.expedition.outside?evaPlaceList:regions[this.region].places;}
+  get navigation() {if(this.region==='space'&&this.expedition.phase==='preparation')return preparationNavigation; if(this.region==='geopark')return geoNavigation(this.geoProgress.exercise);if(this.boat.aboard)return this.region==='coast'?coastalBoatNavigation:boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
   get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
   approach(id:PlaceId) {return this.pushing?rimbaCartConfig.approach:1.4;}
   canPushCart() {return this.region==='rimba'&&this.rimbaProgress.repaired&&Math.hypot(this.position.x-cartParking.x,this.position.z-cartParking.z)<3.25&&walkable(this.position,rimbaNavigation(this.rimbaProgress.cOpen,true));}
@@ -253,6 +263,7 @@ export class World {
     this.followCamera.update(this.position, .016, this.reducedMotion, true);
     addEventListener('resize', () => this.resize());
     this.renderer.setAnimationLoop(() => this.frame());
+    this.expedition.onChange=()=>{this.stop();this.lastNear=undefined;if(this.region==='space'){this.followCamera.setObstacles(this.expedition.outside?exteriorObstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.min.x,o.min.y,o.min.z),new THREE.Vector3(o.max.x,o.max.y,o.max.z))):this.expedition.phase==='preparation'?preparationNavigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,3,o.z+o.depth/2))):spaceCameraBoxes());this.followCamera.resize(innerWidth,innerHeight);if(this.expedition.outside){this.evaCameraBefore={yaw:this.yaw,pitch:this.pitch};this.yaw=-1.4;this.pitch=.40;this.followCamera.update(this.position,.016,true,true);}else if(this.evaCameraBefore){this.yaw=this.evaCameraBefore.yaw;this.pitch=this.evaCameraBefore.pitch;this.evaCameraBefore=null;}}this.onExpeditionChange();};
     canvas.dataset.ready = 'true';
   }
   setLowQuality(low:boolean){
@@ -345,7 +356,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
+    this.recoverExpedition();this.expeditionView=null;this.spaceInterior=null;this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
@@ -354,7 +365,10 @@ export class World {
     if (region === 'town') this.buildTown();
     else if(region==='space'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
-      this.spaceView=buildSpace({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{const rig=createCharacter('nara','spaceNara');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);this.npcs.push({id:'spaceNara',rig,animator:new CharacterAnimator(rig,1.8),timer:0});this.npcLabels.set('spaceNara',this.label('Bu Nara',x,rig.labelSocket.position.y,z,'spaceNara'));}});
+      this.spaceInterior=new THREE.Group();this.spaceInterior.name='space-interior';this.regionRoot.add(this.spaceInterior);
+      const addLabel=(...args:Parameters<World['label']>)=>{const label=this.label(...args);this.spaceInterior!.add(label);return label;};
+      this.spaceView=buildSpace({root:this.spaceInterior,box:b,label:addLabel,npc:(x,z)=>{const rig=createCharacter('nara','spaceNara');rig.root.position.set(x,0,z);this.spaceInterior!.add(rig.root);this.npcs.push({id:'spaceNara',rig,animator:new CharacterAnimator(rig,1.8),timer:0});this.npcLabels.set('spaceNara',addLabel('Bu Nara',x,rig.labelSocket.position.y,z,'spaceNara'));}});
+      this.regionRoot.add(this.spaceView.sky);this.expeditionView=buildSpaceExpeditionWorld(this.regionRoot);
       this.spaceView.quality(this.lowQuality);
       this.collisionBoxes=spaceCameraBoxes();
     }
@@ -448,7 +462,7 @@ export class World {
   }
   waterGarden(group: Group) { this.gardenView?.water(group); }
   goTo(p: Point, onArrive?: () => void) {
-    if(this.rov.active)return false;
+    if(this.rov.active||this.region==='space'&&!this.expedition.landControls)return false;
     const path = findPath(this.position, p, this.navigation);
     if (!path.length) return false;
     if(this.boat.aboard)this.boat.start();
@@ -460,8 +474,8 @@ export class World {
     this.move = this.boat.aboard&&!this.boat.enabled?{x:0,z:0}:input;
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
-  stop(resetRun = true) { this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() {this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  stop(resetRun = true) { this.expedition.stop();this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
+  resetPosition() {this.recoverExpedition();this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -474,17 +488,19 @@ export class World {
   setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
   endInteraction() { this.coastalFocus=null; this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
   setTrial(done: boolean) { this.barrier.visible = done && this.region === 'town'; }
-  pick(clientX: number, clientY: number): { rovPoint?:PressurePoint;place?: PlaceId; point?: Point } {
+  pick(clientX: number, clientY: number): {evaPoint?:Vector3Data; rovPoint?:PressurePoint;place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), this.camera);
     const objects = this.ray.intersectObjects(this.scene.children, true);
     if(this.rov.active){const target=objects.find(o=>o.object.userData.rovPoint&&visibleForPicking(o.object));return target?{rovPoint:target.object.userData.rovPoint}:{};}
     const hit = objects.find(o => o.object.userData.place && visibleForPicking(o.object));
     if (hit) return { place: hit.object.userData.place as PlaceId };
+    if(this.region==='space'&&this.expedition.outside){const point=this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-this.expedition.eva.position.y),new THREE.Vector3());return point&&evaWalkable(point)?{evaPoint:{x:point.x,y:point.y,z:point.z}}:{};}
     const point = this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), new THREE.Vector3());
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
+    if(this.region==='space'&&!this.expedition.landControls)return this.expedition.outside?this.expedition.eva.nearby():null;
     if(this.rov.active)return null;
     if(this.boat.aboard){const d=this.boat.nearby(this.position);return d?this.boat.docks[d].place:null;}
     let nearest: PlaceId | null = null, distance: number = this.interactionRadius;
@@ -507,8 +523,17 @@ export class World {
     this.onRiverFrame(dt,!document.hidden&&document.hasFocus());
     if(this.fishingSession?.active){const phase=this.fishingSession.phase;this.playerAnimator.fishingCast=Math.min(1,this.fishingSession.elapsed/.8);this.playerAnimator.setPose(phase==='casting'?'fishCast':phase==='observing'||phase==='released'?'fishPull':'fishWait');}
     let travelled = 0, dx = 0, dz = 0;
+    if(this.region==='space'){
+      const controlled=this.expedition.controlledPose,before=this.expeditionPreviousPosition.copy(this.position);const arrived=this.expedition.frame(dt,!this.paused&&!document.hidden&&document.hasFocus(),this.reducedMotion,this.move,this.yaw);
+      if(controlled||this.expedition.controlledPose){this.position.set(this.expedition.pose.x,this.expedition.pose.y,this.expedition.pose.z);travelled=this.position.distanceTo(before);dx=this.position.x-before.x;dz=this.position.z-before.z;}
+      if(!this.expedition.landControls)this.running=false;
+      if(arrived&&this.expedition.outside)this.onEvaArrive(arrived);
+      const gear=this.expedition.equipped?'astronaut':'none';if(this.playerRig.cosmetics?.mode!==gear)setTemporaryEquipment(this.playerRig,gear);
+      this.playerAnimator.floating=this.expedition.outside||this.expedition.phase==='exiting'||this.expedition.phase==='reentering';this.playerAnimator.boating=this.expedition.seated;
+      const shadow=this.player.getObjectByName('contact-shadow');if(shadow)shadow.visible=!this.playerAnimator.floating;
+    }
     if(!this.paused&&this.rov.active)this.rov.step(this.move,this.yaw+pressureConfig.cameraYawOffset,dt);
-    if (!this.paused&&!this.rov.active) {
+    if (!this.paused&&!this.rov.active&&!(this.region==='space'&&!this.expedition.landControls)) {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
@@ -520,6 +545,7 @@ export class World {
       }
     }
     if (travelled > .00001 && !this.interacting) this.facing = Math.atan2(dx, dz);
+    if(this.region==='space'&&this.expedition.seated)this.facing=0;
     this.player.rotation.y = turnToward(this.player.rotation.y, this.facing, dt);
     this.player.position.copy(this.position);
     if(this.swimming)this.playerAnimator.setPose('none');
@@ -548,6 +574,13 @@ export class World {
       this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
     this.onSpaceFrame(dt,this.region==='space'&&!document.hidden&&document.hasFocus());this.spaceView?.frame(this.spaceProgress,this.spaceAngle,this.spaceFocus,this.spaceDetail,this.spaceGuides);document.body.classList.toggle('space-instrument',this.region==='space'&&!!this.spaceFocus);document.body.classList.toggle('space-region',this.region==='space');this.canvas.dataset.spaceDetail=String(this.spaceDetail);this.canvas.dataset.spaceQuality=this.lowQuality?'low':'normal';this.canvas.dataset.spaceGuides=JSON.stringify(this.spaceGuides);this.canvas.dataset.spaceFocus=this.spaceFocus??'';this.canvas.dataset.spaceEarthView=String(this.spaceEarthView);this.canvas.dataset.spaceAngle=String(this.spaceAngle);this.canvas.dataset.spaceModels=this.spaceView?'3':'0';
+    if(this.region==='space'&&this.expeditionView){
+      this.spaceInterior!.visible=this.expedition.showInterior;
+      this.player.updateMatrixWorld(true);const socket=this.playerRig.spaceGear?.tetherSocket;this.expeditionView.frame(this.expedition,socket?socket.getWorldPosition(this.tetherPoint):null);
+      const ground=this.expeditionView.preparation.visible;this.spaceView!.sky.visible=!ground;const sky=this.scene.background as THREE.Color;sky.set(ground?'#91b7c9':'#081426');(this.scene.fog as THREE.Fog).color.copy(sky);
+      this.canvas.dataset.expeditionPhase=this.expedition.phase;this.canvas.dataset.expeditionDirection=this.expedition.direction;this.canvas.dataset.expeditionEquipped=String(this.expedition.equipped);this.canvas.dataset.innerDoor=String(this.expedition.innerOpen);this.canvas.dataset.outerDoor=String(this.expedition.outerOpen);this.canvas.dataset.evaY=this.expedition.eva.position.y.toFixed(3);this.canvas.dataset.evaLength=this.expedition.eva.length.toFixed(3);this.canvas.dataset.evaDistance=this.expedition.eva.distance.toFixed(3);this.canvas.dataset.evaArrivals=String(this.expedition.eva.arrivals);this.canvas.dataset.shuttleCount='1';this.onExpeditionFrame();
+    }else{this.canvas.dataset.expeditionPhase='inactive';this.canvas.dataset.shuttleCount='0';}
+    document.body.classList.toggle('space-special',this.region==='space'&&!this.expedition.landControls);document.body.classList.toggle('space-eva',this.region==='space'&&this.expedition.outside);
     this.onGeoFrame(dt,this.region==='geopark'&&!document.hidden&&document.hasFocus());this.geoView?.frame(this.geoProgress,this.geoFraction);this.canvas.dataset.geoExercise=String(this.geoProgress.exercise);this.canvas.dataset.geoModels=this.geoView?'3':'0';
     this.onPontoonFrame(dt,this.region==='river'&&!document.hidden&&document.hasFocus());this.pontoonView?.frame(this.pontoonProgress,this.pontoonFraction,this.pontoonZ);if(this.pontoonView){this.canvas.dataset.pontoonZ=String(this.pontoonZ);this.canvas.dataset.pontoonLoads='1';this.canvas.dataset.pontoonObjectY=String(this.regionRoot.userData.pontoonObjectY);}
     this.onSolidFrame(dt,this.region==='rimba'&&!document.hidden&&document.hasFocus());this.solidView?.frame(this.solidProgress,this.solidFraction);if(this.solidView){this.canvas.dataset.solidLoads='1';this.canvas.dataset.solidPressure=String(this.regionRoot.userData.solidPressure??'');this.canvas.dataset.solidLoadY=String(this.regionRoot.userData.solidLoadY);this.canvas.dataset.solidSlide=String(this.regionRoot.userData.solidSlide);this.canvas.dataset.solidApplied=String(this.regionRoot.userData.solidApplied);}
@@ -567,11 +600,14 @@ export class World {
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
     if(this.geoFocus){const focus=this.geoFocus;const p=this.places.find(p=>p.id===(focus==='earth'?'geoEarth':plateModels[focus].place));if(p)this.geoCameraPoint.set(p.x,1,p.z-.8);}
     this.pontoonCameraPoint.set(this.pontoonFocus==='spring'?-6:7,this.pontoonFocus==='spring'?1:0,this.pontoonFocus==='spring'?23.2:this.pontoonZ);
-    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
     if(this.marketFocus){const p=this.places.find(p=>p.id===this.marketFocus);if(p)this.marketCameraPoint.set(p.x,.20,p.z-1);}
     this.followCamera.inspectionWidth=this.marketFocus?2.8:this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    if(!(this.region==='space'&&this.spaceFocus&&(this.spaceEarthView||this.spaceDetail)))this.followCamera.update(this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
-    if(this.region==='space'&&this.spaceFocus&&this.spaceView&&(this.spaceEarthView||this.spaceDetail)){
+    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(this.region==='space'&&this.expedition.controlledPose&&!this.expedition.outside){
+      if(this.expedition.inVehicle){const ship=this.expedition.shipPosition();this.expeditionTarget.set(ship.x,ship.y+1.15,ship.z);this.expeditionCamera.set(ship.x+5,ship.y+2.8,ship.z+5.5);}else{this.expeditionTarget.set(14,1.2,21);this.expeditionCamera.set(18.6,3.5,25.6);}
+      this.camera.setViewOffset(innerWidth,innerHeight,innerWidth>=701?innerWidth*.18:0,innerWidth<701?innerHeight*.16:0,innerWidth,innerHeight);this.spaceInstrumentCamera.update(this.camera,this.expeditionCamera,this.expeditionTarget,dt,this.reducedMotion);this.camera.layers.set(0);
+    }else if(this.region==='space'&&this.spaceFocus&&this.spaceView&&(this.spaceEarthView||this.spaceDetail)){
       this.camera.layers.set(this.spaceEarthView?3:0);
       this.spaceInstrumentCamera.update(this.camera,this.spaceEarthView?this.spaceView.earthObserver:this.spaceView.detailPosition,this.spaceEarthView?this.spaceView.moonTarget:this.spaceView.detailTarget,dt,this.reducedMotion);
     }else{this.camera.layers.set(0);this.spaceInstrumentCamera.reset();}

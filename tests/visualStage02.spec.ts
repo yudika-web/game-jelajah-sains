@@ -1,3 +1,4 @@
+import {enterStation,leaveStation} from './expedition.helpers';
 import {test,expect,type Page} from '@playwright/test';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {places} from '../src/data/content';
@@ -8,7 +9,7 @@ async function saved(p:Page){await expect(p.locator('#save-status')).toContainTe
 test('stage 02: all Town destinations require real arrival; three region cycles preserve all v17 evidence and resources',async({page})=>{
  test.setTimeout(360000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await start(page);const before=await saved(page),reached:string[]=[],cycles:unknown[]=[];
  for(const place of places){await go(page,place.id);expect(Number(await page.locator('#world').getAttribute('data-x'))).toBeCloseTo(place.x,1);expect(Number(await page.locator('#world').getAttribute('data-z'))).toBeCloseTo(place.z+1.4,1);reached.push(place.id);await page.locator(place.id==='wardrobe'?'#wardrobe-cancel':'#close-panel').click();}
- await go(page,'observatory');await page.locator('#enter-region').click();await expect(page.locator('#world')).toHaveAttribute('data-region','space');await expect(page.locator('#world')).toHaveAttribute('data-town-actors','0');await go(page,'spaceReturn');await page.locator('#enter-region').click();await expect(page.locator('#world')).toHaveAttribute('data-region','town');
+ await enterStation(page);await expect(page.locator('#world')).toHaveAttribute('data-region','space');await expect(page.locator('#world')).toHaveAttribute('data-town-actors','0');await leaveStation(page);await expect(page.locator('#world')).toHaveAttribute('data-region','town');
  for(let i=0;i<3;i++){await go(page,'gardenGate');await page.locator('#enter-region').click();await expect(page.locator('#world')).toHaveAttribute('data-region','garden');await go(page,'townGate');await page.locator('#enter-region').click();await expect(page.locator('#world')).toHaveAttribute('data-region','town');await page.waitForTimeout(400);cycles.push(await page.locator('#world').evaluate(c=>({roots:c.dataset.regionRoots,geometries:c.dataset.geometries,textures:c.dataset.textures,actors:c.dataset.townActors,disposals:c.dataset.regionDisposals})));}
  expect(new Set(cycles.map((c:any)=>c.geometries)).size).toBe(1);expect(new Set(cycles.map((c:any)=>c.textures)).size).toBe(1);expect(cycles.every((c:any)=>c.roots==='1'&&c.actors==='3')).toBe(true);expect(await saved(page)).toEqual(before);expect(errors).toEqual([]);
  mkdirSync('test-results/visual-stage-02',{recursive:true});writeFileSync('test-results/visual-stage-02/routes-resources.json',JSON.stringify({physicalDevice:false,reached,cycles},null,2));

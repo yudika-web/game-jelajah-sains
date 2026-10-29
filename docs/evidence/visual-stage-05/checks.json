@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-29",
+  "platform": "Linux / Chromium SwiftShader",
+  "physicalDevice": false,
+  "unit": {
+    "passed": 746,
+    "files": 26,
+    "newExpeditionCases": 20
+  },
+  "launcher": {
+    "passed": 16
+  },
+  "browser": {
+    "stage05": 5,
+    "targetedRegression": 40,
+    "regressionInitial": {
+      "passed": 39,
+      "failed": 1
+    },
+    "rerun": {
+      "passed": 1,
+      "reason": "GPU geometry count fell from 103 to 102; reject growth, retain root/model/avatar/evidence checks"
+    }
+  },
+  "typecheck": "passed",
+  "build": "passed",
+  "prepareLocal": "passed",
+  "backupVersion": 18,
+  "newMissionOrReward": false,
+  "NASAContentRead": false,
+  "fullBrowserSuiteRun": false
+}

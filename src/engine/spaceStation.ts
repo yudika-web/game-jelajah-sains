@@ -22,7 +22,7 @@ export function buildSpaceStation(parent:THREE.Group){
  }
  // Rear module wall: a human-size sealed airlock is reserved, not an available activity.
  for(const x of [-12,12])box(10,.25,.32,'#92a8b8',x,3.9,19);
- box(12,1,.25,'#d2dce3',-13,.5,19);box(12,1,.25,'#d2dce3',13,.5,19);
+ box(12,1,.25,'#d2dce3',-13,.5,19);box(5.2,1,.25,'#d2dce3',9.6,.5,19);box(3.2,1,.25,'#d2dce3',17.4,.5,19);
  for(const z of frameZ)for(const x of [-18,18]){box(4.2,.18,.25,'#d2dce3',x,4.9,z);box(3.8,.055,.4,'#9ad5dd',x,4.79,z);}
  // Observation window: one low-alpha pane, no double surfaces or coplanar frames.
  const pane=new THREE.Mesh(new THREE.PlaneGeometry(38,3.15),new THREE.MeshBasicMaterial({color:'#70b8cf',transparent:true,opacity:.055,depthWrite:false,side:THREE.DoubleSide}));pane.position.set(0,2.6,-5.35);pane.name='observation-window';root.add(pane);
@@ -30,7 +30,7 @@ export function buildSpaceStation(parent:THREE.Group){
  for(const x of [-19,-5.5,5.5,19])box(.2,3.6,.38,'#92a8b8',x,2.65,-5.35);
  // Three distinct consoles. Their complete bodies stay inside existing navigation footprints.
  for(const p of spacePlaces){
-  if(p.id==='spaceNara'||p.id==='spaceReturn')continue;
+  if(['spaceNara','spaceReturn','spaceLocker','spaceAirlock'].includes(p.id))continue;
   const book=p.id==='spaceBook',notes=p.id==='spaceNotes',instrument=['spaceRotation','spaceRevolution','spaceMoon'].includes(p.id);
   const z=p.z-.8,w=book||notes?1.8:2.6;
   box(w,.68,.8,'#274861',p.x,.40,z);box(w+.1,.12,1,'#d2dce3',p.x,.82,z);box(w-.24,.48,.11,'#18354b',p.x,1.14,z-.29);
@@ -49,15 +49,12 @@ export function buildSpaceStation(parent:THREE.Group){
  box(7,.18,4,'#c5d5e0',-13,.12,15);box(7,3.2,.24,'#385570',-13,1.65,16.9);box(.25,3.2,4,'#385570',-16.4,1.65,15);box(.25,3.2,4,'#385570',-9.6,1.65,15);
  box(7.2,.2,4.2,'#d2dce3',-13,3.35,15);box(1.2,2.1,.10,'#75a4b8',-13,1.10,16.74);sign('PERSIAPAN RISET',-13,2.8,16.73,4);
  for(const x of [-15.3,-10.7]){box(1.4,1.6,.30,'#243f58',x,1.12,16.62);for(let j=0;j<3;j++)box(1.3,.06,.42,'#c5d5e0',x,.55+j*.5,16.53);}
- // Sealed docking reserve faces the main hall; no invented travel or external movement.
- box(4.6,3.1,.24,'#355774',14,1.55,18.4);box(1.5,2.1,.12,'#6e99ac',14,1.08,18.22);for(const x of [13.13,14.87])box(.16,2.35,.16,'#d2dce3',x,1.18,18.15);box(1.9,.16,.16,'#d2dce3',14,2.42,18.15);sign('AIRLOCK · CADANGAN',14,2.85,18.10,3.9,'#e6bd79');
  box(1.2,1.8,2,'#355774',18,.9,10);for(const z of [9.55,10.45]){box(.035,1.55,.74,'#6e99ac',17.38,.9,z);box(.06,.28,.05,'#d2dce3',17.33,.95,z-.22);}for(const y of [.5,1.1,1.7])box(1.08,.04,1.8,'#9ab1bf',18,y,10);
  sign('OBSERVATORIUM · SIMULASI',0,4.72,-5.08,7);
- sign('KEMBALI KE KOTA',5,2.18,15.4,2.5);box(.3,1.9,.4,'#355774',5,.95,15.3);box(1.25,.58,.2,'#6fa6b5',5,1.35,15.33);
  for(const[color,gs]of batches){const geometry=mergeGeometries(gs);gs.forEach(g=>g.dispose());root.add(new THREE.Mesh(geometry,new THREE.MeshLambertMaterial({color})));}
  const light=new THREE.HemisphereLight('#afdbff','#162e45',.35);root.add(light);
  return root;
 }
 
 /** Camera volumes include the complete preparation module; navigation is still the approved 2D footprint. */
-export function spaceCameraBoxes(){return spaceNavigation.obstacles.filter(o=>o.depth!==11).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===-13&&o.z===15?3.6:2.3,o.z+o.depth/2)));}
+export function spaceCameraBoxes(){return spaceNavigation.obstacles.filter(o=>o.depth!==11).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===-13&&o.z===15?3.6:o.x===5?3:2.3,o.z+o.depth/2)));}
