@@ -1,0 +1,18 @@
+
+> jelajah-sains@0.1.0 test:e2e
+> playwright test tests/runtimePackage.spec.ts
+
+
+Running 2 tests using 1 worker
+
+(node:424012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/runtimePackage.spec.ts:12:50 › short ready ZIP runs offline wardrobe, v18 appearance, legacy save and shared gallery 1280x900 (6.1s)
+  ✓  2 tests/runtimePackage.spec.ts:12:50 › short ready ZIP runs offline wardrobe, v18 appearance, legacy save and shared gallery 390x844 (3.4s)
+
+  2 passed (10.2s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

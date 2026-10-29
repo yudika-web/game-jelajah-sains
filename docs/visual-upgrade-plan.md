@@ -1,6 +1,6 @@
 # Rencana pembaruan visual Jelajah Sains
 
-Diperiksa 28 Oktober 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v17, satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01 dan 02** sudah diimplementasikan; tahap saat ini hanya **02**.
+Diperbarui 29 Oktober 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v18 (termasuk penampilan), satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01, 02 dan 03** sudah diimplementasikan; tahap saat ini hanya **03**.
 
 ## Arah seni dan proporsi
 
@@ -42,13 +42,13 @@ Shadow map dinamis belum aktif pada baseline. Bayangan kontak karakter tetap ada
 | Detail Kota (tahap 02) | 3 warga dekoratif + 24 bunga instanced | 2 warga; pejalan dan bunga opsional disembunyikan |
 | Tujuan | keterbacaan normal | mengurangi jumlah piksel dan detail opsional |
 
-Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar DPR 1 keduanya bisa sama. Rendah dapat memperjelas gerigi tepi; pengaturan bukan obat z-fighting atau jaminan FPS. Preferensi `lowQuality` lama tetap kompatibel di localStorage terpisah dari progres IndexedDB; cadangan tetap v17. Pengurangan gerakan tetap opsi tersendiri.
+Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar DPR 1 keduanya bisa sama. Rendah dapat memperjelas gerigi tepi; pengaturan bukan obat z-fighting atau jaminan FPS. Preferensi `lowQuality` lama tetap kompatibel di localStorage terpisah dari progres IndexedDB; cadangan kini v18 dengan penampilan terpisah dari misi. Pengurangan gerakan tetap opsi tersendiri.
 
 ## Urutan kerja dan gerbang pemeriksaan
 
 1. **Stabilkan rendering** — reproduksi bergerak, bedakan z-fighting/aliasing/transparansi/bayangan/duplikasi, perbaiki penyebab terbukti, simpan pasangan bukti. **Selesai pada branch visual tahap 01.**
 2. **Perbaiki Kota Sains sebagai contoh kualitas** — variasi atap/kusen/kanopi, tiga siluet pohon, benda interaksi, label dekat dan aktivitas warga. **Diimplementasikan tahap 02**, lihat [laporan](visual-stage-02-review.md); interior belum tersedia.
-3. **Buat avatar modular dan lemari** — pertahankan rig, proporsi, socket dan identitas; penggantian kosmetik aman bagi progres.
+3. **Buat avatar modular dan lemari** — **diimplementasikan tahap 03**: dua outfit, empat rambut, slot topi/kacamata/tas, Coba/Terapkan/Batal, satu pembangun dan renderer. Ukuran tubuh tanpa kosmetik, penyimpanan v18 serta override perlengkapan sementara tersedia. [Laporan](visual-stage-03-review.md).
 4. **Perbaiki visual astronomi dan stasiun** — cahaya/gerak/fase tetap berasal dari model ilmiah yang sama.
 5. **Tambahkan perjalanan dan aktivitas astronot** — lingkup tersendiri, tidak mengklaim perjalanan simulasi sebagai fisika nyata.
 6. **Perbaiki bawah laut dan aktivitas menyelam** — baca ulang izin gerak air, kamera, keselamatan model dan kompatibilitas ROV.
@@ -57,8 +57,12 @@ Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar
 9. **Sebarkan detail dan aktivitas ke seluruh wilayah** — gunakan Kota sebagai acuan, satu wilayah per iterasi, batas GPU dan navigasi diperiksa.
 10. **Periksa integrasi keseluruhan** — regresi luas, semua format cadangan, pergantian wilayah, launcher/offline, perangkat dan bukti penutup.
 
-Setiap tahap memiliki commit/review sendiri, bukti dari game aktual, build dan pemeriksaan terdampak. Tahap berikutnya baru dikerjakan atas permintaan berikutnya. Tidak ada misi baru, koin, lemari atau toko yang ditambahkan pada tahap 01–02.
+Setiap tahap memiliki commit/review sendiri, bukti dari game aktual, build dan pemeriksaan terdampak. Tahap berikutnya baru dikerjakan atas permintaan berikutnya. Tahap 01–02 tidak menambahkan misi/koin/lemari/toko; tahap 03 menambahkan lemari gratis saja.
 
 ## Keadaan setelah tahap 02
 
-Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 dan seterusnya menunggu permintaan berikutnya.
+Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04 dan seterusnya menunggu permintaan berikutnya.
+
+## Keadaan setelah tahap 03
+
+Siswa/siswi berbagi tubuh netral 1,60 unit tanpa rambut, topi atau tas dalam pengukuran; NPC legacy dipertahankan. Katalog starter memuat 12 ID gratis yang stabil, kompatibel dengan kedua varian. Preview tidak memakai renderer kedua. Memilih ulang penampilan tidak mengubah kemampuan atau XP. Cadangan v18 menambah record penampilan; versi lama mempertahankan record yang tidak tercakup. Toko, koin, pakaian aktivitas penuh dan perluasan Antariksa/selam belum dibuat.

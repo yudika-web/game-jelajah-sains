@@ -1,5 +1,11 @@
 # Catatan pengembangan prototipe 0.1
 
+## Visual tahap 03
+
+Katalog terpusat `appearanceCatalog.ts` memisahkan varian awal dan lima slot. `appearance.ts` memvalidasi ID/kategori serta fallback. `characterModel.ts` tetap pembangun tunggal; tubuh siswa dinormalisasi tanpa kosmetik, dan `setTemporaryEquipment` menyediakan override sementara. Lemari `wardrobeUI.ts` memakai preview studio `wardrobePreview.ts` pada renderer/loop World yang sama. Peta Kota memiliki kabinet; menu Pengaturan menyediakan Penampilan. Terapkan menunggu transaksi simpan, Coba/Batal tidak menulis penampilan.
+
+Cadangan mutakhir **v18** memuat penampilan, seluruh **v1–v17** tetap diterima. IndexedDB tetap skema 1, ditambah key `appearance`; reset misi tidak menyentuhnya. URL siswa/siswi hanya menjadi default ketika belum ada rekaman. Galeri membaca key itu tanpa menulis misi. Bagian versi lama di bawah adalah catatan historis. [Laporan, katalog dan bukti](visual-stage-03-review.md).
+
 ## Visual tahap 02
 
 `townEnvironment.ts` membangun detail Kota, batching statis, objek ber-ID dan tiga kegiatan dekoratif. Dipanggil satu kali saat membangun Kota dan diperbarui oleh loop World; tidak mengubah aturan misi. Kamera meja memakai slab tabletop; collider navigasi tetap. Label Kota dibatasi jarak dan piksel. Kualitas Rendah menyembunyikan satu pejalan dan bunga opsional; reduced motion/jeda membekukan aktivitas. [Laporan](visual-stage-02-review.md) memuat bukti dan batas pemeriksaan. Cadangan tetap v17.
@@ -10,7 +16,7 @@ Lihat [laporan diagnosis dan bukti](visual-stage-01-review.md) serta [arah visua
 
 Misi pasar terbaru tersedia di [W01 / M02 Persediaan Es Pasar](market-ice-review.md). Wilayah terbaru tersedia di [W08 / M07 Catatan dari Observatorium](space-observatory-review.md). Geopark tersedia di [W07 / M13](geopark-review.md). Episode ponton tersedia di [M16-E4 / Ponton Pengangkut Peralatan](pontoon-buoyancy-review.md). Fondasi tekanan air tersedia di [M16-E1 / ROV Tekanan Bawah Air](underwater-pressure-review.md). Wilayah pesisir tersedia di [W05 / S16 Jaring Kehidupan Pesisir](coastal-foodweb-review.md). Episode energi tersedia di [W06 / M17-E3 Energi untuk Pos Riset](workshop-energy-review.md). Episode elektromagnet tersedia di [W06 / M17-E2 Derek Elektromagnet](workshop-electromagnet-review.md). Episode rangkaian tersedia di [W06 / M17-E1 Nyalakan Lampu Pos Riset](workshop-circuit-review.md). Catatan W04 / S13 tersedia di [Catatan Ikan Dua Titik](river-fishing-review.md). Episode sebelumnya tersedia di [W03 Bantu Pos Rimba](rimba-logistics-review.md). Pemeriksaan gerak terbaru tersedia di [Patch respons gerak dan lari](running-review.md). Pemeriksaan karakter terbaru tersedia di [Patch avatar balok dan ukuran absolut](block-avatar-review.md). Bagian penyempurnaan karakter dan kamera di bawah mencatat fondasi tahap sebelumnya.
 
-> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v17**, dengan tujuh belas misi/episode dan delapan wilayah; rincian mutakhir ada pada bagian W01/M02.
+> Bagian M14 dan W03 di bawah mencatat keadaan ketika tahap tersebut dibuat. Format cadangan mutakhir adalah **v18**, dengan tujuh belas misi/episode dan delapan wilayah; rincian mutakhir ada pada bagian W01/M02.
 
 ## Sumber dan keputusan implementasi
 

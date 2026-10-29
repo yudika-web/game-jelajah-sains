@@ -1,0 +1,146 @@
+{
+  "checkedAtUTC": "2026-10-29T03:12:19.953120+00:00",
+  "gameSourceCommit": "5e7c5ffca7f11e43a3d9945c188585490dbe0e61",
+  "baselineCommit": "2582b767666fa243881f6b075dde3e05abf2958a",
+  "scope": "visual-stage-03 only",
+  "unit": {
+    "command": "npm test",
+    "files": 24,
+    "passed": 720
+  },
+  "launcher": {
+    "command": "npm run test:launcher",
+    "passed": 16,
+    "testedActualNewZip": true
+  },
+  "browserFull": {
+    "command": "CAPTURE_WARDROBE_EVIDENCE=1 npm run test:e2e",
+    "total": 110,
+    "initialPassed": 108,
+    "initialFailed": 2,
+    "initialFailures": "Two filename assertions expected v17 instead of v18; application source unchanged.",
+    "correctedRerunCommand": "npm run test:e2e -- tests/game.spec.ts tests/garden.spec.ts --grep 'IFP one-pointer mission|M14 backups'",
+    "correctedRerunPassed": 2,
+    "allScenariosPassedAfterCorrections": true
+  },
+  "newPackageBrowser": {
+    "command": "npm run test:e2e -- tests/runtimePackage.spec.ts",
+    "passed": 2,
+    "offline": true,
+    "wardrobeApplyReloadBackup18Gallery": true
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "warning": "Existing bundle exceeds 500 kB chunk warning."
+  },
+  "prepare": {
+    "command": "npm run prepare:local",
+    "passed": true
+  },
+  "sourceFrozenDuringFullSuite": {
+    "verifiedFiles": 139,
+    "unchanged": true,
+    "hashFile": "source-verification.json"
+  },
+  "capture": {
+    "checkedAtUTC": "2026-10-29T03:10:15.761Z",
+    "productionBuild": true,
+    "physicalDevice": false,
+    "browser": "154.0.8037.57",
+    "renderer": "SwiftShader",
+    "viewport": [
+      1440,
+      960
+    ],
+    "profiles": [
+      {
+        "version": 1,
+        "base": "student-boy",
+        "outfit": "outfit-teal",
+        "hair": "hair-crop",
+        "headwear": "head-none",
+        "facewear": "face-none",
+        "backpack": "pack-mustard"
+      },
+      {
+        "version": 1,
+        "base": "student-girl",
+        "outfit": "outfit-coral",
+        "hair": "hair-sweep",
+        "headwear": "head-none",
+        "facewear": "face-none",
+        "backpack": "pack-mustard"
+      },
+      {
+        "version": 1,
+        "base": "student-boy",
+        "outfit": "outfit-teal",
+        "hair": "hair-shoulder",
+        "headwear": "head-none",
+        "facewear": "face-none",
+        "backpack": "pack-mustard"
+      },
+      {
+        "version": 1,
+        "base": "student-girl",
+        "outfit": "outfit-coral",
+        "hair": "hair-tied",
+        "headwear": "head-none",
+        "facewear": "face-none",
+        "backpack": "pack-mustard"
+      }
+    ],
+    "motion": {
+      "frames": 107,
+      "seconds": 8.944719791412354
+    },
+    "motionStates": [
+      {
+        "phase": "walk",
+        "speed": "5.200",
+        "mode": "walk"
+      },
+      {
+        "phase": "run",
+        "speed": "8.000",
+        "mode": "run"
+      }
+    ],
+    "errors": [],
+    "external": []
+  },
+  "package": {
+    "checkedAtUTC": "2026-10-29T03:12:19.953120+00:00",
+    "gameSourceCommit": "5e7c5ffca7f11e43a3d9945c188585490dbe0e61",
+    "backupFormat": 18,
+    "bytes": 382481,
+    "sha256": "11b84a884b109b87ffcdd8e9681c2f36d67404179fd985d884f2acc463b1bf41",
+    "members": 17,
+    "maxMemberLength": 43,
+    "crc": "passed",
+    "launcherTests": 16,
+    "browserTests": 2,
+    "browserViewports": [
+      [
+        1280,
+        900
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "extractedInUnicodeSpacedFolder": true,
+    "npmRequiredForPlayer": false,
+    "nodeRequired": ">=22.12.0",
+    "distMatchesVisualStage03Release": true,
+    "physicalWindowsExplorerTested": false
+  },
+  "physicalDeviceTests": {
+    "Windows": false,
+    "HP": false,
+    "IFP": false,
+    "LAN": false
+  }
+}

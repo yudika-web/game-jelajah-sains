@@ -1,0 +1,186 @@
+
+> jelajah-sains@0.1.0 test:e2e
+> playwright test
+
+
+Running 110 tests using 1 worker
+
+(node:409310) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    1 tests/blockAvatar.spec.ts:6:1 › siswi uses the real game scale across reload, gallery, both regions and old progress (21.5s)
+  ✓    2 tests/blockAvatar.spec.ts:19:1 › scaled block avatar works with HP analog and readable portrait and landscape layout (5.1s)
+  ✓    3 tests/boat.spec.ts:19:1 › S15 IFP complete: actual boating, six explicit samples, cleaning after baseline, v9 backup and v1-v5 migration (1.6m)
+  ✓    4 tests/boat.spec.ts:33:1 › laptop boat: actual speeds, stop, full hull collision, keyboard mooring, menus, reload and safe recovery (16.2s)
+  ✓    5 tests/boat.spec.ts:38:87 › HP boat portrait: analog plus second camera finger, toggle, pointer cancel, recovery (5.3s)
+  ✓    6 tests/boat.spec.ts:38:87 › HP boat landscape: analog plus second camera finger, toggle, pointer cancel, recovery (5.8s)
+  ✓    7 tests/characters.spec.ts:32:1 › NPC label raycast starts a real approach, greeting and relaxed recovery (3.9s)
+  ✓    8 tests/characters.spec.ts:50:1 › old M01 save resumes, camera preferences survive separately, mission can finish (17.2s)
+  ✓    9 tests/characters.spec.ts:74:1 › actual displacement drives gait at a wall; blur cancels input; manual camera is retained (13.1s)
+  ✓   10 tests/coastal.spec.ts:20:1 › S16 IFP complete: W04 travel, five world observations, real boat, foodweb, case, saves and all old formats (1.4m)
+  ✓   11 tests/coastal.spec.ts:38:1 › laptop coastal boat manual input, blur/cancel recovery and unconfirmed observation reload (11.9s)
+  ✓   12 tests/coastal.spec.ts:41:59 › HP coastal 390x844: touch observations, ports alternative, case and two-finger boat (15.4s)
+  ✓   13 tests/coastal.spec.ts:41:59 › HP coastal 844x390: touch observations, ports alternative, case and two-finger boat (15.7s)
+  ✓   14 tests/electromagnet.spec.ts:18:1 › M17-E2 IFP: four real material observations, three controlled tests, 40-turn two trips, persistence and legacy compatibility (1.8m)
+  ✓   15 tests/electromagnet.spec.ts:44:1 › laptop crane: three 20-turn deliveries, keyboard controls, recovery and safe reload of carried clips (44.2s)
+  ✓   16 tests/electromagnet.spec.ts:47:59 › HP electromagnet 390x844: touch assembly, two-finger exploration, crane pause and restoration (15.5s)
+  ✓   17 tests/electromagnet.spec.ts:47:59 › HP electromagnet 844x390: touch assembly, two-finger exploration, crane pause and restoration (15.8s)
+  ✓   18 tests/energy.spec.ts:17:1 › M17-E3 IFP complete: six real tests, failed plan retained, retry, 4-2-3 Wh, chapter, reload and all legacy backups (2.1m)
+  ✓   19 tests/energy.spec.ts:32:1 › laptop energy: keyboard operation, blur cancels unconfirmed work, reload preserves confirmed interval (19.4s)
+  ✓   20 tests/energy.spec.ts:35:59 › HP energy 390x844: touch ports, analog/camera, preview cancellation and battery graph (20.2s)
+  ✓   21 tests/energy.spec.ts:35:59 › HP energy 844x390: touch ports, analog/camera, preview cancellation and battery graph (20.9s)
+  ✓   22 tests/gallery.spec.ts:3:1 › model gallery renders all eight characters and remains static for shape inspection (2.4s)
+  ✓   23 tests/gallery.spec.ts:20:1 › gallery is accessible from the game and preserves existing M01 progress (6.5s)
+  ✘   24 tests/game.spec.ts:16:1 › IFP one-pointer mission: measurements, experiment, correction, save/resume, backup (44.5s)
+(node:410935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   25 tests/game.spec.ts:77:1 › laptop: WASD, keyboard journal pauses movement, camera reset (3.6s)
+  ✓   26 tests/game.spec.ts:93:1 › HP: simultaneous analog and camera, pointer cancel stops movement, portrait layout (3.0s)
+  ✓   27 tests/game.spec.ts:117:1 › WebGL unavailable: accessible material fallback (570ms)
+  ✓   28 tests/garden.spec.ts:25:1 › M14 IFP complete experiment: physical approaches, water, explicit measurements, day guards, journal and first reward (2.1m)
+  ✘   29 tests/garden.spec.ts:106:1 › M14 backups: new format, old M01 scope, invalid import atomicity and reward-preserving reset (13.4s)
+(node:411385) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   30 tests/garden.spec.ts:136:1 › garden HP portrait and landscape preserve controls, tool visibility and region-specific routes (10.6s)
+  ✓   31 tests/geopark.spec.ts:15:1 › M13 complete: visit from workshop, all evidence, checkpoints, safe path, old backups and separate chapters (1.8m)
+  ✓   32 tests/geopark.spec.ts:23:1 › laptop model: keyboard, paused clock, cancel/reload and fresh input (17.2s)
+  ✓   33 tests/geopark.spec.ts:26:70 › geopark touch 390x844: route B, reload, recovery and readable journal (23.3s)
+  ✓   34 tests/geopark.spec.ts:26:70 › geopark touch 844x390: route B, reload, recovery and readable journal (23.4s)
+  ✓   35 tests/geopark.spec.ts:26:70 › geopark touch 1920x1080: route B, reload, recovery and readable journal (27.9s)
+  ✓   36 tests/hydraulic.spec.ts:16:1 › M16-E2 full IFP expedition: real world sources, three experiments, all challenge limits, conclusion, v12 and legacy backups (1.3m)
+  ✓   37 tests/hydraulic.spec.ts:31:1 › hydraulic laptop: focus/hidden pause, keyboard buttons, close/reload cancellation and camera preference restored (23.7s)
+  ✓   38 tests/hydraulic.spec.ts:34:70 › hydraulic touch 390x844: controls, both piston limits, recovery and readable table (13.6s)
+  ✓   39 tests/hydraulic.spec.ts:34:70 › hydraulic touch 844x390: controls, both piston limits, recovery and readable table (13.9s)
+  ✓   40 tests/hydraulic.spec.ts:34:70 › hydraulic touch 1920x1080: controls, both piston limits, recovery and readable table (17.3s)
+  ✓   41 tests/market.spec.ts:17:1 › M02 complete: real Town approaches, mass/particles, density, fair containers, failed A, one actual C delivery and all legacy progress (1.5m)
+  ✓   42 tests/market.spec.ts:30:1 › laptop market: keyboard, paused animation, cancellation/reload and fresh movement input (12.3s)
+  ✓   43 tests/market.spec.ts:33:70 › market touch 390x844: real package route, one handoff, readable evidence and recovery (13.3s)
+  ✓   44 tests/market.spec.ts:33:70 › market touch 844x390: real package route, one handoff, readable evidence and recovery (14.0s)
+  ✓   45 tests/market.spec.ts:33:70 › market touch 1920x1080: real package route, one handoff, readable evidence and recovery (19.0s)
+  ✓   46 tests/market.spec.ts:37:1 › carried M02 package recovers once across Town/Garden travel while prior evidence is preserved (23.9s)
+  ✓   47 tests/pontoon.spec.ts:17:1 › M16-E4 complete: real spring measurements, all modules, A/C failures, B delivery, old backups and M16 chapter (1.5m)
+  ✓   48 tests/pontoon.spec.ts:29:1 › pontoon laptop: keyboard, focus pause, reload cancellation and restored camera/input (14.6s)
+  ✓   49 tests/pontoon.spec.ts:32:70 › pontoon touch 390x844: C collision, B shipping, recovery and tables (15.0s)
+  ✓   50 tests/pontoon.spec.ts:32:70 › pontoon touch 844x390: C collision, B shipping, recovery and tables (15.7s)
+  ✓   51 tests/pontoon.spec.ts:32:70 › pontoon touch 1920x1080: C collision, B shipping, recovery and tables (18.2s)
+  ✓   52 tests/pressure.spec.ts:19:1 › M16-E1 IFP full expedition: sensor, real zero/tutorial, four 3D stations, cancellation, conclusion, v11 and every legacy format (1.4m)
+  ✓   53 tests/pressure.spec.ts:28:1 › laptop ROV: Space/Q targets, WASD, depth hold on blur, temporary read reload, preferences and safe land return (18.1s)
+  ✓   54 tests/pressure.spec.ts:31:58 › HP ROV 390x844: analog plus camera, depth targets, reading and pointer cancellation (18.2s)
+  ✓   55 tests/pressure.spec.ts:31:58 › HP ROV 844x390: analog plus camera, depth targets, reading and pointer cancellation (18.5s)
+  ✓   56 tests/production.spec.ts:28:3 › production build loads game and every gallery model without internet 1280x900 (10.4s)
+  ✓   57 tests/production.spec.ts:28:3 › production build loads game and every gallery model without internet 390x844 (7.8s)
+  ✓   58 tests/production.spec.ts:28:3 › production build loads game and every gallery model without internet 844x390 (8.1s)
+  ✓   59 tests/production.spec.ts:28:3 › production build loads game and every gallery model without internet 1920x1080 (12.7s)
+  ✓   60 tests/rimba.spec.ts:25:1 › W03 IFP: enter from Town, repair real cart, two loaded journeys, conclude, habitat, reload and legacy-compatible backup (1.7m)
+  ✓   61 tests/rimba.spec.ts:59:1 › HP Rimba: real bucket carry, two-finger camera, partial transfer and safe C route in portrait/landscape (31.3s)
+  ✓   62 tests/rimba.spec.ts:74:1 › IFP bucket can complete six loads without repairing the cart (59.1s)
+  ✓   63 tests/rimba.spec.ts:87:1 › laptop cart: real wheel distance, controlled Shift speed, enlarged collision, park restores normal running (11.1s)
+  ✓   64 tests/river.spec.ts:16:1 › W04 IFP complete six actual fishing observations, atomic release, fair plan, journal, backup v1-4, scoped reset and return (1.4m)
+  ✓   65 tests/river.spec.ts:39:1 › laptop fishing cancellation, focus pause, reload, water collision and clean keyboard recovery (34.3s)
+  ✓   66 tests/river.spec.ts:50:87 › HP portrait: two-finger controls, visible world fishing, record/release and no overflow (11.8s)
+  ✓   67 tests/river.spec.ts:50:87 › HP landscape: two-finger controls, visible world fishing, record/release and no overflow (12.1s)
+  ✓   68 tests/running.spec.ts:31:1 › keyboard: actual running distance, both Shift keys, release to walk, diagonal normalization (9.1s)
+  ✓   69 tests/running.spec.ts:54:1 › panels, editable fields, blur, hidden tab and mode switch clear run and require fresh input (7.2s)
+  ✓   70 tests/running.spec.ts:83:1 › IFP runs a map route exactly, cancels by stop/manual input, and resets on region travel (15.9s)
+  ✓   71 tests/running.spec.ts:113:1 › running into the school wall cannot tunnel or keep the gait moving (8.6s)
+  ✓   72 tests/running.spec.ts:123:1 › HP toggle, proportional analog and a second camera finger work in portrait and landscape (8.8s)
+  ✓   73 tests/runtimePackage.spec.ts:12:50 › short ready ZIP runs offline game, v17 save and gallery 1280x900 (4.0s)
+  ✓   74 tests/runtimePackage.spec.ts:12:50 › short ready ZIP runs offline game, v17 save and gallery 390x844 (2.7s)
+  ✓   75 tests/solid.spec.ts:17:1 › M16-E3 IFP complete: force, real size measurements, C/A/B experiments, A/C/B challenge, saved evidence and all old formats (1.4m)
+  ✓   76 tests/solid.spec.ts:29:1 › solid laptop: keyboard buttons, focus pause, cancel and reload reset unconfirmed trial and preserve camera (21.7s)
+  ✓   77 tests/solid.spec.ts:32:70 › solid touch 390x844: C gate stop, B success, recovery and table (13.1s)
+  ✓   78 tests/solid.spec.ts:32:70 › solid touch 844x390: C gate stop, B success, recovery and table (13.5s)
+  ✓   79 tests/solid.spec.ts:32:70 › solid touch 1920x1080: C gate stop, B success, recovery and table (16.2s)
+  ✓   80 tests/space.spec.ts:17:1 › M07 complete: Observatory, three actual checkpoints, geometry views, v16 and all old progress (1.4m)
+  ✓   81 tests/space.spec.ts:25:1 › laptop astronomy: keyboard, pause/focus, cancel and camera preference survive (13.8s)
+  ✓   82 tests/space.spec.ts:28:70 › space touch 390x844: all four actual Moon views, records and recovery (10.7s)
+  ✓   83 tests/space.spec.ts:28:70 › space touch 844x390: all four actual Moon views, records and recovery (10.8s)
+  ✓   84 tests/space.spec.ts:28:70 › space touch 1920x1080: all four actual Moon views, records and recovery (14.9s)
+  ✓   85 tests/swimming.spec.ts:13:1 › S14 IFP: ramp swimming, real marker practice, three predictions/tests/records, conclusion, reload and scoped reset (38.6s)
+  ✓   86 tests/swimming.spec.ts:19:1 › laptop swimming: keyboard, boundary, pause, fresh input and Return to Shore (11.4s)
+  ✓   87 tests/swimming.spec.ts:20:87 › HP swimming portrait: analog, camera, cancellation and recovery (9.3s)
+  ✓   88 tests/swimming.spec.ts:20:87 › HP swimming landscape: analog, camera, cancellation and recovery (9.7s)
+  ✓   89 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 1440x960 (8.2s)
+  ✓   90 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 390x844 (4.7s)
+  ✓   91 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 844x390 (4.8s)
+  ✓   92 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 1920x1080 (10.2s)
+  ✓   93 tests/visualStage01.spec.ts:20:1 › stage 01 joined ground: real routes, moving camera, one active root, repeatable resource disposal, old progress unchanged (1.5m)
+  ✓   94 tests/visualStage02.spec.ts:8:1 › stage 02: all Town destinations require real arrival; three region cycles preserve all v17 evidence and resources (1.9m)
+  ✓   95 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 1440x960 (8.4s)
+  ✓   96 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 390x844 (5.7s)
+  ✓   97 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 844x390 (6.1s)
+  ✓   98 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 1920x1080 (10.1s)
+  ✓   99 tests/wardrobe.spec.ts:14:1 › wardrobe: physical cabinet, preview-only Try, Cancel, atomic Apply, repeated changes and saved gallery share one model (15.2s)
+  ✓  100 tests/wardrobe.spec.ts:23:1 › wardrobe v18 export/import, every legacy format preserves appearance, mission reset and region travel preserve receipts (15.6s)
+  ✓  101 tests/wardrobe.spec.ts:32:111 › wardrobe laptop 1440x960: girl URL, shared preview, removal, keyboard/touch and fresh movement (4.2s)
+  ✓  102 tests/wardrobe.spec.ts:32:111 › wardrobe hp 390x844: girl URL, shared preview, removal, keyboard/touch and fresh movement (2.6s)
+  ✓  103 tests/wardrobe.spec.ts:32:111 › wardrobe hp 844x390: girl URL, shared preview, removal, keyboard/touch and fresh movement (2.8s)
+  ✓  104 tests/wardrobe.spec.ts:32:111 › wardrobe ifp 1920x1080: girl URL, shared preview, removal, keyboard/touch and fresh movement (4.5s)
+  ✓  105 tests/wardrobe.spec.ts:37:1 › repeated Apply warms a bounded cache; one world avatar and one renderer survive every combination cycle (24.3s)
+  ✓  106 tests/wardrobe.spec.ts:48:1 › personal cosmetics survive real fishing tools, swim vest, boat seating and dock recovery (28.0s)
+  ✓  107 tests/workshop.spec.ts:13:1 › W06 IFP complete: investigate, isolate, diagnose, replace, real lamp switching, evidence, migration and reward (1.4m)
+  ✓  108 tests/workshop.spec.ts:48:94 › W06 laptop 1280x900: accessible pair list, switching and clean input (9.2s)
+  ✓  109 tests/workshop.spec.ts:48:94 › W06 hp 390x844: accessible pair list, switching and clean input (8.5s)
+  ✓  110 tests/workshop.spec.ts:48:94 › W06 hp 844x390: accessible pair list, switching and clean input (9.0s)
+
+
+  1) tests/game.spec.ts:16:1 › IFP one-pointer mission: measurements, experiment, correction, save/resume, backup
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "jelajah-sains-cadangan-v17.json"
+    Received: "jelajah-sains-cadangan-v18.json"
+
+      64 |   await page.locator('#export').click();
+      65 |   const download = await downloadPromise;
+    > 66 |   expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v17.json');
+         |                                        ^
+      67 |   const backup = await download.path();
+      68 |   expect(backup).toBeTruthy();
+      69 |   await page.locator('#import-file').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"version":999}') });
+        at /workspace/game-jelajah-sains/tests/game.spec.ts:66:40
+
+    Error Context: test-results/game-IFP-one-pointer-missi-5fd7c-rrection-save-resume-backup/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/game-IFP-one-pointer-missi-5fd7c-rrection-save-resume-backup/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/game-IFP-one-pointer-missi-5fd7c-rrection-save-resume-backup/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/garden.spec.ts:106:1 › M14 backups: new format, old M01 scope, invalid import atomicity and reward-preserving reset
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "jelajah-sains-cadangan-v17.json"
+    Received: "jelajah-sains-cadangan-v18.json"
+
+      126 |   await expect(page.locator('#settings-feedback')).toContainText('tidak valid');expect(await readGarden(page)).toEqual(before);
+      127 |   const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;
+    > 128 |   expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v17.json');
+          |                                        ^
+      129 |   const exported=JSON.parse(readFileSync((await download.path())!,'utf8'));expect(exported.version).toBe(18);expect(exported.missions.M14).toEqual(before);expect(exported.missions.M01.samples.A.value).toBe(70);
+      130 |   await page.locator('#reset-garden').click();await expect(page.locator('#panel-title')).toHaveText('Ulangi Percobaan M14?');
+      131 |   expect((await readGarden(page)).day).toBe(6);await page.locator('#confirm-garden-reset').click();
+        at /workspace/game-jelajah-sains/tests/garden.spec.ts:128:40
+
+    Error Context: test-results/garden-M14-backups-new-for-302d2-and-reward-preserving-reset/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/garden-M14-backups-new-for-302d2-and-reward-preserving-reset/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/garden-M14-backups-new-for-302d2-and-reward-preserving-reset/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/game.spec.ts:16:1 › IFP one-pointer mission: measurements, experiment, correction, save/resume, backup
+    tests/garden.spec.ts:106:1 › M14 backups: new format, old M01 scope, invalid import atomicity and reward-preserving reset
+  108 passed (49.3m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

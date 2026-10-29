@@ -1,0 +1,51 @@
+
+> jelajah-sains@0.1.0 test:launcher
+> node --test tests/local-launcher/*.test.mjs
+
+✔ installation stamp tracks lock changes and missing dependencies (10.411212ms)
+✔ invalid replacement leaves old production build untouched (4.230097ms)
+✔ successful build replaces both pages, failed promotion rolls the old build back (4.894537ms)
+Log: test-log
+Node.js 24.19.0 | npm 11.9.0
+Hentikan server permainan sebelum memperbarui. Progres browser tidak diubah.
+Memasang dependensi sesuai package-lock.json. Tahap ini mungkin memerlukan internet.
+Log: test-log
+Node.js 24.19.0 | npm 11.9.0
+Hentikan server permainan sebelum memperbarui. Progres browser tidak diubah.
+Memasang dependensi sesuai package-lock.json. Tahap ini mungkin memerlukan internet.
+Membangun versi terbaru ke folder sementara. Build lama tetap tersedia jika gagal.
+✔ failed npm install/build never deletes old dist; retry installation after failure (125.599867ms)
+Log: test-log
+Node.js 24.19.0 | npm 11.9.0
+Hentikan server permainan sebelum memperbarui. Progres browser tidak diubah.
+Log: test-log
+Node.js 24.19.0 | npm 11.9.0
+Hentikan server permainan sebelum memperbarui. Progres browser tidak diubah.
+Memasang dependensi sesuai package-lock.json. Tahap ini mungkin memerlukan internet.
+Membangun versi terbaru ke folder sementara. Build lama tetap tersedia jika gagal.
+BERHASIL. Klik ganda JALANKAN_JELAJAH_SAINS.bat untuk bermain.
+✔ preparation builds to a separate folder then promotes, and blocks concurrent preparation (124.915317ms)
+✔ ready ZIP has bounded ASCII paths, valid CRC and manifest, real CRLF launchers and no development evidence (37.579897ms)
+✔ extracted ready package launches and diagnoses without npm or node_modules from a Unicode/spaced folder (142.091666ms)
+✔ both production pages, asset MIME, query strings and HEAD work from a Unicode/spaced folder (36.977584ms)
+✔ only dist is served; invalid URLs, traversal, hidden files and unsupported methods are rejected (9.252275ms)
+✔ symbolic links cannot serve outside the build (0.869236ms)
+✔ identity endpoint has no paths, environmental secrets, or player data (1.548268ms)
+✔ a second launcher reuses only the same application folder and build (6.355005ms)
+✔ foreign HTTP and non-HTTP services are reported without killing or switching ports (54.269515ms)
+✔ missing or partial dist gives preparation instructions (2.52163ms)
+✔ supported Node versions and private IPv4 LAN candidates only (0.452534ms)
+✔ relocated launcher runs from another working directory without npm/node_modules or internet setup (81.672277ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 337.552895
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

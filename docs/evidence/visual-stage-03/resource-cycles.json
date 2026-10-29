@@ -1,0 +1,23 @@
+{
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "geometries": "88",
+      "textures": "38",
+      "avatarRoots": "1",
+      "regionRoots": "1"
+    },
+    {
+      "geometries": "88",
+      "textures": "38",
+      "avatarRoots": "1",
+      "regionRoots": "1"
+    },
+    {
+      "geometries": "88",
+      "textures": "38",
+      "avatarRoots": "1",
+      "regionRoots": "1"
+    }
+  ]
+}

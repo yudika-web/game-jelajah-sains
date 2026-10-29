@@ -1,0 +1,67 @@
+{
+  "checkedAtUTC": "2026-10-29T03:10:15.761Z",
+  "productionBuild": true,
+  "physicalDevice": false,
+  "browser": "154.0.8037.57",
+  "renderer": "SwiftShader",
+  "viewport": [
+    1440,
+    960
+  ],
+  "profiles": [
+    {
+      "version": 1,
+      "base": "student-boy",
+      "outfit": "outfit-teal",
+      "hair": "hair-crop",
+      "headwear": "head-none",
+      "facewear": "face-none",
+      "backpack": "pack-mustard"
+    },
+    {
+      "version": 1,
+      "base": "student-girl",
+      "outfit": "outfit-coral",
+      "hair": "hair-sweep",
+      "headwear": "head-none",
+      "facewear": "face-none",
+      "backpack": "pack-mustard"
+    },
+    {
+      "version": 1,
+      "base": "student-boy",
+      "outfit": "outfit-teal",
+      "hair": "hair-shoulder",
+      "headwear": "head-none",
+      "facewear": "face-none",
+      "backpack": "pack-mustard"
+    },
+    {
+      "version": 1,
+      "base": "student-girl",
+      "outfit": "outfit-coral",
+      "hair": "hair-tied",
+      "headwear": "head-none",
+      "facewear": "face-none",
+      "backpack": "pack-mustard"
+    }
+  ],
+  "motion": {
+    "frames": 107,
+    "seconds": 8.944719791412354
+  },
+  "motionStates": [
+    {
+      "phase": "walk",
+      "speed": "5.200",
+      "mode": "walk"
+    },
+    {
+      "phase": "run",
+      "speed": "8.000",
+      "mode": "run"
+    }
+  ],
+  "errors": [],
+  "external": []
+}
