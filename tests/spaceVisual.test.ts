@@ -1,0 +1,24 @@
+import {spaceCameraBoxes} from '../src/engine/spaceStation';
+import {FollowCamera} from '../src/engine/cameraController';
+import {describe,it,expect,vi} from 'vitest';
+import * as THREE from 'three';
+import {buildSpace} from '../src/engine/spaceWorld';
+import {disposeRegion} from '../src/engine/disposeRegion';
+import {SpaceInstrumentCamera} from '../src/engine/spaceInstrumentCamera';
+import {revolvedSpace,openSpace} from './helpers/space';
+import {moonTargets,astronomicalState} from '../src/game/astronomyModel';
+const scene=()=>{const root=new THREE.Group();return{root,view:buildSpace({root,box(){},label(){},npc(){}})};};
+describe('visual presentation cannot change M07 science',()=>{
+ it('the full-height preparation module cannot hide the player during an exterior camera orbit',()=>{const camera=new THREE.PerspectiveCamera(48,1,.1,110),follow=new FollowCamera(camera,spaceCameraBoxes());follow.resize(1440,960);follow.yaw=-1.1;follow.pitch=.8;follow.update(new THREE.Vector3(-8,0,14),.016,false,true);expect(camera.position.x).toBeGreaterThan(-9.5);expect(follow.safeDistance).toBeLessThan(3);});
+ it('quality changes only geometry detail/clouds; vectors, positions, evidence and body radii stay fixed',()=>{
+  const {root,view}=scene(),p=openSpace(revolvedSpace(),'phases'),before=structuredClone(p),m=view.models[2];view.frame(p,moonTargets[1],'phases');const normal=m.moon.geometry.getAttribute('position').count,pos=m.moon.position.clone(),light=m.moon.material.uniforms.uLight.value.clone();view.quality(true);view.frame(p,moonTargets[1],'phases',true,{labels:false,orbits:false,light:false});expect(m.moon.geometry.getAttribute('position').count).toBeLessThan(normal);expect(m.moon.position).toEqual(pos);expect(m.moon.material.uniforms.uLight.value).toEqual(light);expect(m.atmosphere.visible).toBe(false);expect(m.orbit.visible).toBe(false);expect(m.lightArrow.visible).toBe(false);expect(m.sunLabel.visible).toBe(false);expect(p).toEqual(before);expect(m.moon.material.uniforms.uNightLevel.value).toBe(0);expect(m.moon.material.fragmentShader).not.toContain('lights_pars');expect(m.earth.material.fragmentShader).not.toContain('sin(nLocal');disposeRegion(root);
+ });
+ it('four Earth-side views use the same geometric light, not lookup images or station lights',()=>{
+  const {root,view}=scene(),p=openSpace(revolvedSpace(),'phases');for(const a of moonTargets){view.frame(p,a,'phases');const state=astronomicalState(0,0,a),m=view.models[2],v=m.moon.material.uniforms.uLight.value;expect(v.x).toBeCloseTo(state.moonLight.x);expect(v.y).toBeCloseTo(state.moonLight.y);expect(view.earthObserver.clone().sub(m.worldEarth).normalize().dot(m.worldMoon.clone().sub(m.worldEarth).normalize())).toBeCloseTo(1);expect(m.moon.layers.isEnabled(3)).toBe(true);}expect(root.getObjectByName('observation-station')!.visible).toBe(false);view.frame(p,0,null);expect(root.getObjectByName('observation-station')!.visible).toBe(true);disposeRegion(root);
+ });
+ it('releases active and inactive LOD plus uniform textures once, without touching shared avatar resources',()=>{
+  const {root,view}=scene(),g=root.userData.ownedGeometries as THREE.BufferGeometry[],maps=root.userData.ownedTextures as THREE.Texture[],gs=g.map(v=>vi.spyOn(v,'dispose')),ts=maps.map(v=>vi.spyOn(v,'dispose'));const shared=new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial());shared.geometry.userData.shared=true;shared.material.userData.shared=true;root.add(shared);const spy=vi.spyOn(shared.geometry,'dispose');view.quality(true);view.quality(false);disposeRegion(root);for(const s of [...gs,...ts])expect(s).toHaveBeenCalledTimes(1);expect(spy).not.toHaveBeenCalled();
+ });
+ it('station detail and repeated frames do not allocate scene objects; stars remain fixed',()=>{const {root,view}=scene(),stars=root.getObjectByName('stable-starfield') as THREE.Points,positions=Array.from(stars.geometry.getAttribute('position').array),p=openSpace(revolvedSpace(),'phases');let before=0;root.traverse(()=>before++);for(let i=0;i<100;i++)view.frame(p,i*900,'phases',i%2===0);let after=0;root.traverse(()=>after++);expect(after).toBe(before);expect(Array.from(stars.geometry.getAttribute('position').array)).toEqual(positions);disposeRegion(root);});
+ it('instrument pose eases to a stable view; reduced motion jumps there without changing FOV',()=>{const camera=new THREE.PerspectiveCamera(48,1,.1,110),controller=new SpaceInstrumentCamera(),position=new THREE.Vector3(1,2,3),target=new THREE.Vector3(1,1,0);camera.position.set(20,6,10);controller.update(camera,position,target,1/60,false);expect(controller.ready).toBe(false);for(let i=0;i<100;i++)controller.update(camera,position,target,1/60,false);expect(controller.ready).toBe(true);controller.reset();controller.update(camera,new THREE.Vector3(5,4,3),target,0,true);expect(controller.ready).toBe(true);expect(camera.position.toArray()).toEqual([5,4,3]);expect(camera.fov).toBe(48);});
+});

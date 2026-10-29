@@ -11,7 +11,7 @@ export const spacePlaces:Place[]=[
  {id:'spaceJournal',name:'Terminal jurnal dan kesimpulan',short:'Jurnal & kesimpulan',action:'Periksa / simpulkan',x:0,z:6,color:'#829fb7'},
 ];
 export const spaceNavigation:NavigationArea={bounds:{minX:-19,maxX:19,minZ:-17,maxZ:18},obstacles:[
- {x:-4,z:12,width:.6,depth:.6},{x:-13,z:15,width:7,depth:4},
+ {x:18,z:10,width:1.5,depth:2.4},{x:5,z:15.3,width:1.4,depth:.6},{x:-4,z:12,width:.6,depth:.6},{x:-13,z:15,width:7,depth:4},
  ...spacePlaces.filter(p=>p.id!=='spaceNara'&&p.id!=='spaceReturn').map(p=>({x:p.x,z:p.z-.8,width:p.id==='spaceBook'||p.id==='spaceNotes'?2:3,depth:1})),
  {x:0,z:-10,width:42,depth:11},
 ]};
