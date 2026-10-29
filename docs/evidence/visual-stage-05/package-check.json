@@ -1,0 +1,13 @@
+{
+  "output": "unduhan/JS-Windows.zip",
+  "bytes": 625760,
+  "members": 20,
+  "longestMember": "JS/dist/assets/environmentStyle-DNc3UJqK.js",
+  "maxMemberLength": 43,
+  "CRC": "passed",
+  "gameSourceCommit": "b2fd329b03eb717a98b5b82156ae267e6f8160fd",
+  "sha256": "01d379392696b2907be12081e7bb8c2d44b1df0a79e42a0a19b67fb75f65114d",
+  "offlineBrowserCasesPassed": 2,
+  "launcherCasesPassed": 16,
+  "physicalWindowsOrLANTested": false
+}

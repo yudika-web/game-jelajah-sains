@@ -8,7 +8,8 @@
     "newExpeditionCases": 20
   },
   "launcher": {
-    "passed": 16
+    "passed": 16,
+    "afterPackagingPassed": 16
   },
   "browser": {
     "stage05": 5,
@@ -20,7 +21,9 @@
     "rerun": {
       "passed": 1,
       "reason": "GPU geometry count fell from 103 to 102; reject growth, retain root/model/avatar/evidence checks"
-    }
+    },
+    "offlineReadyZIP": 2,
+    "totalUniquePassed": 47
   },
   "typecheck": "passed",
   "build": "passed",

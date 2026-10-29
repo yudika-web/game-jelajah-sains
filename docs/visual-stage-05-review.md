@@ -69,9 +69,10 @@ Sumber primer NASA dicoba pada **29 Oktober 2026, 18:01 (UTC+7, Asia/Bangkok)**:
 | `npm run build` dan `npm run prepare:local` | **Lulus**, TypeScript dan build staging atomik; dependensi sudah sesuai |
 | Browser tahap 05 | **5 lulus**: perjalanan nyata, airlock, rute/manual 3D, tiga viewport sentuh, reload dan tiga siklus resource |
 | Regresi browser terpilih | **40 lulus**: S15/perahu, M01, ROV M16-E1, lari, M07 lengkap, Kota, tahap 04, lemari/galeri dan penggunaan alat |
+| ZIP produksi offline | **2 lulus**, 1280×900 dan 390×844: M07, EVA astronot, penampilan, cadangan v18 dan sembilan karakter galeri; seluruh permintaan eksternal diblokir |
 | `git diff --check` | **Lulus** |
 
-Perintah browser baru: `npm run test:e2e -- tests/visualStage05.spec.ts`. Regresi memakai `tests/space.spec.ts tests/visualStage04.spec.ts tests/wardrobe.spec.ts tests/running.spec.ts tests/boat.spec.ts tests/pressure.spec.ts tests/game.spec.ts tests/visualStage02.spec.ts`. Ini 45 pemeriksaan terarah; seluruh 116 kasus browser tidak dijalankan ulang. Ke-40 regresi mula-mula menghasilkan 39 lulus dan satu perbandingan jumlah geometri 103 versus 102. Assertion lama diperbaiki agar menolak pertumbuhan resource, sambil tetap memeriksa avatar, root, model, bukti dan kosmetik. Kasus tersebut diulang dan lulus. Tidak ada kegagalan yang diabaikan.
+Perintah browser baru: `npm run test:e2e -- tests/visualStage05.spec.ts`. Regresi memakai `tests/space.spec.ts tests/visualStage04.spec.ts tests/wardrobe.spec.ts tests/running.spec.ts tests/boat.spec.ts tests/pressure.spec.ts tests/game.spec.ts tests/visualStage02.spec.ts`. Ditambah `tests/runtimePackage.spec.ts`, total **47 pemeriksaan browser terarah** lulus; seluruh 116 kasus browser tidak dijalankan ulang. Ke-40 regresi mula-mula menghasilkan 39 lulus dan satu perbandingan jumlah geometri 103 versus 102. Assertion lama diperbaiki agar menolak pertumbuhan resource, sambil tetap memeriksa avatar, root, model, bukti dan kosmetik. Kasus tersebut diulang dan lulus. Tidak ada kegagalan yang diabaikan.
 
 Unit, launcher, TypeScript/build serta browser dijalankan pada Linux dengan Chromium/SwiftShader. Viewport HP dan IFP adalah emulasi browser, bukan pengujian perangkat fisik. Windows BAT, GPU/HP/IFP nyata dan akses LAN antarperangkat tidak diuji pada tahap ini.
 
@@ -89,3 +90,10 @@ Gambar dan beberapa posisi cuplikan diperiksa. Framing keluar airlock yang pada 
 
 
 Peringatan build tentang chunk lebih besar dari 500 kB masih ada. Tidak ada dependensi runtime baru; pengukuran performa pada GPU/HP/IFP fisik belum dilakukan. Kualitas rendah dan pengurangan gerakan tetap tersedia. Bukti browser menguji alur dan keterbacaan, bukan sertifikasi kinerja perangkat atau prosedur keselamatan astronot.
+
+
+## Paket siap main dan peninjauan
+
+[JS-Windows.zip](../unduhan/JS-Windows.zip) berisi build terbaru dan seluruh aset runtime lokal, **625.760 byte**, 20 file, awalan folder `JS/`, jalur internal terpanjang 43 karakter. CRC dan hash isi diperiksa. Tidak berisi node_modules, kode sumber, video atau dokumen bertingkat. Node.js >=22.12 masih diperlukan (disarankan 24 LTS); npm dan Python tidak diperlukan pemain. Ekstrak ke `C:\Game`, buka folder JS lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Alamat tetap `http://localhost:5173`, sehingga penyimpanan pada alamat tersebut tetap digunakan.
+
+Build dibuat melalui `prepare:local` setelah perubahan kode terakhir. Manifest paket menunjuk commit kode **b2fd329**, dan paket hasil ekstraksi diuji ulang dengan 16 pemeriksaan launcher serta dua pemeriksaan browser offline. [Manifest pemeriksaan paket](evidence/visual-stage-05/package-check.json). Branch peninjauan: `feat/visual-stage-05`, berbasis tahap 04; main tidak dikembalikan ke commit lama atau digabung otomatis. Tahap 06, aktivitas menyelam, koin dan toko tidak dikerjakan.
