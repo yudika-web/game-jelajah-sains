@@ -44,7 +44,7 @@ Air lama yang berupa kotak transparan diganti satu bidang dua sisi, dengan depth
 
 Di bawah air, warna biru kehijauan dan kabut jarak 4–30 unit (Rendah 23) menjaga keterbacaan. Efek mengikuti tinggi kamera sebenarnya selama mode selam; kembali ke darat/instrumen/ROV/wilayah lain memulihkan pengaturan yang sesuai. ROV mempertahankan pencahayaan episode lamanya. Label darat disembunyikan saat menyelam agar tidak mengambang di bidang pengamatan.
 
-Jalur ikan dasar dijauhkan dari titik pendekatan setelah potret awal menunjukkan ikan bertumpuk dengan kaki avatar. Ikan utama, lamun, batu pengamatan dan tiang juga dapat dipilih langsung melalui raycast, selain tombol/daftar. Pemulihan dermaga langsung memulihkan pose kamera agar tidak melintas dari bawah lantai.
+Jalur ikan dasar dijauhkan dari titik pendekatan setelah potret awal menunjukkan ikan bertumpuk dengan kaki avatar. Ikan utama, lamun, batu pengamatan dan tiang juga dapat dipilih langsung melalui raycast, selain tombol/daftar. Pemulihan dermaga langsung memulihkan pose kamera agar tidak melintas dari bawah lantai. Tinjauan paket produksi pada HP juga menangkap kamera lamun yang terlalu tinggi: framing kini memakai pusat petak visual dan jarak lebih lebar, terpisah dari titik interaksi yang tidak diubah. Potret produksi diambil setelah transisi kamera selesai.
 
 Normal menampilkan 12 ikan, 120 bilah lamun instanced, 12 gelembung kecil; Rendah mengurangi ikan menjadi enam, bilah menjadi 60 dan menghilangkan gelembung. Pengurangan gerakan menghentikan gerak dekoratif, tetapi gerak karakter dan navigasi tetap tersedia. Geometri/material ikan serta batu dibagi dalam wilayah, buffer gelembung digunakan ulang. Satu renderer, kamera, loop World dan regionRoot tetap digunakan. Resource wilayah dilepas saat pindah; cache karakter/perlengkapan bersama dilindungi.
 
@@ -68,11 +68,12 @@ Halaman primer NOAA Ocean Service dicoba pada 30 Oktober 2026 (Asia/Bangkok):
 
 ## Bukti permainan dan pemeriksaan
 
-[Rekaman alur utuh, sekitar 48 detik](evidence/visual-stage-06/diving.mp4): pos persiapan → perlengkapan → tangga → permukaan → turun → lima pengamatan → naik → keluar → kostum pribadi. Ini rekaman Chromium dari game yang berjalan, dikodekan H.264 tanpa mengubah urutan atau kecepatan waktu, bukan mockup.
+[Rekaman alur utuh, sekitar 49 detik](evidence/visual-stage-06/diving.mp4): pos persiapan → perlengkapan → tangga → permukaan → turun → lima pengamatan → naik → keluar → kostum pribadi. Ini rekaman Chromium dari game yang berjalan, dikodekan H.264 tanpa mengubah urutan atau kecepatan waktu, bukan mockup.
 
 - [Persiapan](evidence/visual-stage-06/01-preparation.png) · [perlengkapan](evidence/visual-stage-06/02-equipped.png) · [permukaan](evidence/visual-stage-06/03-surface.png) · [turun](evidence/visual-stage-06/04-descending.png).
 - [Ikan](evidence/visual-stage-06/diveFish.png) · [lamun](evidence/visual-stage-06/diveGrass.png) · [batu](evidence/visual-stage-06/diveRocks.png) · [cahaya](evidence/visual-stage-06/diveLight.png) · [pengamatan dermaga](evidence/visual-stage-06/05-observation.png).
 - [Kembali ke permukaan](evidence/visual-stage-06/06-surfaced.png) · [keluar](evidence/visual-stage-06/07-exit.png) · [penampilan pribadi](evidence/visual-stage-06/08-personal.png).
+- [Pengamatan produksi laptop](evidence/visual-stage-06/10-production-observe-1280.png) · [pengamatan produksi HP](evidence/visual-stage-06/10-production-observe-390.png).
 - [Laptop](evidence/visual-stage-06/09-viewport-1440.png) · [HP potret](evidence/visual-stage-06/09-viewport-390.png) · [HP lanskap](evidence/visual-stage-06/09-viewport-844.png) · [IFP](evidence/visual-stage-06/09-viewport-1920.png).
 
 Perbandingan lokasi lama: [pantai sebelum](evidence/visual-stage-06/before-shore.png) / [sesudah](evidence/visual-stage-06/after-shore.png), dan [ROV A4 sebelum](evidence/visual-stage-06/before-underwater.png) / [sesudah](evidence/visual-stage-06/after-underwater.png), viewport 1440×960 dan rute/kamera yang sebanding. Teluk latihan adalah area baru; gambar teluk tidak diklaim sebagai kamera yang sama dengan stasiun ROV lama. Kedua gambar bawah air menunggu posisi aktual A4 (x=7, z=−5, kedalaman sensor 4 m), bukan hanya menunggu kedalamannya. Baseline direkam ulang dari ZIP tahap 05 ber-manifest commit `b2fd329`; hasil sesudah memakai build produksi tahap 06. Reproduksi sesudah: build, lalu `node scripts/capture-visual-stage-06.mjs`; `JELAJAH_BASELINE_ROOT` dapat menunjuk folder JS hasil ekstraksi ZIP lama untuk merekam baseline yang sebanding.
@@ -85,10 +86,18 @@ Perbandingan lokasi lama: [pantai sebelum](evidence/visual-stage-06/before-shore
 | TypeScript/build dan `npm run prepare:local` | **Lulus**, build baru dipromosikan dari staging sesudah sukses |
 | `tests/visualStage06.spec.ts` | **7 lulus**: alur utuh, empat viewport, dua jari/pointercancel, reload, impor lama, eksklusivitas dan tiga siklus wilayah |
 | Regresi browser terpilih | **39 lulus**: S16 lengkap, ROV M16-E1, kolam S14, perahu S15, jalan/lari, lemari/galeri, M07 dan aktivitas astronot |
+| `npm run test:launcher` | **16 lulus**, server produksi, port, URL/path dan paket pendek |
+| `tests/runtimePackage.spec.ts` | **4 lulus**, paket ZIP diekstrak ke folder berspasi/beraksen, permintaan eksternal diblokir: W08/EVA/lemari/galeri dan selam pada laptop/HP |
 | `git diff --check` | **Lulus** |
 
-Regresi memakai `tests/coastal.spec.ts tests/pressure.spec.ts tests/swimming.spec.ts tests/boat.spec.ts tests/wardrobe.spec.ts tests/visualStage05.spec.ts tests/running.spec.ts tests/space.spec.ts`. Setelah penyesuaian akhir jalur ikan dan kamera pemulihan, unit, build/persiapan, tujuh kasus browser selam dan pasangan gambar produksi diulang. Pemeriksaan ini terarah; seluruh kasus browser proyek tidak dijalankan ulang.
+Regresi memakai `tests/coastal.spec.ts tests/pressure.spec.ts tests/swimming.spec.ts tests/boat.spec.ts tests/wardrobe.spec.ts tests/visualStage05.spec.ts tests/running.spec.ts tests/space.spec.ts`. Setelah penyesuaian akhir jalur ikan dan kamera pemulihan, unit, build/persiapan, tujuh kasus browser selam dan pasangan gambar produksi diulang. Empat kasus paket produksi juga lulus tanpa akses jaringan eksternal. Jumlah kasus browser terpilih adalah **50 (7 + 39 + 4)**; seluruh kasus browser proyek tidak dijalankan ulang. Setelah koreksi framing lamun, pemeriksaan selam dan paket produksi yang terdampak diulang.
 
 Pada iterasi awal, satu pemeriksaan memakai persamaan float persis pada batas permukaan dan disesuaikan ke toleransi numerik. Pemeriksaan lain menangkap jalur darat antarbank yang terbuka setelah perluasan batas; penghalang laut diperbaiki dan seluruh unit lulus. Tidak ada kegagalan yang diabaikan.
 
 Linux, Chromium/SwiftShader; HP/IFP adalah emulasi viewport/sentuhan, bukan perangkat fisik. Windows BAT, GPU/HP/IFP fisik dan LAN antarperangkat belum diuji. Peringatan chunk build besar dan deprecation THREE.Clock yang sudah ada tetap dicatat; tidak ada API, login, CDN atau dependensi runtime baru.
+
+## Paket siap main
+
+`unduhan/JS-Windows.zip` dibangun ulang melalui `npm run prepare:local` dari sumber `a6486ce`, kemudian dikemas dengan `scripts/package_windows.py`. Ukuran **633.888 byte**, 20 anggota ZIP, awalan `JS/`, jalur terpanjang **43 karakter**. CRC dan seluruh hash pada manifest diverifikasi. [Rincian paket dan SHA-256](evidence/visual-stage-06/ready-package.json).
+
+Paket berisi build serta seluruh aset permainan lokal; kode sumber, node_modules, video dan dokumentasi pengembangan tidak dimasukkan. Ini menjelaskan ukuran unduhan yang jauh lebih kecil daripada arsip repository. Ekstrak ke `C:\Game`, buka `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Node.js tetap diperlukan; disarankan 24 LTS. Alamat tetap `http://localhost:5173`; jangan menghapus data browser atau membuka index.html langsung.

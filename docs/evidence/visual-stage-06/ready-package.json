@@ -1,0 +1,12 @@
+{
+  "bytes": 633888,
+  "members": 20,
+  "longestMember": "JS/dist/assets/environmentStyle-CP4a6tHh.js",
+  "maxMemberLength": 43,
+  "CRC": "passed",
+  "gameSourceCommit": "a6486ce2a278a523a66ead7f7b1db2b32bda602e",
+  "file": "unduhan/JS-Windows.zip",
+  "sha256": "aeda53405d5084d3e985da3a9f412ad9499ed19bef8da470a52674ed61043db1",
+  "manifestHashes": "passed",
+  "backupVersion": 18
+}

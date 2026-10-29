@@ -10,7 +10,9 @@
   },
   "browser": {
     "stage06": 7,
-    "targetedRegression": 39
+    "targetedRegression": 39,
+    "readyZipOffline": 4,
+    "totalSelected": 50
   },
   "typecheck": "passed",
   "build": "passed",
@@ -19,5 +21,8 @@
   "IDBSchema": 1,
   "newMissionOrReward": false,
   "NOAAContentRead": false,
-  "fullBrowserSuiteRun": false
+  "fullBrowserSuiteRun": false,
+  "launcher": {
+    "passed": 16
+  }
 }
