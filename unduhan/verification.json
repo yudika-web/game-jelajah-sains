@@ -1,10 +1,11 @@
 {
-  "checkedAtUTC": "2026-10-29T03:12:19.953120+00:00",
-  "gameSourceCommit": "5e7c5ffca7f11e43a3d9945c188585490dbe0e61",
+  "checkedAtUTC": "2026-10-29T10:19:21.082070+00:00",
+  "gameSourceCommit": "9b5da7e3c4d4c9af3ca6a7fdc6b904aabbf26252",
+  "visualStage": 4,
   "backupFormat": 18,
-  "bytes": 382481,
-  "sha256": "11b84a884b109b87ffcdd8e9681c2f36d67404179fd985d884f2acc463b1bf41",
-  "members": 17,
+  "bytes": 613737,
+  "sha256": "52777b92a51315b4240cf793f3f5164149ceef253c86bc4e933b6a4ce71521d7",
+  "members": 20,
   "maxMemberLength": 43,
   "crc": "passed",
   "launcherTests": 16,
@@ -22,6 +23,7 @@
   "extractedInUnicodeSpacedFolder": true,
   "npmRequiredForPlayer": false,
   "nodeRequired": ">=22.12.0",
-  "distMatchesVisualStage03Release": true,
+  "distMatchesVisualStage04Release": true,
+  "allThreeSpaceTexturesLoadedOffline": true,
   "physicalWindowsExplorerTested": false
 }

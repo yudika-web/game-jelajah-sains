@@ -1,0 +1,14 @@
+{
+  "physicalDevice": false,
+  "productionBuild": true,
+  "frames": 138,
+  "seconds": 19.54228901863098,
+  "sequence": [
+    "walk and turn camera inside station",
+    "real approach to rotation console",
+    "normal camera easing to equatorial marker",
+    "run and step rotation",
+    "explicit night/day observe and record",
+    "return to explorer camera"
+  ]
+}

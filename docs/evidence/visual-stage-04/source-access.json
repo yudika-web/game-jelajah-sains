@@ -1,0 +1,30 @@
+{
+  "checkedAtUTC": "2026-10-29T09:34:22.543235+00:00",
+  "nasa": [
+    {
+      "url": "https://science.nasa.gov/earth/facts/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://science.nasa.gov/moon/moon-phases/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://science.nasa.gov/moon/top-moon-questions/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://science.nasa.gov/moon/eclipses/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ],
+  "naturalEarth": {
+    "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
+    "status": 200,
+    "bytes": 138160,
+    "sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+    "licenseURL": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/LICENSE.md",
+    "licenseRead": true,
+    "license": "Public domain"
+  }
+}

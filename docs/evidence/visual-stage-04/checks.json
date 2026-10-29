@@ -1,0 +1,141 @@
+{
+  "checkedAtUTC": "2026-10-29T10:19:21.082070+00:00",
+  "gameSourceCommit": "9b5da7e3c4d4c9af3ca6a7fdc6b904aabbf26252",
+  "baselineCommit": "6ba07e9cd0d9fd40c1726bce493323196f3eafaf",
+  "scope": "visual-stage-04 only",
+  "unit": {
+    "command": "npm test",
+    "files": 25,
+    "passed": 726
+  },
+  "browserRegression": {
+    "command": "CAPTURE_VISUAL04=1 npm run test:e2e -- tests/space.spec.ts tests/visualStage04.spec.ts tests/wardrobe.spec.ts tests/running.spec.ts tests/visualStage01.spec.ts tests/visualStage02.spec.ts",
+    "passed": 33,
+    "note": "Selected impacted regression; before final texture/frame/camera refinements. Not a full 115-test browser run."
+  },
+  "browserFinalW08": {
+    "command": "CAPTURE_VISUAL04=1 npm run test:e2e -- tests/space.spec.ts tests/visualStage04.spec.ts",
+    "passed": 10,
+    "afterLastCorrection": true
+  },
+  "launcher": {
+    "command": "npm run test:launcher",
+    "passed": 16,
+    "newZipTested": true
+  },
+  "packagedBrowser": {
+    "command": "npm run test:e2e -- tests/runtimePackage.spec.ts",
+    "passed": 2,
+    "allThreeTexturesLocal": true
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "warnings": [
+      "Bundle chunk exceeds 500 kB warning; no performance claim."
+    ]
+  },
+  "prepare": {
+    "command": "npm run prepare:local",
+    "passed": true
+  },
+  "sourceFrozenAfterLastCorrection": {
+    "files": 146,
+    "unchanged": true,
+    "hashes": "source-verification.json"
+  },
+  "scienceAndSaveModulesUnchanged": [
+    "astronomyModel.ts",
+    "spaceSession.ts",
+    "spaceMission.ts",
+    "spaceContent.ts",
+    "storage.ts",
+    "gameState.ts",
+    "characterModel.ts"
+  ],
+  "resourceCycles": {
+    "physicalDevice": false,
+    "cycles": [
+      {
+        "geometry": "91",
+        "textures": "50",
+        "roots": "1",
+        "avatars": "1",
+        "models": "3"
+      },
+      {
+        "geometry": "91",
+        "textures": "50",
+        "roots": "1",
+        "avatars": "1",
+        "models": "3"
+      },
+      {
+        "geometry": "91",
+        "textures": "50",
+        "roots": "1",
+        "avatars": "1",
+        "models": "3"
+      }
+    ]
+  },
+  "productionCapture": {
+    "phase": "after",
+    "checkedAtUTC": "2026-10-29T10:09:33.833Z",
+    "viewport": [
+      1440,
+      960
+    ],
+    "productionBuild": true,
+    "browser": "154.0.8037.57",
+    "physicalDevice": false,
+    "errors": [],
+    "external": []
+  },
+  "motion": {
+    "physicalDevice": false,
+    "productionBuild": true,
+    "frames": 138,
+    "seconds": 19.54228901863098,
+    "sequence": [
+      "walk and turn camera inside station",
+      "real approach to rotation console",
+      "normal camera easing to equatorial marker",
+      "run and step rotation",
+      "explicit night/day observe and record",
+      "return to explorer camera"
+    ]
+  },
+  "package": {
+    "checkedAtUTC": "2026-10-29T10:19:21.082070+00:00",
+    "gameSourceCommit": "9b5da7e3c4d4c9af3ca6a7fdc6b904aabbf26252",
+    "visualStage": 4,
+    "backupFormat": 18,
+    "bytes": 613737,
+    "sha256": "52777b92a51315b4240cf793f3f5164149ceef253c86bc4e933b6a4ce71521d7",
+    "members": 20,
+    "maxMemberLength": 43,
+    "crc": "passed",
+    "launcherTests": 16,
+    "browserTests": 2,
+    "browserViewports": [
+      [
+        1280,
+        900
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "extractedInUnicodeSpacedFolder": true,
+    "npmRequiredForPlayer": false,
+    "nodeRequired": ">=22.12.0",
+    "distMatchesVisualStage04Release": true,
+    "allThreeSpaceTexturesLoadedOffline": true,
+    "physicalWindowsExplorerTested": false
+  },
+  "physicalDevicesTested": false,
+  "nasaPagesSuccessfullyRead": 0,
+  "naturalEarthLicenseRead": true
+}

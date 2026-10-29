@@ -1,5 +1,7 @@
 # W08 — Antariksa / M07 — Catatan dari Observatorium
 
+> Pembaruan visual W08 tahap 04 tersedia: [laporan baru, perbandingan, aset dan pemeriksaan](visual-stage-04-review.md). Parameter/bukti M07 di bawah tetap dipertahankan; cadangan terkini v18 termasuk penampilan. Dokumen ini mencatat implementasi M07 awal.
+
 28 Oktober 2026. Dikembangkan dari main `cdbe60f` tanpa mengembalikan branch. AGENTS.md tidak ditemukan. W08 adalah wilayah kedelapan dan lingkungan **simulasi ekspedisi**, bukan perjalanan antariksa seketika. M07 memiliki tiga checkpoint dalam satu misi, dengan satu hadiah 100 XP. M16 tetap mengikuti empat episode, M17 tiga episode. S22/S23/S24 tidak diselesaikan otomatis.
 
 ## Cara bermain

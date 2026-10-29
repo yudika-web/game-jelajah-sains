@@ -1,0 +1,12 @@
+[
+  {
+    "asset": "clouds",
+    "longitudeEdgeMeanDifference": 1.45703125,
+    "longitudeEdgeMaxDifference": 10
+  },
+  {
+    "asset": "moon",
+    "longitudeEdgeMeanDifference": 0.052734375,
+    "longitudeEdgeMaxDifference": 1
+  }
+]

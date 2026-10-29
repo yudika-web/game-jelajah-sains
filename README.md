@@ -1,12 +1,14 @@
 # Jelajah Sains
 
+**Visual tahap 04 — Antariksa dan instrumen M07**: W08 memiliki ruang observasi, konsol, jendela, kabinet dan airlock cadangan. Bumi memakai daratan geografis lokal, Matahari/permukaan Bulan lebih rinci, sisi terang tetap mengikuti model. Buka **Kamera & petunjuk tampilan** untuk keseluruhan/detail serta nama/orbit/panah; pada fase, gunakan **Penampakan dari Bumi** untuk mencatat. Kualitas Rendah tetap tersedia. Cadangan tetap **v18**, seluruh progres dan penampilan dipertahankan. [Perbandingan, cuplikan, sumber dan pemeriksaan](docs/visual-stage-04-review.md).
+
 **Visual tahap 03 — Lemari Penampilan**: datangi lemari melalui Peta Kota atau buka Pengaturan → Penampilan. Dua pakaian, empat rambut, topi, kacamata dan pilihan tas gratis dapat dicoba, diputar, diterapkan atau dibatalkan. Avatar dunia, preview dan galeri memakai pembangun yang sama. Tinggi tubuh siswa 1,60 unit tidak bergantung kosmetik. Cadangan **v18** menyertakan penampilan; impor **v1–v17** mempertahankannya. [Panduan, katalog, bukti dan pemeriksaan](docs/visual-stage-03-review.md). Belum ada koin atau pembelian.
 
-**Windows: [unduh paket siap main dengan folder pendek](https://github.com/yudika-web/game-jelajah-sains/raw/refs/heads/feat/visual-stage-03/unduhan/JS-Windows.zip)** untuk menghindari `Path too long` saat ekstraksi. Ekstrak ke `C:\Game`, buka folder `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Build sudah tersedia; Node.js masih diperlukan. [Rincian paket](unduhan/README.md).
+**Windows: [unduh paket siap main dengan folder pendek](https://github.com/yudika-web/game-jelajah-sains/raw/refs/heads/feat/visual-stage-04/unduhan/JS-Windows.zip)** untuk menghindari `Path too long` saat ekstraksi. Ekstrak ke `C:\Game`, buka folder `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Build sudah tersedia; Node.js masih diperlukan. [Rincian paket](unduhan/README.md).
 
 **Visual tahap 02 — Kota Sains**: sekolah/perpustakaan, pasar, observatorium, menara air, taman dan benda interaksi kini lebih terbaca; warga membaca, menyapu dan berjalan pada rute pendek. Label tampil dekat, Peta tetap lengkap. Pengaturan Rendah mengurangi detail opsional. [Laporan, perbandingan dan cuplikan](docs/visual-stage-02-review.md). Tidak ada misi, toko atau koin baru.
 
-**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 02 kini tersedia; tahap 03 dan seterusnya belum dikerjakan.
+**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 01–04 kini tersedia; tahap 05 dan seterusnya menunggu permintaan.
 
 **W01 / M02 — Persediaan Es Pasar**: amati mencair dan menguap dengan model partikel, ukur tiga sampel massa/volume, uji tiga sistem dinding, lalu bawa satu paket es melalui jalan pasar. Pak Wira memberi tugas; Bu Nara menerima kiriman. Tiga checkpoint, satu hadiah 100 XP. [Cara bermain, model, sumber dan bukti](docs/market-ice-review.md).
 
@@ -48,7 +50,7 @@ Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, p
 
 Model acuan tiga sisi terdahulu dan perbandingannya tersedia pada [arsip pemeriksaan model](docs/reference-model-review.md). Gambar tersebut mendokumentasikan tahap sebelum penyederhanaan avatar balok terbaru.
 
-Varian siswi dapat dimainkan dengan menambahkan `?avatar=siswi` pada alamat server (misalnya path `/?avatar=siswi`). Pilihan ini tidak mengubah progres; hilangkan parameter untuk memakai siswa. Tautan galeri mempertahankan varian ketika kembali ke permainan. Tidak ada onboarding avatar tambahan.
+Varian siswi dapat dimainkan dengan menambahkan `?avatar=siswi` pada alamat server (misalnya path `/?avatar=siswi`). Query ini menjadi pilihan awal jika belum ada penampilan tersimpan. Gunakan lemari untuk mengganti penampilan yang sudah disimpan. Pilihan tidak mengubah progres misi. Tautan galeri mempertahankan varian ketika kembali ke permainan. Tidak ada onboarding avatar tambahan.
 
 Untuk memeriksa model secara langsung, buka **Pengaturan → Galeri karakter · tiga sisi**. Galeri menampilkan model 3D yang sama dari depan, samping, dan belakang secara bersamaan, dengan tombol detail wajah serta pilihan siswa/siswi/Bu Nara/Pak Wira/Bu Sari/Pak Damar/Kak Lestari/Kak Bima/Kak Raka. Galeri memakai pose diam agar bentuk dapat dinilai. Halaman `character.html` disertakan dalam build produksi.
 

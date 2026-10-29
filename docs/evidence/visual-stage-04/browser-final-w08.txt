@@ -1,0 +1,48 @@
+
+> jelajah-sains@0.1.0 test:e2e
+> playwright test tests/space.spec.ts tests/visualStage04.spec.ts
+
+[WebServer] (node:18469) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:18482) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:18506) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 10:10:34 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:11:05 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:11:19 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:11:31 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:11:39 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   1 tests/space.spec.ts:17:1 › M07 complete: Observatory, three actual checkpoints, geometry views, v16 and all old progress (1.5m)
+[WebServer] 10:12:02 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:12:14 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   2 tests/space.spec.ts:25:1 › laptop astronomy: keyboard, pause/focus, cancel and camera preference survive (14.1s)
+[WebServer] 10:12:16 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:12:29 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   3 tests/space.spec.ts:28:70 › space touch 390x844: all four actual Moon views, records and recovery (14.7s)
+[WebServer] 10:12:31 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:12:44 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   4 tests/space.spec.ts:28:70 › space touch 844x390: all four actual Moon views, records and recovery (14.9s)
+[WebServer] 10:12:46 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 10:13:01 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   5 tests/space.spec.ts:28:70 › space touch 1920x1080: all four actual Moon views, records and recovery (17.5s)
+[WebServer] 10:13:04 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   6 tests/visualStage04.spec.ts:9:1 › visual 04: three region cycles retain cosmetics/evidence and release active/inactive LOD and texture resources (26.3s)
+[WebServer] 10:13:30 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   7 tests/visualStage04.spec.ts:14:81 › visual 04 1440x960: guides, detail, low quality, Earth phase view and camera recovery (13.5s)
+[WebServer] 10:13:43 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   8 tests/visualStage04.spec.ts:14:81 › visual 04 390x844: guides, detail, low quality, Earth phase view and camera recovery (10.6s)
+[WebServer] 10:13:54 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   9 tests/visualStage04.spec.ts:14:81 › visual 04 844x390: guides, detail, low quality, Earth phase view and camera recovery (10.6s)
+[WebServer] 10:14:05 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  10 tests/visualStage04.spec.ts:14:81 › visual 04 1920x1080: guides, detail, low quality, Earth phase view and camera recovery (15.1s)
+
+  10 passed (3.8m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

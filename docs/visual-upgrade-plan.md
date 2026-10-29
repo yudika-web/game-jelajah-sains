@@ -1,6 +1,6 @@
 # Rencana pembaruan visual Jelajah Sains
 
-Diperbarui 29 Oktober 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v18 (termasuk penampilan), satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01, 02 dan 03** sudah diimplementasikan; tahap saat ini hanya **03**.
+Diperbarui 29 Oktober 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v18 (termasuk penampilan), satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01–04** sudah diimplementasikan; tahap saat ini hanya **04**.
 
 ## Arah seni dan proporsi
 
@@ -40,6 +40,7 @@ Shadow map dinamis belum aktif pada baseline. Bayangan kontak karakter tetap ada
 | Depth / cahaya / data IPA | sama | sama |
 | Bayangan kontak / jarak kamera | tetap | tetap |
 | Detail Kota (tahap 02) | 3 warga dekoratif + 24 bunga instanced | 2 warga; pejalan dan bunga opsional disembunyikan |
+| W08 (tahap 04) | Bumi/Matahari 64×40, Bulan 48×32; halo dan atmosfer | bola 32×20, tanpa halo/atmosfer, awan diperingan |
 | Tujuan | keterbacaan normal | mengurangi jumlah piksel dan detail opsional |
 
 Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar DPR 1 keduanya bisa sama. Rendah dapat memperjelas gerigi tepi; pengaturan bukan obat z-fighting atau jaminan FPS. Preferensi `lowQuality` lama tetap kompatibel di localStorage terpisah dari progres IndexedDB; cadangan kini v18 dengan penampilan terpisah dari misi. Pengurangan gerakan tetap opsi tersendiri.
@@ -49,7 +50,7 @@ Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar
 1. **Stabilkan rendering** — reproduksi bergerak, bedakan z-fighting/aliasing/transparansi/bayangan/duplikasi, perbaiki penyebab terbukti, simpan pasangan bukti. **Selesai pada branch visual tahap 01.**
 2. **Perbaiki Kota Sains sebagai contoh kualitas** — variasi atap/kusen/kanopi, tiga siluet pohon, benda interaksi, label dekat dan aktivitas warga. **Diimplementasikan tahap 02**, lihat [laporan](visual-stage-02-review.md); interior belum tersedia.
 3. **Buat avatar modular dan lemari** — **diimplementasikan tahap 03**: dua outfit, empat rambut, slot topi/kacamata/tas, Coba/Terapkan/Batal, satu pembangun dan renderer. Ukuran tubuh tanpa kosmetik, penyimpanan v18 serta override perlengkapan sementara tersedia. [Laporan](visual-stage-03-review.md).
-4. **Perbaiki visual astronomi dan stasiun** — cahaya/gerak/fase tetap berasal dari model ilmiah yang sama.
+4. **Perbaiki visual astronomi dan stasiun** — **diimplementasikan tahap 04**: ruang konsol, peta lokal Bumi, permukaan Matahari/Bulan, detail kamera dan petunjuk opsional, LOD dan ownership resource. Cahaya/gerak/fase tetap berasal dari model ilmiah yang sama. [Laporan](visual-stage-04-review.md).
 5. **Tambahkan perjalanan dan aktivitas astronot** — lingkup tersendiri, tidak mengklaim perjalanan simulasi sebagai fisika nyata.
 6. **Perbaiki bawah laut dan aktivitas menyelam** — baca ulang izin gerak air, kamera, keselamatan model dan kompatibilitas ROV.
 7. **Tambahkan koin hadiah misi** — tentukan transaksi dan receipt sekali; jangan mengubah XP historis atau menggandakan hadiah.
@@ -61,8 +62,12 @@ Setiap tahap memiliki commit/review sendiri, bukti dari game aktual, build dan p
 
 ## Keadaan setelah tahap 02
 
-Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04 dan seterusnya menunggu permintaan berikutnya.
+Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04 tersedia; tahap 05 dan seterusnya menunggu permintaan berikutnya.
 
 ## Keadaan setelah tahap 03
 
 Siswa/siswi berbagi tubuh netral 1,60 unit tanpa rambut, topi atau tas dalam pengukuran; NPC legacy dipertahankan. Katalog starter memuat 12 ID gratis yang stabil, kompatibel dengan kedua varian. Preview tidak memakai renderer kedua. Memilih ulang penampilan tidak mengubah kemampuan atau XP. Cadangan v18 menambah record penampilan; versi lama mempertahankan record yang tidak tercakup. Toko, koin, pakaian aktivitas penuh dan perluasan Antariksa/selam belum dibuat.
+
+## Keadaan setelah tahap 04
+
+W08 memiliki ruang observasi dengan atap potongan terbuka, tiga konsol berbeda dan alat detail kamera pada renderer yang sama. Daratan berasal dari Natural Earth lokal; awan dan kawah ilustratif. Tampilan dan input tetap terpisah dari bukti M07. Format cadangan tetap v18. Sumber NASA dicoba namun ditolak CONNECT 403; telaah halaman primer masih terbatas. Tidak ada perjalanan astronot, docking atau tahap 05 baru.

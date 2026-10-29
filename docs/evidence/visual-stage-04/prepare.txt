@@ -1,0 +1,47 @@
+
+> jelajah-sains@0.1.0 prepare:local
+> node scripts/local/prepare.mjs
+
+Log: /tmp/Jelajah-Sains/logs/persiapan-2026-10-29T10-15-21-630Z-19306.log
+Node.js 24.19.0 | npm 11.9.0
+Hentikan server permainan sebelum memperbarui. Progres browser tidak diubah.
+Dependensi sudah sesuai; instalasi dilewati.
+Membangun versi terbaru ke folder sementara. Build lama tetap tersedia jika gagal.
+
+> jelajah-sains@0.1.0 build
+> npm run typecheck && vite build --outDir .jelajah-build-***
+
+
+> jelajah-sains@0.1.0 typecheck
+> tsc --noEmit
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 149 modules transformed.
+rendering chunks...
+computing gzip size...
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/character.html                         0.60 kB │ gzip:   0.35 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/index.html                             0.79 kB │ gzip:   0.45 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/assets/character-DsxQkyDf.css          2.33 kB │ gzip:   0.97 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/assets/game-DGHmiwd3.css              40.81 kB │ gzip:   9.32 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/assets/character-COUXo5Gz.js           4.07 kB │ gzip:   1.94 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/assets/game-DiM20EHU.js              484.11 kB │ gzip: 150.32 kB
+.jelajah-build-994b0cea-36c4-43ae-9c3b-f946cd5c658b/assets/environmentStyle-CkTKUbWe.js  827.07 kB │ gzip: 215.80 kB
+
+✓ built in 196ms
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+BERHASIL. Klik ganda JALANKAN_JELAJAH_SAINS.bat untuk bermain.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

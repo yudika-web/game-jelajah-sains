@@ -1,0 +1,101 @@
+
+> jelajah-sains@0.1.0 test:e2e
+> playwright test tests/space.spec.ts tests/visualStage04.spec.ts tests/wardrobe.spec.ts tests/running.spec.ts tests/visualStage01.spec.ts tests/visualStage02.spec.ts
+
+[WebServer] (node:12693) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12706) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 33 tests using 1 worker
+
+(node:12730) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 9:40:42 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   1 tests/running.spec.ts:31:1 › keyboard: actual running distance, both Shift keys, release to walk, diagonal normalization (10.1s)
+[WebServer] 9:40:52 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   2 tests/running.spec.ts:54:1 › panels, editable fields, blur, hidden tab and mode switch clear run and require fresh input (7.6s)
+[WebServer] 9:40:59 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   3 tests/running.spec.ts:83:1 › IFP runs a map route exactly, cancels by stop/manual input, and resets on region travel (15.6s)
+[WebServer] 9:41:15 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   4 tests/running.spec.ts:113:1 › running into the school wall cannot tunnel or keep the gait moving (8.7s)
+[WebServer] 9:41:24 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:41:28 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   5 tests/running.spec.ts:123:1 › HP toggle, proportional analog and a second camera finger work in portrait and landscape (9.1s)
+[WebServer] 9:41:33 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:42:03 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:42:17 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:42:30 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:42:37 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   6 tests/space.spec.ts:17:1 › M07 complete: Observatory, three actual checkpoints, geometry views, v16 and all old progress (1.5m)
+[WebServer] 9:43:01 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:43:13 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   7 tests/space.spec.ts:25:1 › laptop astronomy: keyboard, pause/focus, cancel and camera preference survive (14.4s)
+[WebServer] 9:43:15 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:43:28 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   8 tests/space.spec.ts:28:70 › space touch 390x844: all four actual Moon views, records and recovery (14.8s)
+[WebServer] 9:43:30 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:43:43 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓   9 tests/space.spec.ts:28:70 › space touch 844x390: all four actual Moon views, records and recovery (15.0s)
+[WebServer] 9:43:45 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:44:01 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  10 tests/space.spec.ts:28:70 › space touch 1920x1080: all four actual Moon views, records and recovery (18.2s)
+[WebServer] 9:44:03 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:44:08 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  11 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 1440x960 (8.4s)
+[WebServer] 9:44:11 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:44:14 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  12 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 390x844 (4.0s)
+[WebServer] 9:44:16 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:44:18 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  13 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 844x390 (4.8s)
+[WebServer] 9:44:20 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:44:27 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  14 tests/visualStage01.spec.ts:8:72 › stage 01 quality persists separately from all v17 progress 1920x1080 (10.2s)
+[WebServer] 9:44:31 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  15 tests/visualStage01.spec.ts:20:1 › stage 01 joined ground: real routes, moving camera, one active root, repeatable resource disposal, old progress unchanged (1.5m)
+[WebServer] 9:45:58 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  16 tests/visualStage02.spec.ts:8:1 › stage 02: all Town destinations require real arrival; three region cycles preserve all v17 evidence and resources (1.8m)
+[WebServer] 9:47:48 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  17 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 1440x960 (8.0s)
+[WebServer] 9:47:56 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  18 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 390x844 (5.9s)
+[WebServer] 9:48:02 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  19 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 844x390 (6.0s)
+[WebServer] 9:48:08 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  20 tests/visualStage02.spec.ts:16:72 › stage 02 ambient pause, reduced motion, Low and input recovery 1920x1080 (9.3s)
+[WebServer] 9:48:18 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  21 tests/visualStage04.spec.ts:9:1 › visual 04: three region cycles retain cosmetics/evidence and release active/inactive LOD and texture resources (27.0s)
+[WebServer] 9:48:45 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  22 tests/visualStage04.spec.ts:14:81 › visual 04 1440x960: guides, detail, low quality, Earth phase view and camera recovery (13.5s)
+[WebServer] 9:48:58 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  23 tests/visualStage04.spec.ts:14:81 › visual 04 390x844: guides, detail, low quality, Earth phase view and camera recovery (10.4s)
+[WebServer] 9:49:09 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  24 tests/visualStage04.spec.ts:14:81 › visual 04 844x390: guides, detail, low quality, Earth phase view and camera recovery (10.8s)
+[WebServer] 9:49:19 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  25 tests/visualStage04.spec.ts:14:81 › visual 04 1920x1080: guides, detail, low quality, Earth phase view and camera recovery (15.1s)
+[WebServer] 9:49:34 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:49:41 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  26 tests/wardrobe.spec.ts:14:1 › wardrobe: physical cabinet, preview-only Try, Cancel, atomic Apply, repeated changes and saved gallery share one model (12.3s)
+[WebServer] 9:49:47 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  27 tests/wardrobe.spec.ts:23:1 › wardrobe v18 export/import, every legacy format preserves appearance, mission reset and region travel preserve receipts (14.4s)
+[WebServer] 9:50:01 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  28 tests/wardrobe.spec.ts:32:111 › wardrobe laptop 1440x960: girl URL, shared preview, removal, keyboard/touch and fresh movement (3.6s)
+[WebServer] 9:50:05 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  29 tests/wardrobe.spec.ts:32:111 › wardrobe hp 390x844: girl URL, shared preview, removal, keyboard/touch and fresh movement (2.2s)
+[WebServer] 9:50:07 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  30 tests/wardrobe.spec.ts:32:111 › wardrobe hp 844x390: girl URL, shared preview, removal, keyboard/touch and fresh movement (2.3s)
+[WebServer] 9:50:09 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  31 tests/wardrobe.spec.ts:32:111 › wardrobe ifp 1920x1080: girl URL, shared preview, removal, keyboard/touch and fresh movement (4.2s)
+[WebServer] 9:50:14 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  32 tests/wardrobe.spec.ts:37:1 › repeated Apply warms a bounded cache; one world avatar and one renderer survive every combination cycle (22.6s)
+[WebServer] 9:50:36 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[WebServer] 9:51:00 AM [vite] (client) [console.warn] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+  ✓  33 tests/wardrobe.spec.ts:48:1 › personal cosmetics survive real fishing tools, swim vest, boat seating and dock recovery (25.8s)
+
+  33 passed (10.4m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

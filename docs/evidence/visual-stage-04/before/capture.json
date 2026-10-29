@@ -1,0 +1,13 @@
+{
+  "phase": "before",
+  "checkedAtUTC": "2026-10-29T09:17:47.276Z",
+  "viewport": [
+    1440,
+    960
+  ],
+  "productionBuild": true,
+  "browser": "154.0.8037.57",
+  "physicalDevice": false,
+  "errors": [],
+  "external": []
+}
