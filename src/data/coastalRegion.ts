@@ -1,9 +1,10 @@
+import {divePlaces} from './diving';
 import {pressurePlaces} from './pressureRegion';
 import type {Place} from './content';
 import type {NavigationArea} from '../engine/navigation';
 import {boatConfig,type BoatDocks} from './boatRegion';
 export const coastalPlaces:Place[]=[
- ...pressurePlaces,
+ ...pressurePlaces,...divePlaces,
  {id:'coastReturn',name:'Dermaga keberangkatan ke Sungai',short:'Ke Sungai',action:'Berangkat',x:-3,z:14,color:'#5b99a3'},
  {id:'coastLestari',name:'Kak Lestari · pos pesisir',short:'Kak Lestari',action:'Bicara',x:-7,z:8,color:'#518f94'},
  {id:'coastBook',name:'Buku Energi dalam Ekosistem',short:'Buku ekosistem',action:'Baca',x:-11,z:3,color:'#638b61'},
@@ -16,8 +17,9 @@ export const coastalPlaces:Place[]=[
  {id:'coastBoatStart',name:'Dermaga pantai · perahu lokal',short:'Perahu · pantai',action:'Perahu',x:1,z:10,color:'#57999f'},
  {id:'coastBoatObservation',name:'Dermaga titik ikan',short:'Perahu · titik ikan',action:'Perahu',x:20,z:-6,color:'#57999f'},
 ];
-export const coastalNavigation:NavigationArea={bounds:{minX:-18,maxX:25,minZ:-17,maxZ:18},obstacles:[
- {x:10,z:.5,width:16,depth:35},
+export const coastalNavigation:NavigationArea={bounds:{minX:-18,maxX:25,minZ:-17,maxZ:26},obstacles:[
+ {x:10,z:4.5,width:16,depth:43},{x:21.5,z:22.25,width:7,depth:7.5},
+ {x:-7,z:37,width:20,depth:22},{x:-11,z:21.3,width:1.5,depth:.8},{x:-4,z:20.3,width:1.5,depth:.8},
  {x:-11,z:10,width:5,depth:4},
  {x:-7,z:8,width:.6,depth:.6},
  ...coastalPlaces.filter(p=>['coastBook','coastNotes','coastLimits','planktonScope','underwaterWindow','coastFishPoint','foodwebBoard'].includes(p.id)).map(p=>({x:p.x,z:p.z-.7,width:1.4,depth:.6})),

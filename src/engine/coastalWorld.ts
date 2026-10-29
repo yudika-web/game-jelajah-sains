@@ -1,3 +1,5 @@
+import {createSeaSurface} from './seaSurface';
+import {divePlaces} from '../data/diving';
 import {pressurePlaces} from '../data/pressureRegion';
 import * as THREE from 'three';
 import {coastalPlaces,coastalDocks} from '../data/coastalRegion';
@@ -23,7 +25,7 @@ export function coastalSpecimen(id:OrganismId){
 export function buildCoastal({root,box:b,label,npc}:Builder){
  root.userData.region='coast';
  b(24,.8,36,'#e8d29b',-10,-.45,.5);b(7,.8,36,'#e8d29b',21.5,-.45,.5);
- const sea=new THREE.Mesh(new THREE.BoxGeometry(16,.05,36),new THREE.MeshLambertMaterial({color:'#4daab2',transparent:true,opacity:.62,depthWrite:false}));sea.position.set(10,-.2,.5);root.add(sea);b(4,.16,4,'#b18b5d',1,-.03,10);b(4,.16,4,'#b18b5d',19,-.03,-6);
+ const sea=createSeaSurface(16,43.5,10,4.25);root.add(sea);b(4,.16,4,'#b18b5d',1,-.03,10);b(4,.16,4,'#b18b5d',19,-.03,-6);
  b(3,.05,30,'#c4a779',-3,.015,.5);b(14,.05,2,'#c4a779',-6,.015,-9);b(2,.05,8,'#c4a779',21,.015,-7);
  for(let z=-11;z<14;z+=.65)b(2.8,.012,.04,'#937850',-3,.05,z);
  // Open-front research hut. Door clearance 2.2 units for 1.60-unit explorers.
@@ -38,7 +40,7 @@ export function buildCoastal({root,box:b,label,npc}:Builder){
  b(.6,.4,.6,'#ecd175',10,0,2);b(.10,.8,.10,'#f4ebca',10,.4,2);
  for(const d of Object.values(coastalDocks)){const ring=new THREE.Mesh(new THREE.RingGeometry(.5,.64,24),new THREE.MeshBasicMaterial({color:'#ffe5a3',side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(d.water.x,-.13,d.water.z);root.add(ring);}
  const boat=buildResearchBoat(root);
- for(const p of coastalPlaces){if(p.id==='coastLestari')continue;if(pressurePlaces.some(q=>q.id===p.id)){label(p.short,p.x,2.15,p.z,p.id);continue;}
+ for(const p of coastalPlaces){if(p.id==='coastLestari')continue;if(divePlaces.some(q=>q.id===p.id)){label(p.short,p.x,2.2,p.z,p.id);continue;}if(pressurePlaces.some(q=>q.id===p.id)){label(p.short,p.x,2.15,p.z,p.id);continue;}
   b(.10,1.1,.1,'#897451',p.x,.55,p.z-.7);b(1.4,.6,.10,p.color,p.x,1.25,p.z-.7);label(p.short,p.x,2.15,p.z,p.id);
   if(['coastBook','coastNotes'].includes(p.id)){b(1.4,.10,.8,'#9f8055',p.x,.85,p.z-.7);b(.7,.08,.5,'#f4e7c8',p.x,.95,p.z-.7);}
  }

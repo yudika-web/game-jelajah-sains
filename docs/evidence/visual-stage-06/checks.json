@@ -1,0 +1,23 @@
+{
+  "dateLocal": "2026-10-30",
+  "timezone": "Asia/Bangkok",
+  "platform": "Linux / Chromium SwiftShader",
+  "physicalDevice": false,
+  "unit": {
+    "passed": 765,
+    "files": 27,
+    "newDivingCases": 19
+  },
+  "browser": {
+    "stage06": 7,
+    "targetedRegression": 39
+  },
+  "typecheck": "passed",
+  "build": "passed",
+  "prepareLocal": "passed",
+  "backupVersion": 18,
+  "IDBSchema": 1,
+  "newMissionOrReward": false,
+  "NOAAContentRead": false,
+  "fullBrowserSuiteRun": false
+}

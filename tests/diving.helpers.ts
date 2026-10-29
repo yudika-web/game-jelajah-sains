@@ -1,0 +1,3 @@
+import {expect,type Page} from '@playwright/test';
+export async function diveGo(p:Page,id:string,title:string){if(await p.locator('#panel').isVisible())await p.locator('#close-panel').click();await p.locator('#map').click();await p.locator(`[data-destination=${id}]`).click();await expect(p.locator('#panel-title')).toHaveText(title,{timeout:45000});}
+export async function wearAndEnter(p:Page){await diveGo(p,'diveLocker','Perlengkapan selam gratis');await p.locator('[data-dive=equip]').click();await diveGo(p,'diveDock','Tangga masuk teluk');await p.locator('[data-dive=enter]').click();await expect(p.locator('#world')).toHaveAttribute('data-dive-phase','surface');}

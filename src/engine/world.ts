@@ -1,3 +1,6 @@
+import {DivingController,UnderwaterEnvironment,diveNavigation,type DiveAction} from './divingController';
+import {buildDivingWorld} from './divingWorld';
+import {diveConfig,diveShore,divePoints,divePointPlaces,diveObstacles,type DivePointId} from '../data/diving';
 import {SpaceExpedition,type ExpeditionAction} from '../game/spaceExpedition';
 import {buildSpaceExpeditionWorld} from './spaceExpeditionWorld';
 import {preparationPlaces,preparationNavigation,evaPlaceList,evaPoints,exteriorObstacles,safeSpaceSpawn,type EvaPointId,type Vector3Data} from '../data/spaceExpedition';
@@ -108,12 +111,18 @@ export class World {
   private swimAppearance(active:boolean){this.playerAnimator.swimming=active;this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const m=this.player.getObjectByName(name);if(m)m.visible=!active;}}
   returnShore(){this.stop();this.swimming=false;this.swimAppearance(false);this.position.set(poolExit.x,0,poolExit.z);this.endInteraction();}
   private updateSwimming(distance:number){if(this.region!=='river'||this.boat.aboard||this.rov.active)return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
+  diveSuspended=false;readonly dive=new DivingController();private diveView:ReturnType<typeof buildDivingWorld>|null=null;readonly waterEnvironment=new UnderwaterEnvironment();diveFocus:DivePointId|null=null;
+  private diveCameraPoint=new THREE.Vector3();private divePreviousPosition=new THREE.Vector3();private diveCameraBefore:{yaw:number;pitch:number}|null=null;
+  onDiveChange:()=>void=()=>{};onDiveFrame:()=>void=()=>{};onDiveArrive:(id:DivePointId|'entry')=>void=()=>{};
+  get locomotionMode(){return this.dive.controlled?'diving':this.rov.active?'rov':this.boat.aboard?'boat':this.swimming?'pool-swim':this.region==='space'&&this.expedition.controlledPose?'astronaut':'land';}
+  diveAction(action:DiveAction,revision=this.dive.revision){if(this.region!=='coast'||this.boat.aboard||this.rov.active||this.swimming)return false;const controlled=this.dive.controlled,ok=this.dive.act(action,this.position,revision);if(ok){this.endInteraction();if(controlled||this.dive.controlled||action==='recover')this.position.set(this.dive.pose.x,this.dive.pose.y,this.dive.pose.z);setTemporaryEquipment(this.playerRig,this.dive.equipped?'dive':'none');if(action==='recover'){this.followCamera.targetHeight=characterConfig.cameraTargetHeight;this.followCamera.distanceScale=1;this.followCamera.update(this.position,.016,true,true);}}return ok;}
+  recoverDive(){const used=this.dive.equipped;this.dive.reset();this.playerAnimator.diving=false;if(used){setTemporaryEquipment(this.playerRig,'none');if(this.region==='coast')this.position.set(diveShore.x,0,diveShore.z);}this.waterEnvironment.reset();this.diveFocus=null;if(this.region==='coast'){(this.scene.background as THREE.Color).set('#d9e9e3');const fog=this.scene.fog as THREE.Fog;fog.color.set('#d9e9e3');fog.near=48;fog.far=100;this.followCamera?.setObstacles(this.collisionBoxes);}}
   readonly rov=new RovController();private pressureView:ReturnType<typeof buildPressureWorld>|null=null;
   setPressureChecked(checked:boolean){this.pressureView?.update(checked);}
   onPressureFrame:(dt:number,active:boolean)=>void=()=>{};
   private rovCameraPoint=new THREE.Vector3();private rovSensorPoint=new THREE.Vector3();private rovSample={xMm:0,zMm:0,depthMm:0,pressurePa:0};
   rovSnapshot(){if(this.pressureView){this.pressureView.robot.position.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);this.pressureView.sensor.getWorldPosition(this.rovSensorPoint);}else this.rovSensorPoint.set(this.rov.position.x,this.rov.position.y+pressureConfig.sensorOffsetY,this.rov.position.z);const h=Math.max(0,pressureConfig.surfaceY-this.rovSensorPoint.y);this.rovSample.xMm=Math.round(this.rovSensorPoint.x*1000);this.rovSample.zMm=Math.round(this.rovSensorPoint.z*1000);this.rovSample.depthMm=Math.round(h*1000);this.rovSample.pressurePa=Math.round(waterPressurePa(h));return this.rovSample;}
-  launchRov(){if(this.region!=='coast'||this.boat.aboard||this.swimming)return false;this.stop();this.endInteraction();this.rov.launch();this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.setObstacles(this.pressureView?.cameraBoxes??[]);return true;}
+  launchRov(){if(this.region!=='coast'||this.boat.aboard||this.swimming||this.dive.equipped)return false;this.stop();this.endInteraction();this.rov.launch();this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.setObstacles(this.pressureView?.cameraBoxes??[]);return true;}
   recoverRov(){const wasActive=this.rov.active;this.rov.recover();this.stop();if(!wasActive)return;this.followCamera.interactionYaw=0;this.followCamera?.setObstacles(this.collisionBoxes);if(this.scene.background)(this.scene.background as THREE.Color).set('#d9e9e3');if(this.scene.fog){const f=this.scene.fog as THREE.Fog;f.color.set('#d9e9e3');f.near=48;f.far=100;}}
   rovDepth(delta:number){if(!this.paused)this.rov.changeDepth(delta);}
   readonly boat=new BoatController();
@@ -123,7 +132,7 @@ export class World {
   setFlowSampling(s:FlowSampling|null){this.flowSampling=s;}
   setIrrigation(p:IrrigationProgress){this.riverView?.irrigation.update(p);this.canvas.dataset.screenCleaned=String(p.cleaned);}
   private boatAppearance(active:boolean){this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const obj=this.player.getObjectByName(name);if(obj)obj.visible=!active;}}
-  boardBoat(){if(this.rov.active||!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
+  boardBoat(){if(this.dive.equipped||this.rov.active||!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
   startBoat(){if(!this.boat.start())return false;this.stop();this.boat.start();return true;}
   moorBoat(){const d=this.boat.moor(this.position);if(!d)return null;this.stop();this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river'&&d==='irrigation'&&this.boat.tripFrom==='research')this.onBoatTutorial('arrive',this.boat.distanceMm);return d;}
   exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions[this.region].navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(this.region==='river'&&dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
@@ -193,7 +202,7 @@ export class World {
   private geoProgress=initialGeo();geoFraction=0;geoFocus:PlateId|'earth'|null=null;
   private geoCameraPoint=new THREE.Vector3();onGeoFrame:(dt:number,active:boolean)=>void=()=>{};
   setGeopark(p:GeoProgress){const changed=this.geoProgress.exercise!==p.exercise;this.geoProgress=p;if(this.region==='geopark'&&changed){this.stop();this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.4:1.2,o.z+o.depth/2)));this.followCamera.setObstacles(this.collisionBoxes);if(!walkable(this.position,this.navigation))this.resetPosition();}}
-  get places() {return this.region==='space'&&this.expedition.phase==='preparation'?preparationPlaces:this.region==='space'&&this.expedition.outside?evaPlaceList:regions[this.region].places;}
+  get places() {return this.region==='coast'&&this.dive.active?divePointPlaces:this.region==='space'&&this.expedition.phase==='preparation'?preparationPlaces:this.region==='space'&&this.expedition.outside?evaPlaceList:regions[this.region].places;}
   get navigation() {if(this.region==='space'&&this.expedition.phase==='preparation')return preparationNavigation; if(this.region==='geopark')return geoNavigation(this.geoProgress.exercise);if(this.boat.aboard)return this.region==='coast'?coastalBoatNavigation:boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
   get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
   approach(id:PlaceId) {return this.pushing?rimbaCartConfig.approach:1.4;}
@@ -263,6 +272,7 @@ export class World {
     this.followCamera.update(this.position, .016, this.reducedMotion, true);
     addEventListener('resize', () => this.resize());
     this.renderer.setAnimationLoop(() => this.frame());
+    this.dive.onChange=()=>{this.stop();this.lastNear=undefined;const active=this.dive.controlled;if(active&&!this.diveCameraBefore){this.diveCameraBefore={yaw:this.yaw,pitch:this.pitch};this.yaw=.15;this.pitch=.27;}else if(!active&&this.diveCameraBefore){this.yaw=this.diveCameraBefore.yaw;this.pitch=this.diveCameraBefore.pitch;this.diveCameraBefore=null;}if(this.region==='coast')this.followCamera.setObstacles(active?diveObstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.min.x,o.min.y,o.min.z),new THREE.Vector3(o.max.x,o.max.y,o.max.z))):this.collisionBoxes);this.onDiveChange();};
     this.expedition.onChange=()=>{this.stop();this.lastNear=undefined;if(this.region==='space'){this.followCamera.setObstacles(this.expedition.outside?exteriorObstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.min.x,o.min.y,o.min.z),new THREE.Vector3(o.max.x,o.max.y,o.max.z))):this.expedition.phase==='preparation'?preparationNavigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,3,o.z+o.depth/2))):spaceCameraBoxes());this.followCamera.resize(innerWidth,innerHeight);if(this.expedition.outside){this.evaCameraBefore={yaw:this.yaw,pitch:this.pitch};this.yaw=-1.4;this.pitch=.40;this.followCamera.update(this.position,.016,true,true);}else if(this.evaCameraBefore){this.yaw=this.evaCameraBefore.yaw;this.pitch=this.evaCameraBefore.pitch;this.evaCameraBefore=null;}}this.onExpeditionChange();};
     canvas.dataset.ready = 'true';
   }
@@ -356,7 +366,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    this.recoverExpedition();this.expeditionView=null;this.spaceInterior=null;this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
+    this.recoverDive();this.diveView=null;this.recoverExpedition();this.expeditionView=null;this.spaceInterior=null;this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
@@ -408,8 +418,8 @@ export class World {
         this.npcs.push({id:'coastLestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
         this.npcLabels.set('coastLestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'coastLestari'));
       }});
-      this.pressureView=buildPressureWorld(this.regionRoot);
-      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13.5,0,8),new THREE.Vector3(-8.5,3,12))];
+      this.pressureView=buildPressureWorld(this.regionRoot);this.diveView=buildDivingWorld(this.regionRoot);
+      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13.5,0,8),new THREE.Vector3(-8.5,3,12)),new THREE.Box3(new THREE.Vector3(-11.7,0,20.9),new THREE.Vector3(-10.3,1.8,21.7)),new THREE.Box3(new THREE.Vector3(-4.75,0,19.9),new THREE.Vector3(-3.25,.9,20.7))];
     }
     else if(region==='river'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -462,7 +472,7 @@ export class World {
   }
   waterGarden(group: Group) { this.gardenView?.water(group); }
   goTo(p: Point, onArrive?: () => void) {
-    if(this.rov.active||this.region==='space'&&!this.expedition.landControls)return false;
+    if(this.dive.controlled||this.rov.active||this.region==='space'&&!this.expedition.landControls)return false;
     const path = findPath(this.position, p, this.navigation);
     if (!path.length) return false;
     if(this.boat.aboard)this.boat.start();
@@ -474,8 +484,8 @@ export class World {
     this.move = this.boat.aboard&&!this.boat.enabled?{x:0,z:0}:input;
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
-  stop(resetRun = true) { this.expedition.stop();this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() {this.recoverExpedition();this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  stop(resetRun = true) { this.dive.stop();this.expedition.stop();this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
+  resetPosition() {this.recoverDive();this.recoverExpedition();this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -488,10 +498,11 @@ export class World {
   setInteractionPose(pose: InteractionPose) { this.playerAnimator.setPose(pose); this.followCamera.interactionFraming = pose !== 'none'; }
   endInteraction() { this.coastalFocus=null; this.interacting = null; this.playerAnimator.setPose('none'); this.followCamera.interactionFraming = false; this.followCamera.interactionYaw = 0; }
   setTrial(done: boolean) { this.barrier.visible = done && this.region === 'town'; }
-  pick(clientX: number, clientY: number): {evaPoint?:Vector3Data; rovPoint?:PressurePoint;place?: PlaceId; point?: Point } {
+  pick(clientX: number, clientY: number): {divePoint?:Vector3Data;evaPoint?:Vector3Data; rovPoint?:PressurePoint;place?: PlaceId; point?: Point } {
     const rect = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, -(clientY - rect.top) / rect.height * 2 + 1), this.camera);
     const objects = this.ray.intersectObjects(this.scene.children, true);
+    if(this.dive.active){const hit=objects.find(o=>o.object.userData.place in divePoints&&visibleForPicking(o.object));if(hit)return{place:hit.object.userData.place};const point=this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-this.dive.position.y),new THREE.Vector3());return point&&diveNavigation.walkable(point)?{divePoint:{x:point.x,y:point.y,z:point.z}}:{};}
     if(this.rov.active){const target=objects.find(o=>o.object.userData.rovPoint&&visibleForPicking(o.object));return target?{rovPoint:target.object.userData.rovPoint}:{};}
     const hit = objects.find(o => o.object.userData.place && visibleForPicking(o.object));
     if (hit) return { place: hit.object.userData.place as PlaceId };
@@ -500,6 +511,7 @@ export class World {
     return point && walkable(point, this.navigation) ? { point: { x: point.x, z: point.z } } : {};
   }
   nearest(): PlaceId | null {
+    if(this.dive.controlled)return this.dive.active?this.dive.nearby():null;
     if(this.region==='space'&&!this.expedition.landControls)return this.expedition.outside?this.expedition.eva.nearby():null;
     if(this.rov.active)return null;
     if(this.boat.aboard){const d=this.boat.nearby(this.position);return d?this.boat.docks[d].place:null;}
@@ -523,6 +535,15 @@ export class World {
     this.onRiverFrame(dt,!document.hidden&&document.hasFocus());
     if(this.fishingSession?.active){const phase=this.fishingSession.phase;this.playerAnimator.fishingCast=Math.min(1,this.fishingSession.elapsed/.8);this.playerAnimator.setPose(phase==='casting'?'fishCast':phase==='observing'||phase==='released'?'fishPull':'fishWait');}
     let travelled = 0, dx = 0, dz = 0;
+    if(this.region==='coast'){
+      const controlled=this.dive.controlled,before=this.divePreviousPosition.copy(this.position);const arrived=this.dive.frame(dt,!this.paused&&!this.diveSuspended&&!document.hidden&&document.hasFocus(),this.reducedMotion,this.move,this.yaw);
+      if(controlled||this.dive.controlled){this.position.set(this.dive.pose.x,this.dive.pose.y,this.dive.pose.z);travelled=this.position.distanceTo(before);dx=this.position.x-before.x;dz=this.position.z-before.z;this.running=false;}
+      this.playerAnimator.diving=this.dive.controlled;const shadow=this.player.getObjectByName('contact-shadow');if(shadow&&!this.boat.aboard)shadow.visible=!this.dive.controlled;
+      if(arrived)this.onDiveArrive(arrived);
+      this.diveView?.frame(!this.paused&&!document.hidden&&document.hasFocus()?dt:0,this.reducedMotion,this.lowQuality,this.position,this.dive.active);this.onDiveFrame();
+    }
+    document.body.classList.toggle('dive-mode',this.dive.controlled);this.canvas.dataset.divePhase=this.region==='coast'?this.dive.phase:'inactive';this.canvas.dataset.diveDepth=this.dive.depth.toFixed(3);this.canvas.dataset.diveY=this.dive.position.y.toFixed(3);this.canvas.dataset.diveEquipped=String(this.dive.equipped);this.canvas.dataset.diveDistance=this.dive.distance.toFixed(3);this.canvas.dataset.diveArrivals=String(this.dive.arrivals);this.canvas.dataset.locomotionMode=this.locomotionMode;
+
     if(this.region==='space'){
       const controlled=this.expedition.controlledPose,before=this.expeditionPreviousPosition.copy(this.position);const arrived=this.expedition.frame(dt,!this.paused&&!document.hidden&&document.hasFocus(),this.reducedMotion,this.move,this.yaw);
       if(controlled||this.expedition.controlledPose){this.position.set(this.expedition.pose.x,this.expedition.pose.y,this.expedition.pose.z);travelled=this.position.distanceTo(before);dx=this.position.x-before.x;dz=this.position.z-before.z;}
@@ -533,7 +554,7 @@ export class World {
       const shadow=this.player.getObjectByName('contact-shadow');if(shadow)shadow.visible=!this.playerAnimator.floating;
     }
     if(!this.paused&&this.rov.active)this.rov.step(this.move,this.yaw+pressureConfig.cameraYawOffset,dt);
-    if (!this.paused&&!this.rov.active&&!(this.region==='space'&&!this.expedition.landControls)) {
+    if (!this.paused&&!this.dive.controlled&&!this.rov.active&&!(this.region==='space'&&!this.expedition.landControls)) {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
@@ -600,10 +621,11 @@ export class World {
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
     if(this.geoFocus){const focus=this.geoFocus;const p=this.places.find(p=>p.id===(focus==='earth'?'geoEarth':plateModels[focus].place));if(p)this.geoCameraPoint.set(p.x,1,p.z-.8);}
     this.pontoonCameraPoint.set(this.pontoonFocus==='spring'?-6:7,this.pontoonFocus==='spring'?1:0,this.pontoonFocus==='spring'?23.2:this.pontoonZ);
-    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.dive.controlled?.8:this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.dive.controlled?(this.diveFocus?.55:.58):this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
+    if(this.diveFocus){const p=divePoints[this.diveFocus].position;this.diveCameraPoint.set(p.x,p.y,p.z);}
     if(this.marketFocus){const p=this.places.find(p=>p.id===this.marketFocus);if(p)this.marketCameraPoint.set(p.x,.20,p.z-1);}
     this.followCamera.inspectionWidth=this.marketFocus?2.8:this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(this.diveFocus?this.diveCameraPoint:this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
     if(this.region==='space'&&this.expedition.controlledPose&&!this.expedition.outside){
       if(this.expedition.inVehicle){const ship=this.expedition.shipPosition();this.expeditionTarget.set(ship.x,ship.y+1.15,ship.z);this.expeditionCamera.set(ship.x+5,ship.y+2.8,ship.z+5.5);}else{this.expeditionTarget.set(14,1.2,21);this.expeditionCamera.set(18.6,3.5,25.6);}
       this.camera.setViewOffset(innerWidth,innerHeight,innerWidth>=701?innerWidth*.18:0,innerWidth<701?innerHeight*.16:0,innerWidth,innerHeight);this.spaceInstrumentCamera.update(this.camera,this.expeditionCamera,this.expeditionTarget,dt,this.reducedMotion);this.camera.layers.set(0);
@@ -615,6 +637,10 @@ export class World {
     this.onPressureFrame(dt,this.region==='coast'&&!document.hidden&&document.hasFocus());
     this.pressureView?.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.rov);
     if(this.rov.active){(this.scene.background as THREE.Color).set('#86b7b6');const f=this.scene.fog as THREE.Fog;f.color.set('#86b7b6');f.near=8;f.far=38;}
+    if(this.region==='coast'){
+      const under=this.waterEnvironment.update(this.camera.position.y,this.dive.active);if(!this.rov.active){const color=under?'#448f9e':'#d9e9e3';(this.scene.background as THREE.Color).set(color);const f=this.scene.fog as THREE.Fog;f.color.set(color);f.near=under?4:48;f.far=under?(this.lowQuality?23:30):100;}
+    }else this.waterEnvironment.reset();
+    this.canvas.dataset.underwater=String(this.waterEnvironment.underwater);this.canvas.dataset.waterSwitches=String(this.waterEnvironment.switches);
     this.canvas.dataset.rovActive=String(this.rov.active);this.canvas.dataset.rovDepth=this.rov.depth.toFixed(3);this.canvas.dataset.rovTarget=this.rov.targetDepth.toFixed(3);this.canvas.dataset.rovX=this.rov.position.x.toFixed(3);this.canvas.dataset.rovZ=this.rov.position.z.toFixed(3);this.canvas.dataset.rovY=this.rov.position.y.toFixed(3);this.canvas.dataset.rovPressure=String(Math.round(waterPressurePa(Math.max(0,this.rov.depth))));this.canvas.dataset.rovStable=this.rov.stable??'';this.canvas.dataset.rovMoving=String(this.rov.moving);
     const nearest = this.nearest();
     if (nearest !== this.lastNear) { this.lastNear = nearest; this.onUpdate(nearest); }
@@ -661,7 +687,7 @@ export class World {
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
-      label.visible=!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
+      label.visible=!this.dive.controlled&&!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
