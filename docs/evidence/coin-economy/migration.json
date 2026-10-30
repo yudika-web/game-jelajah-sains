@@ -1,0 +1,53 @@
+{
+  "schemaBefore": 1,
+  "schemaAfter": 2,
+  "coins": 770,
+  "receipts": [
+    {
+      "mission": "M01",
+      "amount": 100
+    },
+    {
+      "mission": "M07",
+      "amount": 100
+    },
+    {
+      "mission": "M13",
+      "amount": 100
+    },
+    {
+      "mission": "M14",
+      "amount": 100
+    },
+    {
+      "mission": "M16",
+      "amount": 100
+    },
+    {
+      "mission": "M17",
+      "amount": 100
+    },
+    {
+      "mission": "S13",
+      "amount": 30
+    },
+    {
+      "mission": "S14",
+      "amount": 30
+    },
+    {
+      "mission": "S15",
+      "amount": 30
+    },
+    {
+      "mission": "S16",
+      "amount": 30
+    },
+    {
+      "mission": "W03-LOG01",
+      "amount": 50
+    }
+  ],
+  "repeatStable": true,
+  "physicalDevice": false
+}

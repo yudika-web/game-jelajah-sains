@@ -1,3 +1,5 @@
+> Status aktif tahap 07: cadangan **v19**, wallet **v1**, IndexedDB **skema 2**. Keterangan versi pada bagian tahap terdahulu adalah riwayat. Lihat [kontrak ekonomi](coin-economy-review.md).
+
 # Catatan pengembangan prototipe 0.1
 
 ## Visual tahap 04 — stasiun dan instrumen W08
@@ -291,3 +293,15 @@ Pak Wira dan Bu Nara memakai karakter yang sudah tersedia, dengan dialog berdasa
 Jarak membawa dikumpulkan dari substep perpindahan nyata sebelum callback kedatangan, lalu disahkan sebelum panel dibuka, blur atau perpindahan wilayah. Tidak ada pengurangan es berdasarkan waktu nyata. Pemeriksaan pada penerima menerapkan satu dataset distribusi tetap 20 menit virtual. Penyerahan menuntut paket, jarak membawa dan posisi sah; navigasi saja tidak menyerahkan. Reload/perpindahan wilayah/pemulihan mengembalikan paket belum diterima ke kios; bukti sah tetap.
 
 Key M02 ditambahkan pada store IndexedDB skema 1, dalam transaksi atomik tujuh belas misi dan world. Cadangan **v17** menerima **v1–v16**, mempertahankan M02 yang tidak dicakup dan menggabungkan bukti hadiah pertama secara monoton. Nomor format cadangan berbeda dari skema database. M16/M17 dan S02/M03/S14 tidak berubah. Lihat [laporan dan batas model](market-ice-review.md).
+
+## Tahap 07: reward ledger dan penyimpanan dengan revisi
+
+`missionRecords.ts` memusatkan parser/key misi; `coinEconomy.ts` menyimpan registry reward dan validasi ledger. `walletUI.ts` hanya menerima wallet terkonfirmasi, memakai dialog/HUD dan tidak menambah renderer, loop atau input global.
+
+Skema IndexedDB 2 tetap memakai store saves. `save-meta` memiliki revision/profil; `economy` adalah ledger aktif; `economy-history:<profileId>` menyimpan checkpoint append-only identitas yang pernah dikenal. Baca revisi/wallet terbaru, cek expected revision, validasi bukti, tambahkan reward yang belum ada, lalu tulis seluruh state dalam satu readwrite transaction. Baru `oncomplete` memperbarui HUD. Autosave tab usang ditolak. Kode lama yang membuka skema 1 mendapat VersionError.
+
+Cadangan v19 menerima v1–v18. Impor bersifat store-first: parser menyelesaikan validasi, transaksi menyimpan kandidat dan rekonsiliasi wallet, kemudian world/appearance aktif dipulihkan. Profil berbeda membutuhkan konfirmasi dan tidak mencampur XP/ledger. Profil sama memakai prefix, bukan penjumlahan saldo. Arsip identitas mencegah pergantian profil menghindari checkpoint.
+
+M01 menambah proof reward opsional yang menyimpan penyelesaian sah. Reset dan impor lama mempertahankan 100 XP pertama, bukan menghapusnya. Payload versi 1 lama tetap diterima. M16/M17 tetap memakai completed seluruh episode untuk status bab dan klaim pertama. Tidak ada hadiah coin per episode.
+
+Tahap toko harus memperluas parser/format secara eksplisit, menyimpan pengeluaran serta ownership dalam transaksi/revisi yang sama, mempertahankan prefix dan arsip profil saat impor, dan tidak menghapus pembelian dengan cadangan lama. [Rincian dan batas lokal](coin-economy-review.md).

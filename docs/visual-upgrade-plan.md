@@ -53,7 +53,7 @@ Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar
 4. **Perbaiki visual astronomi dan stasiun** — **diimplementasikan tahap 04**: ruang konsol, peta lokal Bumi, permukaan Matahari/Bulan, detail kamera dan petunjuk opsional, LOD dan ownership resource. Cahaya/gerak/fase tetap berasal dari model ilmiah yang sama. [Laporan](visual-stage-04-review.md).
 5. **Tambahkan perjalanan dan aktivitas astronot** — **diimplementasikan tahap 05**: persiapan, kendaraan, docking, perlengkapan sementara, airlock dan EVA terbatas. [Laporan](visual-stage-05-review.md). — lingkup tersendiri, tidak mengklaim perjalanan simulasi sebagai fisika nyata.
 6. **Perbaiki bawah laut dan aktivitas menyelam** — **diimplementasikan tahap 06**: teluk pasir/lamun, avatar bersirip, kendali 3D, pengamatan, air stabil dan pemulihan. [Laporan](visual-stage-06-review.md). baca ulang izin gerak air, kamera, keselamatan model dan kompatibilitas ROV.
-7. **Tambahkan koin hadiah misi** — tentukan transaksi dan receipt sekali; jangan mengubah XP historis atau menggandakan hadiah.
+7. **Tambahkan koin hadiah misi — diimplementasikan** — registry reward misi/bab, ledger profil, transaksi/revisi, migrasi, Dompet dan cadangan v19. XP tetap terpisah; toko belum tersedia. [Laporan tahap 07](coin-economy-review.md).
 8. **Tambahkan toko kosmetik** — transaksi atomik, kepemilikan dan migrasi diuji setelah sistem koin tersedia.
 9. **Sebarkan detail dan aktivitas ke seluruh wilayah** — gunakan Kota sebagai acuan, satu wilayah per iterasi, batas GPU dan navigasi diperiksa.
 10. **Periksa integrasi keseluruhan** — regresi luas, semua format cadangan, pergantian wilayah, launcher/offline, perangkat dan bukti penutup.
@@ -81,3 +81,7 @@ Perjalanan kendaraan dan docking dapat dimainkan pergi/pulang; perlengkapan grat
 ## Keadaan setelah tahap 06
 
 W05 memiliki teluk selam terbatas yang terpisah dari ROV, jalur perahu dan bukti S16. Permukaan memakai bidang dua sisi stabil, kamera memiliki hysteresis air, geometri/material wilayah dibagi, dan perlengkapan memakai rig modular yang sama. Semua data misi/XP serta format cadangan v18 dipertahankan. Koin/toko dan wilayah baru tidak ditambahkan. Pernyataan tahap sebelumnya tentang belum adanya selam manusia merupakan catatan historis.
+
+## Keadaan setelah tahap 07
+
+Ekonomi lokal terhubung dengan penyelesaian misi. Registry hanya memuat 12 hadiah misi/bab yang sudah tersedia, bukan seluruh nomor rancangan. Koin dan receipt disimpan atomik dengan progres serta XP; impor mempertahankan ledger append-only dan checkpoint profil. Cadangan kini v19, skema IndexedDB 2. Stage visual 01–06 tetap tersedia. Tahap 08 toko, transaksi belanja, koin harian dan misi baru belum dikerjakan.

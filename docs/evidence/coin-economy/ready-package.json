@@ -1,0 +1,12 @@
+{
+  "bytes": 638101,
+  "members": 20,
+  "longestMember": "JS/dist/assets/environmentStyle-BJdeQJQq.js",
+  "maxMemberLength": 43,
+  "CRC": "passed",
+  "gameSourceCommit": "10486edd5242b3770e93e64fe3dc42d302551cb9",
+  "sha256": "630b6e8ae267acfee54d15890b7af6c151b215c6d4f5660697bfdab11786848e",
+  "file": "unduhan/JS-Windows.zip",
+  "backupVersion": 19,
+  "manifestHashes": "passed"
+}

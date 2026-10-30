@@ -1,0 +1,41 @@
+{
+  "dateLocal": "2026-10-30",
+  "timezone": "Asia/Bangkok",
+  "sourceCommit": "10486edd5242b3770e93e64fe3dc42d302551cb9",
+  "platform": "Linux / Chromium SwiftShader",
+  "physicalDevice": false,
+  "unit": {
+    "passed": 818,
+    "files": 28,
+    "coinCases": 53
+  },
+  "launcher": {
+    "passed": 16
+  },
+  "browserEconomy": {
+    "passed": 12,
+    "viewports": [
+      "1440x960",
+      "390x844",
+      "844x390",
+      "1920x1080"
+    ]
+  },
+  "fullBrowserSuite": {
+    "passed": 139,
+    "failedInitially": 1,
+    "total": 140,
+    "source": "1475893",
+    "followupPassed": 2,
+    "resourceCycles": 4
+  },
+  "build": "passed",
+  "prepareLocal": "passed",
+  "backupVersion": 19,
+  "walletVersion": 1,
+  "indexedDBSchema": 2,
+  "legacyBackupSupport": "1-18",
+  "newMissionOrShop": false,
+  "readyZipBrowser": 4,
+  "prerequisiteRecheck": "12 economy + 4 runtime package cases passed after transition/profile fixes"
+}

@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "profileId": "e542d369-c6ac-4da8-b237-020ceb784410",
+  "balance": 100,
+  "ledger": [
+    {
+      "id": "e542d369-c6ac-4da8-b237-020ceb784410:mission:M01",
+      "kind": "mission-reward",
+      "missionId": "M01",
+      "amount": 100,
+      "ruleVersion": 1,
+      "source": "mission-completion",
+      "at": "2026-10-30T09:05:42.939Z",
+      "evidence": {
+        "M01": {
+          "version": 1,
+          "accepted": true,
+          "hypothesis": true,
+          "sources": {
+            "book": true,
+            "rain": true
+          },
+          "plan": true,
+          "samples": {
+            "A": {
+              "value": 70,
+              "session": "hujan-0900"
+            },
+            "B": {
+              "value": 20,
+              "session": "hujan-0900"
+            }
+          },
+          "trial": 35,
+          "attempts": [
+            {
+              "answer": "sediment",
+              "correct": true
+            }
+          ],
+          "completed": true,
+          "reward": 100,
+          "savedAt": "2026-10-30T09:05:42.916Z",
+          "rewardProof": {
+            "at": "2026-10-30T09:05:42.916Z",
+            "evidence": {
+              "version": 1,
+              "accepted": true,
+              "hypothesis": true,
+              "sources": {
+                "book": true,
+                "rain": true
+              },
+              "plan": true,
+              "samples": {
+                "A": {
+                  "value": 70,
+                  "session": "hujan-0900"
+                },
+                "B": {
+                  "value": 20,
+                  "session": "hujan-0900"
+                }
+              },
+              "trial": 35,
+              "attempts": [
+                {
+                  "answer": "sediment",
+                  "correct": true
+                }
+              ],
+              "completed": true,
+              "reward": 100,
+              "savedAt": "2026-10-30T09:05:37.075Z"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
