@@ -55,7 +55,7 @@ describe('same body, rig and tools for every free combination',()=>{
  });
 });
 describe('appearance in backup v18 and independent IndexedDB record',()=>{
- it('round-trips all mission data and appearance without changing mission versions',()=>{const g={...initialGame(),appearance:custom()},b=makeBackup(g);expect(b.version).toBe(18);expect(BACKUP_VERSION).toBe(18);expect(importBackup(b,initialGame()).game).toEqual(g);});
+ it('round-trips all mission data and appearance without changing mission versions',()=>{const g={...initialGame(),appearance:custom()},b=makeBackup(g);expect(b.version).toBe(19);expect(BACKUP_VERSION).toBe(19);expect(importBackup(b,initialGame()).game).toEqual(g);});
  it('every previously supported v1-v17 fixture retains an existing appearance',()=>{
   const g={...initialGame(),appearance:custom()},seen=new Set<number>();
   const fixtures=readdirSync('tests/fixtures').filter(f=>f.endsWith('.json')).map(f=>JSON.parse(readFileSync('tests/fixtures/'+f,'utf8')));fixtures.push(JSON.parse(readFileSync('docs/evidence/market/completed-v17.json','utf8')));

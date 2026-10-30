@@ -1,0 +1,11 @@
+#coin-wallet{min-width:78px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 12px;border:1px solid #c8ad63;border-radius:24px;background:#fff7d9;color:#674b14;font-size:15px;font-weight:700;white-space:nowrap}
+#coin-wallet:disabled{opacity:.65}#coin-wallet .coin-symbol{display:inline-grid;place-items:center;width:23px;height:23px;border:2px solid #a77d2b;border-radius:50%;background:#ebc75f;font-size:15px}
+#coin-notice{position:fixed;top:84px;right:20px;z-index:12;max-width:min(390px,calc(100vw - 32px));background:#fff5cd;color:#604710;border:1px solid #cfb76c;border-radius:12px;padding:12px 16px;box-shadow:0 4px 18px #182b3020;pointer-events:none;font-size:13px}
+.wallet-total{display:flex;gap:10px;align-items:baseline;color:#795a1f;font-size:18px}.wallet-total strong{font-size:36px}.wallet-history{list-style:none;margin:0;padding:0}.wallet-history li{display:flex;justify-content:space-between;gap:15px;padding:14px 0;border-bottom:1px solid #dfe3d2}.wallet-history small{display:block;margin-top:5px;color:#65776a}.wallet-history b{white-space:nowrap;color:#795a1f}
+#storage-alert{position:fixed;z-index:35;left:50%;transform:translateX(-50%);bottom:92px;width:min(560px,calc(100vw - 24px));padding:14px 18px;background:#fff3e7;border:1px solid #c18362;border-radius:12px;color:#683c29;box-shadow:0 4px 20px #152a3320}#storage-alert button{min-height:44px;margin:8px 8px 0 0;padding:8px 14px;border:1px solid #b99c7b;border-radius:8px;background:#fffdf3;color:#513f2f}
+body[data-mode=ifp] #coin-wallet{min-height:52px;min-width:94px;font-size:18px}
+@media(max-width:700px){.top-right{gap:8px}#coin-wallet{min-width:68px;padding:7px 9px;font-size:14px}#coin-notice{top:76px;right:12px;max-width:calc(100vw - 24px)}.wallet-history li{font-size:14px}}
+@media(max-height:500px) and (orientation:landscape){#coin-notice{top:65px;max-width:310px;font-size:11px;padding:8px 12px}#storage-alert{bottom:10px;max-height:70dvh;overflow:auto}}
+
+body[data-save-state=pending] .success-banner{visibility:hidden}
+#settings-feedback button{display:block;min-height:44px;width:100%;margin:8px 0;padding:10px 14px;border:1px solid #b79a60;border-radius:10px;background:#fff7dc;color:#614b22}

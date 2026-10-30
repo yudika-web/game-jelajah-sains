@@ -1,3 +1,4 @@
+// Learning-record comparisons exclude the separately tested coin ledger and save revision.
 import {test,expect,type Page} from '@playwright/test';
 import {readFileSync,mkdirSync,writeFileSync,copyFileSync} from 'node:fs';
 import {wearAndEnter,diveGo} from './diving.helpers';
@@ -5,7 +6,7 @@ const capture=!!process.env.CAPTURE_VISUAL06,out=capture?'docs/evidence/visual-s
 const fixture=JSON.parse(readFileSync('docs/evidence/visual-stage-03/applied-backup-v18.json','utf8'));
 async function load(p:Page,mode='ifp'){await p.goto('/');await p.locator('#start:not([disabled])').waitFor();await p.locator('#input-mode').selectOption(mode);await p.locator('#start').click();await p.locator('#settings').click();const b={...structuredClone(fixture),world:{region:'coast',activeMission:'S16'}};await p.locator('#import-file').setInputFiles({name:'coast.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(b))});await expect(p.locator('#settings-feedback')).toContainText('Cadangan valid');await p.locator('#close-panel').click();}
 async function shot(p:Page,id:string){if(capture){await p.waitForTimeout(250);await p.screenshot({path:`${out}/${id}.png`});}}
-async function saved(p:Page){return p.evaluate(()=>new Promise<any>(resolve=>{const q=indexedDB.open('jelajah-sains',1);q.onsuccess=()=>{const db=q.result,t=db.transaction('saves'),all:any={},r=t.objectStore('saves').openCursor();r.onsuccess=()=>{if(r.result){all[r.result.key as string]=r.result.value;r.result.continue();}};t.oncomplete=()=>{db.close();delete all.world;if(all.M01)delete all.M01.savedAt;resolve(all);};};}));}
+async function saved(p:Page){return p.evaluate(()=>new Promise<any>(resolve=>{const q=indexedDB.open('jelajah-sains');q.onsuccess=()=>{const db=q.result,t=db.transaction('saves'),all:any={},r=t.objectStore('saves').openCursor();r.onsuccess=()=>{if(r.result){all[r.result.key as string]=r.result.value;r.result.continue();}};t.oncomplete=()=>{db.close();delete all.world;if(all.M01)delete all.M01.savedAt;for(const key of Object.keys(all))if(key==='economy'||key==='save-meta'||key.startsWith('economy-history:'))delete all[key];resolve(all);};};}));}
 async function swimTo(p:Page,id:string,title:string){await p.locator('#map').click();await p.locator(`#panel [data-dive="go:${id}"]`).click();await expect(p.locator('#panel-title')).toHaveText(title,{timeout:30000});}
 async function near(p:Page,id:string,title:string){await swimTo(p,id,title);await p.locator('#close-panel').click();await shot(p,id);}
 test('stage06: actual kit, surface swim, 3D observations, depth, normal exit and personal restoration without new mission evidence',async({page})=>{

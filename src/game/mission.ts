@@ -1,6 +1,7 @@
 export interface Reading { value: number; session: 'hujan-0900'; }
 export interface Attempt { answer: string; correct: boolean; }
 export interface Progress {
+  rewardProof?: {at:string;evidence:Progress};
   version: 1;
   accepted: boolean;
   hypothesis: boolean;
@@ -56,6 +57,7 @@ export function transition(p: Progress, e: MissionEvent): { progress: Progress; 
       if (!p.completed) next.attempts.push({ answer: e.answer, correct });
       if (correct) {
         next.completed = true; next.reward = 100;
+        if(!next.rewardProof)next.rewardProof={at:new Date().toISOString(),evidence:structuredClone(next)};
         message = 'M01 selesai! Bukti mendukung kontribusi sedimen. Keamanan air minum tetap memerlukan pemeriksaan lain.';
       } else {
         message = e.answer === 'drink' ? 'Kekeruhan turun tidak berarti semua mikroorganisme atau zat berbahaya hilang. Perbaiki kesimpulanmu.' : 'Data tidak membuktikan semua kekeruhan berasal dari limbah. Hubungkan perubahan A dengan uji sedimen.';
@@ -80,6 +82,11 @@ export function steps(p: Progress) {
 export function parseProgress(raw: unknown): Progress {
   if (typeof raw !== 'object' || raw === null) throw new Error('Berkas bukan cadangan Jelajah Sains.');
   const p = raw as Progress;
+  if(p.rewardProof!==undefined){
+    const proof=p.rewardProof;
+    if(!proof||typeof proof.at!=='string'||!Number.isFinite(Date.parse(proof.at))||!proof.evidence||Object.hasOwn(proof.evidence,'rewardProof')||!parseProgress(proof.evidence).completed||p.reward!==100)
+      throw new Error('Bukti hadiah M01 tidak valid.');
+  }
   if (p.version !== 1 || typeof p.accepted !== 'boolean' || typeof p.hypothesis !== 'boolean' ||
       typeof p.sources?.book !== 'boolean' || typeof p.sources.rain !== 'boolean' || typeof p.plan !== 'boolean' ||
       !p.samples || typeof p.samples !== 'object' || typeof p.completed !== 'boolean' ||
@@ -96,6 +103,20 @@ export function parseProgress(raw: unknown): Progress {
   if ((!p.accepted && (p.hypothesis || p.sources.book || p.sources.rain || p.plan)) ||
       ((p.samples.A || p.samples.B) && !p.plan) || (p.trial !== null && !hasEvidence(p)) ||
       (p.completed && (!hasEvidence(p) || p.trial !== 35 || p.reward !== 100 || !p.attempts.some(a => a.correct))) ||
-      (!p.completed && p.reward !== 0)) throw new Error('Urutan bukti dalam cadangan tidak konsisten.');
+      (!p.completed && p.reward !== 0 && !p.rewardProof)) throw new Error('Urutan bukti dalam cadangan tidak konsisten.');
   return structuredClone(p);
+}
+
+/** Preserve the first XP proof while starting a new learning attempt. */
+export function resetProgress(p:Progress):Progress {
+  const valid=parseProgress(p),fresh=initialProgress();
+  if(valid.reward===100){
+    fresh.reward=100;
+    fresh.rewardProof=valid.rewardProof??{at:valid.savedAt??new Date().toISOString(),evidence:valid};
+  }
+  return fresh;
+}
+export function preserveProgressReward(incoming:Progress,current:Progress):Progress {
+  if(current.reward===100&&incoming.reward===0){const proof=resetProgress(current).rewardProof;return parseProgress({...incoming,reward:100,rewardProof:proof});}
+  return incoming;
 }

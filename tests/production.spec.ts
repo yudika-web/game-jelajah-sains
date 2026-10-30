@@ -44,7 +44,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     const fixture = {...JSON.parse(readFileSync(path.join(APP_ROOT, 'docs/evidence/boat/final-state.json'), 'utf8')), 'M17-E1':finishedWorkshop(),'M17-E2':finishedMagnet(),'M17-E3':finishedEnergy(),S16:finishedCoastal(),'M16-E1':finishedPressure(),'M16-E2':finishedHydraulic(),'M16-E3':finishedSolid(),'M16-E4':finishedPontoon(),world:{region:'workshop',activeMission:'M17-E1'}};
     await page.evaluate(async save => {
       await new Promise<void>((resolve, reject) => {
-        const request = indexedDB.open('jelajah-sains', 1);
+        const request = indexedDB.open('jelajah-sains');
         request.onsuccess = () => {
           const db = request.result, tx = db.transaction('saves', 'readwrite');
           for (const [key, value] of Object.entries(save).filter(([key]) => ['M01', 'M14', 'W03-LOG01', 'S13', 'S14', 'S15', 'M17-E1','M17-E2','M17-E3','S16','M16-E1','M16-E2','M16-E3','M16-E4'].includes(key))) tx.objectStore('saves').put(value, key);
@@ -63,7 +63,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await page.locator('#circuit-toggle').click();await expect(page.locator('#world')).toHaveAttribute('data-lamp-on','true');
     await page.locator('#close-panel').click();await expect(page.locator('#save-status')).toContainText('Tersimpan');
     const savedBefore = await page.evaluate(async () => new Promise(resolve => {
-      const request = indexedDB.open('jelajah-sains', 1);
+      const request = indexedDB.open('jelajah-sains');
       request.onsuccess = () => { const db = request.result, read = db.transaction('saves').objectStore('saves').getAll(); read.onsuccess = () => { db.close(); resolve(read.result); }; };
     }));
     await page.goto(`${origin}/character.html?avatar=siswi`);
@@ -78,7 +78,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
     await page.goto(origin);
     await expect(page.locator('#world')).toHaveAttribute('data-ready', 'true');
     const savedAfter = await page.evaluate(async () => new Promise(resolve => {
-      const request = indexedDB.open('jelajah-sains', 1);
+      const request = indexedDB.open('jelajah-sains');
       request.onsuccess = () => { const db = request.result, read = db.transaction('saves').objectStore('saves').getAll(); read.onsuccess = () => { db.close(); resolve(read.result); }; };
     }));
     expect(savedAfter).toEqual(savedBefore);

@@ -36,6 +36,7 @@ def package(output):
         '   Jika bermasalah, buka DIAGNOSTIK_JELAJAH_SAINS.bat.\r\n\r\n'
         'Alamat laptop tetap http://localhost:5173 . Jangan membuka index.html langsung.\r\n'
         'Jika server lama masih aktif dari folder lain, tutup jendela server lama sendiri.\r\n'
+        'Tutup tab permainan versi lama setelah pembaruan; gunakan satu tab untuk menyimpan.\r\n'
         'Jangan hapus data browser. Progres mengikuti alamat, bukan lokasi folder game.\r\n'
         'Jika sebelumnya memakai 127.0.0.1, port lain atau IP LAN: ekspor progres dari\r\n'
         'alamat lama lalu impor pada alamat baru sebelum melanjutkan.\r\n\r\n'

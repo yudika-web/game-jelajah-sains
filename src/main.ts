@@ -1,3 +1,6 @@
+import './coin.css';
+import {createWalletUI} from './game/walletUI';
+import {ProfileReplacementRequired,type Economy} from './game/coinEconomy';
 import {createDivingUI} from './game/divingUI';
 import {divePoints,type DivePointId} from './data/diving';
 import {createSpaceExpeditionUI} from './game/spaceExpeditionUI';
@@ -60,8 +63,8 @@ import { initialRimba, rimbaTransition, rimbaSteps, litres, type RimbaEvent } fr
 import { createRimbaUI, rimbaInventory } from './game/rimbaUI';
 import { RimbaSession } from './game/rimbaSession';
 import { cards, conclusions, type PlaceId } from './data/content';
-import { initialProgress, transition, steps, type MissionEvent } from './game/mission';
-import { loadGame, saveGame } from './game/storage';
+import { initialProgress, resetProgress, transition, steps, type MissionEvent } from './game/mission';
+import {loadGame,saveGame,SaveConflict} from './game/storage';
 import { World, type InputMode } from './engine/world';
 import { bindInput } from './engine/input';
 import { loadPreferences, savePreferences } from './game/preferences';
@@ -92,7 +95,7 @@ app.innerHTML = `
   <header class="topbar">
     <a class="brand" href="#" aria-label="Jelajah Sains, beranda">${icon('flask')}<span>jelajah<span class="brand-light">sains</span><small>PETUALANGAN · PENEMUAN</small></span></a>
     <div class="location"><span class="live-dot"></span><div>Kota Sains<small>W01 · KELAS VII</small></div></div>
-    <div class="top-right"><span class="prototype">PROTOTIPE 0.1</span><button class="icon-button" id="settings" aria-label="Pengaturan">${icon('gear')}</button></div>
+    <div class="top-right"><button id="coin-wallet" aria-label="Dompet koin" disabled><span class="coin-symbol" aria-hidden="true">◉</span><span id="coin-balance">—</span></button><button class="icon-button" id="settings" aria-label="Pengaturan">${icon('gear')}</button></div>
   </header>
   <main class="hud" hidden>
     <aside class="mission-card compact">
@@ -167,6 +170,7 @@ let toastTimer = 0;
 let saveChain = Promise.resolve();
 let saveGeneration = 0;
 let storageBlocked = false;
+let economy:Economy|null=null,saveRevision=0,importBusy=false;
 let appearance:Appearance=defaultAppearance(new URLSearchParams(location.search).get('avatar')==='siswi'?'student-girl':'student-boy');
 const preferences = loadPreferences(matchMedia('(prefers-reduced-motion: reduce)').matches);
 const panel = $<HTMLDialogElement>('panel');
@@ -180,31 +184,37 @@ function toast(message: string) {
 function saveLabel(text: string, failed = false) {
   $('save-status').textContent = text; $('save-status').classList.toggle('failed', failed);
 }
-function persist() {
-  if (storageBlocked) { saveLabel('⚠ Simpan nonaktif · cadangkan melalui Pengaturan', true); return; }
-  const snapshot = structuredClone({ appearance, M01: progress, M14: garden, Rimba:rimba, S13:river, S14:buoyancy,S15:irrigation, M17E1:workshop, M17E2:electromagnet,M17E3:energy,S16:coastal,M16E1:pressure,M16E2:hydraulic,M16E3:solid,M16E4:pontoon,M13:geopark,M07:space,M02:market, world: travel });
-  snapshot.M01.savedAt = new Date().toISOString();
-  const generation = ++saveGeneration;
-  saveLabel('◌ Menyimpan progres…');
-  saveChain = saveChain.then(async () => {
-    try {
-      await saveGame(snapshot);
-      if (generation === saveGeneration) {
-        progress.savedAt = snapshot.M01.savedAt;
-        saveLabel(`● Tersimpan ${new Date(snapshot.M01.savedAt!).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`);
-      }
-    } catch {
-      saveLabel('⚠ Gagal menyimpan · ekspor cadangan di Pengaturan', true);
-      toast('Penyimpanan browser tidak tersedia. Progres masih ada selama tab terbuka; gunakan Ekspor cadangan.');
-    }
-  });
+function currentGame() {return {economy,saveRevision,appearance,M01:progress,M14:garden,Rimba:rimba,S13:river,S14:buoyancy,S15:irrigation,M17E1:workshop,M17E2:electromagnet,M17E3:energy,S16:coastal,M16E1:pressure,M16E2:hydraulic,M16E3:solid,M16E4:pontoon,M13:geopark,M07:space,M02:market,world:travel};}
+function storageError(error:unknown,canRetry=true){
+ storageBlocked=true;if(panel.open)closePanel();document.body.dataset.saveState='failed';document.querySelectorAll('.success-banner').forEach(e=>e.textContent='Penyelesaian belum tersimpan. Hadiah belum diberikan; coba simpan lagi.');saveLabel('⚠ Belum tersimpan · dompet tidak berubah',true);
+ let alert=document.getElementById('storage-alert');if(!alert){alert=document.createElement('aside');alert.id='storage-alert';alert.setAttribute('role','alert');document.body.append(alert);}
+ const text=document.createElement('p');text.textContent=error instanceof SaveConflict?error.message:'Penyimpanan gagal. Progres terbaru dan hadiah belum tersimpan; saldo tetap sesuai transaksi terakhir. Coba simpan kembali atau ekspor bukti melalui Pengaturan.';
+ const reload=document.createElement('button');reload.textContent='Muat ulang data tersimpan';reload.onclick=()=>location.reload();alert.replaceChildren(text,reload);
+ if(canRetry&&!(error instanceof SaveConflict)){const retry=document.createElement('button');retry.id='retry-save';retry.textContent='Coba simpan lagi';retry.onclick=()=>{storageBlocked=false;alert!.remove();persist();void saveChain.then(()=>{if(!storageBlocked&&world){clearInput();world.paused=panel.open||!started;}});};alert.append(retry);}
+ clearInput();if(world)world.paused=true;
 }
+function persist() {
+ if(importBusy)return;
+ if(storageBlocked){saveLabel('⚠ Simpan nonaktif · dompet tidak berubah',true);return;}
+ const snapshot=structuredClone(currentGame());snapshot.M01.savedAt=new Date().toISOString();
+ const generation=++saveGeneration;document.body.dataset.saveState='pending';saveLabel('◌ Menyimpan progres…');
+ saveChain=saveChain.then(async()=>{
+  if(storageBlocked)return;
+  try{
+   const result=await saveGame({...snapshot,economy,saveRevision});
+   economy=result.economy;saveRevision=result.saveRevision;walletUI.commit(economy,result.coinGrants);
+   if(generation===saveGeneration){document.body.dataset.saveState='committed';progress.savedAt=snapshot.M01.savedAt;saveLabel(`● Tersimpan ${new Date(snapshot.M01.savedAt!).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}`);}
+  }catch(error){storageError(error);}
+ });
+}
+// Mission success/reward messages wait for the associated durable transaction.
+function missionToast(message:string){void saveChain.then(()=>{if(!storageBlocked)toast(message);});}
 function dispatch(event: MissionEvent) {
   const result = transition(progress, event);
   const changed = result.progress !== progress;
   progress = result.progress;
   if (changed) persist();
-  updateMission(); world?.setTrial(progress.trial === 35); toast(result.message);
+  updateMission(); world?.setTrial(progress.trial === 35); missionToast(result.message);
   return result.ok;
 }
 function gateTo(target:RegionId):PlaceId {if(travel.region==='space')return 'spaceReturn';if(travel.region==='town'&&target==='space')return 'observatory';if(travel.region==='geopark')return 'geoReturn';if(travel.region==='workshop'&&target==='geopark')return 'geoTerminal';if(travel.region==='coast')return 'coastReturn';if(travel.region==='river'&&target==='coast')return 'riverCoastDock';return travel.region==='town'?(target==='workshop'||target==='geopark'?'workshopGate':target==='rimba'?'rimbaGate':target==='river'||target==='coast'?'riverGate':'gardenGate'):regions[travel.region].gate;}
@@ -232,9 +242,10 @@ function updateMission() {
   $('mission-steps').innerHTML = effectiveList.map((s, i) => `<li class="${s.done ? 'done' : list.findIndex(t => !t.done) === i ? 'active' : ''}"><span class="step-number">${s.done ? '✓' : String(i + 1).padStart(2, '0')}</span><button data-guide="${s.place}"><strong>${s.title}</strong><small>${s.detail}</small></button></li>`).join('');
   $('mission-steps').querySelectorAll<HTMLButtonElement>('[data-guide]').forEach(b => { b.onclick = () => navigate(b.dataset.guide as PlaceId); });
 }
+const walletUI=createWalletUI({open:openPanel,started:()=>started});
 const divingUI=createDivingUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),toast});
 const expeditionUI=createSpaceExpeditionUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),town:()=>changeRegion('town'),toast});
-function closePanel() { divingUI.pause(); marketUI.pause();spaceUI.pause();geoparkUI.pause();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();pressureUI.cancel();coastalUI.cancel();energyUI.pause();electromagnetUI.pause();panel.close(); if (world) { world.paused = !started; world.endInteraction(); } }
+function closePanel() { divingUI.pause(); marketUI.pause();spaceUI.pause();geoparkUI.pause();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();pressureUI.cancel();coastalUI.cancel();energyUI.pause();electromagnetUI.pause();panel.close(); if (world) { world.paused = !started||storageBlocked; world.endInteraction(); } }
 function openPanel(title: string, html: string, kicker = 'CATATAN PENJELAJAH') {
   divingUI.pause();flushMarketCarry();marketUI.pause();spaceUI.pause();geoparkUI.pause();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();pressureUI.cancel();coastalUI.cancel();energyUI.pause();electromagnetUI.pause();buoyancyUI.cancel();irrigationUI.cancel();riverUI.cancel();rimbaSession.flush(); clearInput(); if (world) world.paused = true;
   panel.classList.toggle('character-interaction', started && world?.playerAnimator.pose !== 'none');
@@ -449,7 +460,7 @@ function dispatchGarden(event: GardenEvent, place?: PlaceId) {
     if(!world||world.region!=='garden'||!target||Math.hypot(world.position.x-target.x,world.position.z-target.z)>2.65) {toast('Dekati objek di kebun terlebih dahulu.');return false;}
   }
   const result=gardenTransition(garden,event), changed=result.progress!==garden;
-  garden=result.progress;if(changed)persist();refreshWorld();updateMission();toast(result.message);return result.ok;
+  garden=result.progress;if(changed)persist();refreshWorld();updateMission();missionToast(result.message);return result.ok;
 }
 const gardenUI=createGardenUI({get:()=>garden,open:openPanel,close:closePanel,send:dispatchGarden,navigate,pose:pose=>world?.setInteractionPose(pose),water:group=>world?.waterGarden(group)});
 function dispatchRimba(event:RimbaEvent,place?:PlaceId,quiet=false) {
@@ -460,7 +471,7 @@ function dispatchRimba(event:RimbaEvent,place?:PlaceId,quiet=false) {
   }
   const result=rimbaTransition(rimba,event);
   if(result.progress!==rimba){rimba=result.progress;persist();world?.setRimba(rimba);if(event.type!=='travel')updateMission();}
-  if(!quiet&&result.message)toast(result.message);return result.ok;
+  if(!quiet&&result.message)missionToast(result.message);return result.ok;
 }
 const rimbaSession=new RimbaSession(()=>rimba,e=>{dispatchRimba(e,undefined,true);});
 const rimbaUI=createRimbaUI({get:()=>rimba,open:openPanel,close:closePanel,send:dispatchRimba,navigate,pushing:()=>world?.pushing??false,
@@ -472,7 +483,7 @@ const rimbaUI=createRimbaUI({get:()=>rimba,open:openPanel,close:closePanel,send:
 });
 function dispatchRiver(event:RiverEvent,place?:PlaceId) {
   if(place){const p=world?.places.find(p=>p.id===place);if(!world||world.region!=='river'||!p||Math.hypot(world.position.x-p.x,world.position.z-p.z)>world.interactionRadius+.05){toast('Dekati objek di tepian dahulu.');return false;}}
-  const result=riverTransition(river,event);if(result.progress!==river){river=result.progress;persist();updateMission();}if(result.message)toast(result.message);return result.ok;
+  const result=riverTransition(river,event);if(result.progress!==river){river=result.progress;persist();updateMission();}if(result.message)missionToast(result.message);return result.ok;
 }
 const riverUI=createRiverUI({get:()=>river,open:openPanel,close:closePanel,send:dispatchRiver,navigate,
   approach:(site,arrive)=>{clearInput();if(!world?.goTo(fishingPositions[site],arrive))toast('Pilih jalur tepian yang aman menuju titik pancing.');},
@@ -546,13 +557,13 @@ function dispatchEnergy(e:EnergyEvent,place?:PlaceId){
 const energyUI=createEnergyUI({get:()=>energy,send:dispatchEnergy,open:(title,html)=>openPanel(title,html,'W06 · M17-E3'),replace:(title,html)=>{$('panel-title').textContent=title;$('panel-content').innerHTML=html;},isOpen:()=>panel.open,pose:p=>world?.setInteractionPose(p),fraction:f=>{if(world)world.energyFraction=f;},camera:k=>{if(world)world.energyFocus=k;},chapter:chapterLabel});
 function dispatchCoastal(e:CoastalEvent,place?:PlaceId){
  if(place){const p=world?.places.find(p=>p.id===place);if(!world||world.region!=='coast'||world.boat.aboard||!p||Math.hypot(world.position.x-p.x,world.position.z-p.z)>world.interactionRadius+.05){toast('Turun dari perahu dan dekati objek Pesisir terlebih dahulu.');return false;}}
- const result=coastalTransition(coastal,e);if(result.progress!==coastal){coastal=result.progress;persist();world?.setCoastal(coastal);updateMission();}toast(result.message);return result.ok;
+ const result=coastalTransition(coastal,e);if(result.progress!==coastal){coastal=result.progress;persist();world?.setCoastal(coastal);updateMission();}missionToast(result.message);return result.ok;
 }
 const coastalUI=createCoastalUI({get:()=>coastal,send:dispatchCoastal,open:openPanel,close:closePanel,navigate,focus:id=>{if(world)world.coastalFocus=id;},boat:()=>({aboard:world?.boat.aboard??false,dock:world?.boat.dock??null}),board:()=>{clearInput();return world?.boardBoat()??false;},recover:()=>{coastalUI.cancel();clearInput();world?.recoverBoat();toast('Kembali ke Dermaga Pantai. Bukti tetap tersimpan.');}});
 function dispatchPressure(e:PressureEvent,place?:PlaceId){
  if(place){const p=world?.places.find(p=>p.id===place);if(!world||world.region!=='coast'||world.boat.aboard||world.rov.active||!p||Math.hypot(world.position.x-p.x,world.position.z-p.z)>world.interactionRadius+.05){toast('Dekati stasiun tekanan di darat dahulu.');return false;}}
  if(e.type==='startRead'){if(!world?.rov.ready(e.point)||JSON.stringify(e.snapshot)!==JSON.stringify(world.rovSnapshot())){toast('Sensor belum stabil pada stasiun.');return false;}}
- const result=pressureTransition(pressure,e);if(result.progress!==pressure){pressure=result.progress;persist();world?.setPressureChecked(pressure.sensorChecked);updateMission();}if(!['practice','finishRead'].includes(e.type))toast(result.message);return result.ok;
+ const result=pressureTransition(pressure,e);if(result.progress!==pressure){pressure=result.progress;persist();world?.setPressureChecked(pressure.sensorChecked);updateMission();}if(!['practice','finishRead'].includes(e.type))missionToast(result.message);return result.ok;
 }
 function returnRov(reason:'command'|'home'='command'){pressureUI.cancel();clearInput();world?.recoverRov();if(pressure.deployed)dispatchPressure({type:'return',reason});if(world)world.paused=panel.open||!started;}
 const pressureUI=createPressureUI({chapter:pressureChapterLabel,get:()=>pressure,send:dispatchPressure,open:openPanel,close:closePanel,isOpen:()=>panel.open,navigate,robot:()=>world?.rov??null,launch:()=>{const p=world?.places.find(p=>p.id==='rovControl');if(!world||world.region!=='coast'||!p||Math.hypot(world.position.x-p.x,world.position.z-p.z)>world.interactionRadius+.05){toast('Dekati Pos kendali ROV terlebih dahulu.');return false;}clearInput();if(!dispatchPressure({type:'launch'},'rovControl'))return false;world.position.set(p.x,0,p.z+1.4);return world.launchRov();},recover:()=>returnRov(),go:id=>{clearInput();return world?.rov.navigate(id)??false;},stabilize:id=>{clearInput();return world?.rov.stabilize(id)??false;},depth:delta=>world?.rovDepth(delta),stop:()=>clearInput(),lock:active=>{clearInput();if(world)world.paused=active||panel.open||!started;},snapshot:()=>world?.rovSnapshot()??{xMm:0,zMm:0,depthMm:0,pressurePa:0}});
@@ -565,7 +576,7 @@ const wardrobeUI=createWardrobeUI({
 });
 function settings() {
   world?.endInteraction();
-  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Kualitas Rendah · resolusi ringan (hapus centang: Normal)</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>M02 pasar: pilih M02, temui Pak Wira, baca dua sumber, amati perubahan wujud, ukur massa/volume dan uji wadah. Mode langkah tersedia. Kemas satu paket, berjalan ke Bu Nara, Periksa hasil 20 menit virtual lalu Serahkan. Lama berjalan tidak mengurangi es.</p><p>W08: Observatorium → persiapan → pintu kendaraan → Mulai Perjalanan → docking → Keluar. Lemari menyediakan perlengkapan gratis. Airlock memakai dua pintu terkunci. Di luar: WASD/analog horizontal, Space naik 1 m, Q turun 1 m, Berhenti dan tujuan bantu; Shift tidak berlari. Kembali ke Airlock tersedia. Ini simulasi dengan stabilisasi aktif, bukan prosedur spacewalk nyata. M07: Pada setiap stasiun: prediksi, Buka alat, Jalankan/Jeda atau Langkah, Amati, Catat. Empat posisi dan gerak satu putaran diperlukan untuk revolusi. Fase Bulan memiliki pandangan posisi dan pandangan dari Bumi. Tab/panah/Enter atau sentuhan dapat dipakai. Kembali ke Pos Antariksa tidak menghapus checkpoint.</p><p>W07: terminal Bengkel menuju Geopark; panel memakai tombol/daftar (Tab, panah, Enter). Model: prediksi, Jalankan, Amati, pilih gejala, Catat. Latihan jalur dimulai setelah guncangan simulasi berhenti; periksa peta dan penanda, tempuh B lalu konfirmasi posisi. Kembali ke Pos Geopark tersedia.</p><p>WASD bergerak · Shift berlari (tahan kiri atau kanan) · Panah: bergerak · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: pilih Jalan/Lari, lalu gunakan analog kiri dan seret kamera di kanan bersamaan. IFP: pilih Jalan/Lari, lalu ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan. Kolam: masuk/keluar melalui ramp; WASD/analog atau tujuan sentuh untuk berenang. Kembali ke Tepian tersedia. Perahu W04/W05: Naik di dermaga, Mulai bergerak, WASD/analog atau tujuan air/Peta; Shift atau Pelan/Jelajah; Berhenti, Sandar, lalu Turun. Kembali ke dermaga memulihkan posisi tanpa menghapus bukti. ROV M16-E1: karakter tetap di pos; WASD/analog horizontal, Space naik target 1 m, Q turun 1 m. Tombol kedalaman dan tujuan tersedia untuk HP/IFP; Stabilkan, baca, lalu Catat. Space/Q tidak dipakai di darat. W05 menyelam: Peta → Persiapan menyelam, lemari gratis, tangga masuk. WASD/analog, Space naik 1 m, Q turun 1 m; tombol dan tujuan bantu tersedia. Batas 6 m pusat tubuh. Kembali ke Dermaga, keluar lewat tangga dan lepas perlengkapan sebelum ROV/perahu. Ini simulasi, bukan prosedur selam nyata. W05: Berangkat ke Pesisir dari dermaga W04; amati organisme, susun panah makanan menuju pemakan, lalu tinjau kasus. S16 memakai jendela dan lokasi bukti semula; eksplorasi selam di teluk latihan terpisah tidak menambah bukti S16. W04: pilih Mulai memancing, tunggu indikator Tarik, amati ciri, lalu Catat dan lepaskan. Tombol dapat dipakai dengan Tab dan Enter; tidak ada batas waktu reaksi. Membuka menu membatalkan proses yang belum disahkan. W04 M16-E4: neraca dan ponton memakai pilihan kondisi/modul; Jalankan, Amati, Catat, Parkir. Penarik virtual mengirim dari darat; Berhenti, Kembali, Bongkar dan Pulihkan tersedia. W03 M16-E3: ukur penopang, pilih luas kontak, pasang, prediksi, letakkan beban, Amati, Catat, angkat dan siapkan ulang media. Jalur 30 cm hanya pada maket. Pulihkan Maket tersedia. W06 M16-E2: pilih modul saat platform awal; prediksi, uji, amati, Catat, Kembalikan. Tombol dan daftar dapat dipakai dengan Tab/panah/Enter; Pulihkan Alat menjaga bukti. W06 M17-E2: terminal atau daftar pasangan untuk merakit; tujuan derek tetap, Turunkan, Magnet ON/OFF, Angkat, Berhenti, dan Pulihkan Derek. Di Pos Rimba, pilih Dorong di Bengkel; Parkir tersedia di bengkel dan melalui Tas.</p></div><div class="settings-actions"><button class="secondary" id="appearance-open">Penampilan · buka lemari</button><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan M01</button><button class="danger" id="reset-garden">Ulangi Percobaan M14</button><button class="danger" id="reset-rimba">Ulangi Latihan Pos Rimba</button><button class="danger" id="reset-river">Ulangi pengamatan S13</button><button class="danger" id="reset-buoyancy">Ulangi S14</button><button class="danger" id="reset-irrigation">Ulangi penyelidikan S15</button><button class="danger" id="reset-workshop">Ulangi episode M17-E1</button><button class="danger" id="reset-market">Ulangi M02 Persediaan Es Pasar</button><button class="danger" id="reset-space">Ulangi M07 Observatorium</button><button class="danger" id="reset-geopark">Ulangi M13 Geopark</button><button class="danger" id="reset-pontoon">Ulangi M16-E4</button><button class="danger" id="reset-solid">Ulangi M16-E3</button><button class="danger" id="reset-hydraulic">Ulangi M16-E2</button><button class="danger" id="reset-pressure">Ulangi M16-E1</button><button class="danger" id="reset-coastal">Ulangi S16</button><button class="danger" id="reset-energy">Ulangi episode M17-E3</button><button class="danger" id="reset-electromagnet">Ulangi episode M17-E2</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
+  openPanel('Atur petualanganmu', `<div class="form-grid"><label>Kontrol<select id="settings-mode"><option value="laptop">Laptop · WASD / panah + mouse</option><option value="hp">HP · analog + seret kamera</option><option value="ifp">IFP · satu sentuhan, tombol besar</option></select></label><label>Jarak kamera<select id="camera-distance"><option value="near">Dekat · detail karakter</option><option value="normal">Normal · menjelajah</option><option value="far">Jauh · gambaran wilayah</option></select></label><label class="check-label"><input id="reduced-motion" type="checkbox" ${world?.reducedMotion ? 'checked' : ''}> Kurangi gerakan kamera & animasi</label><label class="check-label"><input id="low-quality" type="checkbox" ${preferences.lowQuality ? 'checked' : ''}> Kualitas Rendah · resolusi ringan (hapus centang: Normal)</label></div><div class="controls-reference"><h3>Petunjuk kontrol</h3><p>M02 pasar: pilih M02, temui Pak Wira, baca dua sumber, amati perubahan wujud, ukur massa/volume dan uji wadah. Mode langkah tersedia. Kemas satu paket, berjalan ke Bu Nara, Periksa hasil 20 menit virtual lalu Serahkan. Lama berjalan tidak mengurangi es.</p><p>W08: Observatorium → persiapan → pintu kendaraan → Mulai Perjalanan → docking → Keluar. Lemari menyediakan perlengkapan gratis. Airlock memakai dua pintu terkunci. Di luar: WASD/analog horizontal, Space naik 1 m, Q turun 1 m, Berhenti dan tujuan bantu; Shift tidak berlari. Kembali ke Airlock tersedia. Ini simulasi dengan stabilisasi aktif, bukan prosedur spacewalk nyata. M07: Pada setiap stasiun: prediksi, Buka alat, Jalankan/Jeda atau Langkah, Amati, Catat. Empat posisi dan gerak satu putaran diperlukan untuk revolusi. Fase Bulan memiliki pandangan posisi dan pandangan dari Bumi. Tab/panah/Enter atau sentuhan dapat dipakai. Kembali ke Pos Antariksa tidak menghapus checkpoint.</p><p>W07: terminal Bengkel menuju Geopark; panel memakai tombol/daftar (Tab, panah, Enter). Model: prediksi, Jalankan, Amati, pilih gejala, Catat. Latihan jalur dimulai setelah guncangan simulasi berhenti; periksa peta dan penanda, tempuh B lalu konfirmasi posisi. Kembali ke Pos Geopark tersedia.</p><p>WASD bergerak · Shift berlari (tahan kiri atau kanan) · Panah: bergerak · E: interaksi · J: jurnal · I: tas · M: peta · R: pulihkan kamera · Esc: jeda/tutup.</p><p>HP: pilih Jalan/Lari, lalu gunakan analog kiri dan seret kamera di kanan bersamaan. IFP: pilih Jalan/Lari, lalu ketuk tujuan atau pilih lokasi di Peta. Ketuk Berhenti untuk membatalkan perjalanan. Kolam: masuk/keluar melalui ramp; WASD/analog atau tujuan sentuh untuk berenang. Kembali ke Tepian tersedia. Perahu W04/W05: Naik di dermaga, Mulai bergerak, WASD/analog atau tujuan air/Peta; Shift atau Pelan/Jelajah; Berhenti, Sandar, lalu Turun. Kembali ke dermaga memulihkan posisi tanpa menghapus bukti. ROV M16-E1: karakter tetap di pos; WASD/analog horizontal, Space naik target 1 m, Q turun 1 m. Tombol kedalaman dan tujuan tersedia untuk HP/IFP; Stabilkan, baca, lalu Catat. Space/Q tidak dipakai di darat. W05 menyelam: Peta → Persiapan menyelam, lemari gratis, tangga masuk. WASD/analog, Space naik 1 m, Q turun 1 m; tombol dan tujuan bantu tersedia. Batas 6 m pusat tubuh. Kembali ke Dermaga, keluar lewat tangga dan lepas perlengkapan sebelum ROV/perahu. Ini simulasi, bukan prosedur selam nyata. W05: Berangkat ke Pesisir dari dermaga W04; amati organisme, susun panah makanan menuju pemakan, lalu tinjau kasus. S16 memakai jendela dan lokasi bukti semula; eksplorasi selam di teluk latihan terpisah tidak menambah bukti S16. W04: pilih Mulai memancing, tunggu indikator Tarik, amati ciri, lalu Catat dan lepaskan. Tombol dapat dipakai dengan Tab dan Enter; tidak ada batas waktu reaksi. Membuka menu membatalkan proses yang belum disahkan. W04 M16-E4: neraca dan ponton memakai pilihan kondisi/modul; Jalankan, Amati, Catat, Parkir. Penarik virtual mengirim dari darat; Berhenti, Kembali, Bongkar dan Pulihkan tersedia. W03 M16-E3: ukur penopang, pilih luas kontak, pasang, prediksi, letakkan beban, Amati, Catat, angkat dan siapkan ulang media. Jalur 30 cm hanya pada maket. Pulihkan Maket tersedia. W06 M16-E2: pilih modul saat platform awal; prediksi, uji, amati, Catat, Kembalikan. Tombol dan daftar dapat dipakai dengan Tab/panah/Enter; Pulihkan Alat menjaga bukti. W06 M17-E2: terminal atau daftar pasangan untuk merakit; tujuan derek tetap, Turunkan, Magnet ON/OFF, Angkat, Berhenti, dan Pulihkan Derek. Di Pos Rimba, pilih Dorong di Bengkel; Parkir tersedia di bengkel dan melalui Tas.</p></div><div class="settings-actions"><button class="secondary" id="wallet-open">Dompet · riwayat koin</button><button class="secondary" id="appearance-open">Penampilan · buka lemari</button><a class="secondary" href="/character.html" id="character-gallery-link">Galeri karakter · tiga sisi</a><button class="secondary" id="home">Kembali ke Pos</button><button class="secondary" id="fullscreen-button">Layar penuh</button><button class="secondary" id="export">Ekspor cadangan</button><button class="secondary" id="import">Impor cadangan</button><input type="file" id="import-file" accept="application/json,.json" hidden><button class="danger" id="reset-progress">Ulangi penyelidikan M01</button><button class="danger" id="reset-garden">Ulangi Percobaan M14</button><button class="danger" id="reset-rimba">Ulangi Latihan Pos Rimba</button><button class="danger" id="reset-river">Ulangi pengamatan S13</button><button class="danger" id="reset-buoyancy">Ulangi S14</button><button class="danger" id="reset-irrigation">Ulangi penyelidikan S15</button><button class="danger" id="reset-workshop">Ulangi episode M17-E1</button><button class="danger" id="reset-market">Ulangi M02 Persediaan Es Pasar</button><button class="danger" id="reset-space">Ulangi M07 Observatorium</button><button class="danger" id="reset-geopark">Ulangi M13 Geopark</button><button class="danger" id="reset-pontoon">Ulangi M16-E4</button><button class="danger" id="reset-solid">Ulangi M16-E3</button><button class="danger" id="reset-hydraulic">Ulangi M16-E2</button><button class="danger" id="reset-pressure">Ulangi M16-E1</button><button class="danger" id="reset-coastal">Ulangi S16</button><button class="danger" id="reset-energy">Ulangi episode M17-E3</button><button class="danger" id="reset-electromagnet">Ulangi episode M17-E2</button></div><p id="settings-feedback" class="feedback" role="status"></p><p class="model-note">Progres tersimpan di IndexedDB pada alamat browser ini. Cadangkan sebelum membersihkan data atau berpindah alamat LAN. Posisi kembali ke pos saat dimuat ulang. Prototipe belum memiliki audio, multiplayer, atau pengiriman nilai.</p>`, 'AKSESIBILITAS & PENYIMPANAN LOKAL');
   $<HTMLSelectElement>('settings-mode').value = world?.mode ?? modeSelect.value;
   $('settings-mode').onchange = e => setMode((e.target as HTMLSelectElement).value as InputMode);
   $<HTMLSelectElement>('camera-distance').value = world?.cameraDistance ?? preferences.cameraDistance;
@@ -584,28 +595,46 @@ function settings() {
     preferences.lowQuality = (e.target as HTMLInputElement).checked;
     world?.setLowQuality(preferences.lowQuality); storePreferences();
   };
+  $('wallet-open').onclick=()=>walletUI.show();
   $('appearance-open').onclick=()=>{closePanel();wardrobeUI.open();};
   $('home').onclick = () => {flushMarketCarry();market=settleMarket(market);world?.setMarket(market);persist();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();returnRov('home'); energy=settleEnergy(energy);persist();world?.setEnergy(energy); if(world?.region==='workshop')dispatchElectromagnet({type:'recover'},undefined,true); if(world?.region==='rimba')rimbaSession.settle('home'); world?.resetPosition(); closePanel(); toast('Kembali ke Pos. Seluruh bukti misi tetap tersimpan.'); };
   $('fullscreen-button').onclick = fullscreen;
-  $('export').onclick = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup({appearance,M01:progress,M14:garden,Rimba:rimba,S13:river,S14:buoyancy,S15:irrigation,M17E1:workshop,M17E2:electromagnet,M17E3:energy,S16:coastal,M16E1:pressure,M16E2:hydraulic,M16E3:solid,M16E4:pontoon,M13:geopark,M07:space,M02:market,world:travel}), null, 2)], { type: 'application/json' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-cadangan-v18.json'; a.click();
+  $('export').onclick = async () => {
+    await saveChain;if(importBusy)return;if(!economy){$('settings-feedback').textContent='Data belum dapat dibaca. Cadangan kosong tidak dibuat; data lama tetap disimpan.';return;}
+    const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup(currentGame()), null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-cadangan-v19.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    $('settings-feedback').textContent = 'Cadangan v18 dibuat, termasuk penampilan. Simpan berkas di tempat yang aman.';
+    $('settings-feedback').textContent = 'Cadangan v19 dibuat, termasuk profil, dompet, bukti hadiah dan penampilan. Simpan berkas di tempat yang aman.';
   };
   $('import').onclick = () => $<HTMLInputElement>('import-file').click();
-  $('import-file').onchange = async e => {
-    const file = (e.target as HTMLInputElement).files?.[0]; if (!file) return;
-    try {
-      if (file.size > 1_000_000) throw new Error('Cadangan terlalu besar (maksimum 1 MB).');
-      const imported = importBackup(JSON.parse(await file.text()),{appearance,M01:progress,M14:garden,Rimba:rimba,S13:river,S14:buoyancy,S15:irrigation,M17E1:workshop,M17E2:electromagnet,M17E3:energy,S16:coastal,M16E1:pressure,M16E2:hydraulic,M16E3:solid,M16E4:pontoon,M13:geopark,M07:space,M02:market,world:travel});
-      // Import is explicit replacement; parsing must finish before changing live state.
-      world?.recoverDive();world?.recoverExpedition();appearance=imported.game.appearance??appearance;world?.setPlayerAppearance(appearance);progress=imported.game.M01;garden=imported.game.M14;travel=imported.game.world;rimba=imported.game.Rimba;river=imported.game.S13;buoyancy=imported.game.S14;if(world?.swimming)world.returnShore();irrigation=imported.game.S15;workshop=imported.game.M17E1;electromagnet=settleElectromagnet(imported.game.M17E2);energy=settleEnergy(imported.game.M17E3);coastal=imported.game.S16;pressure=settlePressure(imported.game.M16E1);hydraulic=settleHydraulic(imported.game.M16E2);solid=settleSolid(imported.game.M16E3);pontoon=settlePontoon(imported.game.M16E4);geopark=settleGeo(imported.game.M13);space=settleSpace(imported.game.M07);marketCarryMm=0;market=settleMarket(imported.game.M02);world?.recoverRov();world?.recoverBoat(); rimbaSession.settle('reload');storageBlocked=false;
-      world?.setRimba(rimba);world?.setRegion(travel.region);refreshWorld();updateRegionUI();persist();updateMission();
+  async function applyImport(raw:unknown,replaceProfile=false){
+   if(importBusy)return;importBusy=true;
+   try{
+    await saveChain;if(storageBlocked)throw new Error('Selesaikan konflik/galat penyimpanan dahulu. Cadangan belum diterapkan.');
+    const imported=importBackup(raw,currentGame(),{replaceProfile});
+    // Cancel only transient work in the candidate before validation/commit.
+    const g=imported.game;g.M17E2=settleElectromagnet(g.M17E2);g.M17E3=settleEnergy(g.M17E3);g.M16E1=settlePressure(g.M16E1);g.M16E2=settleHydraulic(g.M16E2);g.M16E3=settleSolid(g.M16E3);g.M16E4=settlePontoon(g.M16E4);g.M13=settleGeo(g.M13);g.M07=settleSpace(g.M07);g.M02=settleMarket(g.M02);g.Rimba=rimbaTransition(g.Rimba,{type:'settle',reason:'reload'}).progress;
+    const result=await saveGame({...g,saveRevision},{importing:true,replaceProfile});
+    world?.recoverDive();world?.recoverExpedition();world?.recoverRov();world?.recoverBoat();if(world?.swimming)world.returnShore();
+    economy=result.economy;saveRevision=result.saveRevision;walletUI.commit(economy,result.coinGrants,true);
+    appearance=g.appearance??appearance;world?.setPlayerAppearance(appearance);progress=g.M01;garden=g.M14;travel=g.world;rimba=g.Rimba;river=g.S13;buoyancy=g.S14;irrigation=g.S15;workshop=g.M17E1;electromagnet=g.M17E2;energy=g.M17E3;coastal=g.S16;pressure=g.M16E1;hydraulic=g.M16E2;solid=g.M16E3;pontoon=g.M16E4;geopark=g.M13;space=g.M07;marketCarryMm=0;market=g.M02;clearInput();
+    world?.setRimba(rimba);world?.setRegion(travel.region);refreshWorld();updateRegionUI();updateMission();saveLabel('● Tersimpan · cadangan dan dompet');
       $('settings-feedback').textContent = (imported.scope==='M01'?'Cadangan valid dimuat: hanya M01 versi 1. M14, Pos Rimba, dan wilayah saat ini tetap dipertahankan. S13 juga tetap tersimpan.':imported.scope==='both'?'Cadangan valid dimuat: M01 dan M14 versi 2. Pos Rimba tetap dipertahankan. S13 juga tetap tersimpan.':imported.scope==='three'?'Cadangan valid dimuat: M01, M14, Pos Rimba, dan wilayah versi 3 dipulihkan. S13 tetap tersimpan.':imported.scope==='four'?'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, dan wilayah versi 4 dipulihkan.':imported.scope==='five'?'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, S14, dan wilayah versi 5 dipulihkan.':imported.scope==='six'?'Cadangan valid dimuat: enam misi lama versi 6; M17-E1 tetap dipertahankan.':imported.scope==='seven'?'Cadangan valid dimuat: tujuh misi/episode versi 7; M17-E2 tetap dipertahankan.':imported.scope==='eight'?'Cadangan valid dimuat: delapan misi versi 8; M17-E3 tetap dipertahankan.':imported.scope==='nine'?'Cadangan valid versi 9 dimuat. S16 yang tidak tercakup tetap dipertahankan.':imported.scope==='ten'?'Cadangan valid versi 10 dimuat. M16-E1 dan M16-E2 yang tidak tercakup tetap dipertahankan.':imported.scope==='eleven'?'Cadangan valid versi 11 dimuat. M16-E2 dan M16-E3 yang tidak tercakup tetap dipertahankan.':imported.scope==='sixteen'?'Cadangan valid versi 16 dimuat. M02 yang tidak tercakup tetap dipertahankan.':imported.scope==='fifteen'?'Cadangan valid versi 15 dimuat. M07 yang tidak tercakup tetap dipertahankan.':imported.scope==='fourteen'?'Cadangan valid versi 14 dimuat. M13 yang tidak tercakup tetap dipertahankan.':imported.scope==='thirteen'?'Cadangan valid versi 13 dimuat. M16-E4 yang tidak tercakup tetap dipertahankan.':imported.scope==='twelve'?'Cadangan valid versi 12 dimuat. M16-E3 yang tidak tercakup tetap dipertahankan.':'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, S14, S15, M17-E1, M17-E2, M17-E3, S16, M16-E1, M16-E2, M16-E3, M16-E4, M13, M07, M02, dan wilayah dipulihkan. Hadiah pertama tidak digandakan.')+(imported.scope!=='all'?' M17-E1, M17-E2, M17-E3, S16, M16-E1, M16-E2, M16-E3, M16-E4, M13, M07, M02, dan misi lain yang tidak tercakup tetap dipertahankan.':'');
-      $('settings-feedback').textContent+=' Cadangan v18 memuat penampilan; cadangan lama mempertahankan penampilan saat ini. ID yang tidak dikenal memakai pilihan aman.';
-    } catch (error) { $('settings-feedback').textContent = error instanceof Error ? error.message : 'Cadangan tidak dapat dibaca.'; }
-    (e.target as HTMLInputElement).value = '';
+      $('settings-feedback').textContent+=' Cadangan v19 memuat profil dan dompet; v18 memuat penampilan; cadangan lama mempertahankan penampilan saat ini. ID yang tidak dikenal memakai pilihan aman.';
+    $('settings-feedback').append(document.createTextNode(' Dompet direkonsiliasi berdasarkan riwayat transaksi; saldo tidak dijumlahkan.'));
+   }catch(error){
+    if(error instanceof ProfileReplacementRequired){
+     const feedback=$('settings-feedback'),text=document.createElement('p');text.textContent=error.message;
+     const confirm=document.createElement('button');confirm.id='confirm-profile-restore';confirm.textContent='Pulihkan profil dan dompet dari cadangan';confirm.onclick=()=>void applyImport(raw,true);
+     const cancel=document.createElement('button');cancel.id='cancel-profile-restore';cancel.textContent='Batal · pertahankan profil saat ini';cancel.onclick=()=>feedback.textContent='Pemulihan dibatalkan. Profil, progres dan dompet tetap utuh.';feedback.replaceChildren(text,confirm,cancel);
+    }else{ $('settings-feedback').textContent=error instanceof Error?error.message:'Cadangan tidak dapat dibaca.';if(error instanceof SaveConflict)storageError(error); }
+   }finally{importBusy=false;}
+  }
+  $('import-file').onchange=async e=>{
+   const input=e.target as HTMLInputElement,file=input.files?.[0];if(!file)return;
+   try{if(file.size>5_000_000)throw Error('Cadangan terlalu besar (maksimum 5 MB).');await applyImport(JSON.parse(await file.text()));}
+   catch(error){$('settings-feedback').textContent=error instanceof Error?error.message:'Cadangan tidak dapat dibaca.';}
+   input.value='';
   };
   $('character-gallery-link').onclick=async e=>{e.preventDefault();await saveChain;location.assign('/character.html'+location.search);};
   $('reset-market').onclick=()=>{openPanel('Ulangi Persediaan Es Pasar?', '<p>Hanya M02 diulang. Paket kembali ke kios. Riwayat hadiah pertama dan misi lain tetap ada.</p><button class="danger" id="confirm-market-reset">Ya, ulangi M02</button>');$('confirm-market-reset').onclick=()=>{marketCarryMm=0;dispatchMarket({type:'reset'});closePanel();};};
@@ -630,7 +659,7 @@ function settings() {
   $('reset-progress').onclick = () => {
     openPanel('Ulangi penyelidikan?', '<p>Bukti, jurnal, dan hasil M01 lokal akan dihapus dan digantikan penyelidikan baru. Ekspor cadangan melalui Pengaturan jika ingin menyimpan hasil lama.</p><button class="danger" id="confirm-reset">Ya, mulai ulang M01</button><button class="secondary" id="cancel-reset">Batal</button>');
     $('cancel-reset').onclick = settings;
-    $('confirm-reset').onclick = () => { progress = initialProgress(); storageBlocked = false; persist(); world?.setTrial(false); world?.resetPosition(); updateMission(); closePanel(); toast('Penyelidikan baru dimulai. Temui Bu Nara.'); };
+    $('confirm-reset').onclick = () => { progress = resetProgress(progress); persist(); world?.setTrial(false); world?.resetPosition(); updateMission(); closePanel(); toast('Penyelidikan baru dimulai. Temui Bu Nara.'); };
   };
 }
 function setMode(mode: InputMode) {
@@ -646,15 +675,16 @@ async function fullscreen() {
 function interaction() { const near = world?.nearest(); if (near) interactAt(near); }
 
 $('start').onclick = () => {
-  if (!world) return;
+  if (!world||storageBlocked) return;
   started = true; setMode(modeSelect.value as InputMode); world.paused = false;
   document.querySelector<HTMLElement>('.welcome')!.hidden = true;
   document.querySelector<HTMLElement>('.hud')!.hidden = false;
   if ($<HTMLInputElement>('fullscreen').checked) void fullscreen();
+  walletUI.started();
   toast(progress.accepted || garden.accepted ? 'Selamat kembali! Buka Jurnal untuk melihat bukti yang tersimpan.' : 'Selamat datang! Temui Bu Nara atau pilih langkah pertama pada kartu misi.');
 };
 $('close-panel').onclick = closePanel;
-panel.addEventListener('close', () => { if (world) { world.paused = !started || panel.open; if (!panel.open) world.endInteraction(); } });
+panel.addEventListener('close', () => { if (world) { world.paused = !started || panel.open || storageBlocked; if (!panel.open) world.endInteraction(); } });
 panel.addEventListener('click', e => {
   const r = panel.getBoundingClientRect();
   if (e.target === panel && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) closePanel();
@@ -682,14 +712,13 @@ document.querySelector('.brand')!.addEventListener('click', e => { e.preventDefa
 
 async function initialize() {
   try {
-    const saved = await loadGame();
+    const saved = await loadGame();economy=saved.economy;saveRevision=saved.saveRevision;walletUI.commit(economy,saved.coinGrants,true);
     appearance=saved.appearance??appearance;progress=saved.M01;garden=saved.M14;travel=saved.world;rimba=saved.Rimba;river=saved.S13;buoyancy=saved.S14;irrigation=saved.S15;workshop=saved.M17E1;electromagnet=settleElectromagnet(saved.M17E2);energy=settleEnergy(saved.M17E3);coastal=saved.S16;pressure=settlePressure(saved.M16E1);hydraulic=settleHydraulic(saved.M16E2);solid=settleSolid(saved.M16E3);pontoon=settlePontoon(saved.M16E4);geopark=settleGeo(saved.M13);space=settleSpace(saved.M07);market=settleMarket(saved.M02);if(market!==saved.M02||space!==saved.M07||geopark!==saved.M13||pontoon!==saved.M16E4||solid!==saved.M16E3||hydraulic!==saved.M16E2||pressure!==saved.M16E1||energy!==saved.M17E3||electromagnet!==saved.M17E2)persist();
     const resumed=rimbaTransition(rimba,{type:'settle',reason:'reload'});rimba=resumed.progress;if(resumed.ok)persist();
     if (progress.accepted || garden.accepted || rimba.accepted || river.accepted || buoyancy.accepted || irrigation.accepted || workshop.accepted || electromagnet.accepted || energy.accepted || coastal.accepted || pressure.accepted || hydraulic.accepted || solid.accepted || pontoon.accepted || geopark.accepted || space.accepted || market.accepted || travel.region!=='town') { $('start').firstChild!.textContent = 'Lanjutkan petualangan '; saveLabel('● Progres sebelumnya dimuat'); }
-  } catch {
-    storageBlocked = true;
-    toast('Progres lokal tidak dapat dibaca. Gunakan cadangan atau mulai ulang lewat Pengaturan. Data lama tidak ditimpa otomatis.');
-    saveLabel('⚠ Progres lokal tidak tersedia', true);
+  } catch(error) {
+    storageError(error,false);
+    toast('Data lokal belum dapat dibaca. Tutup tab versi lama lalu muat ulang. Jangan hapus penyimpanan; data lama tidak ditimpa otomatis.');
   }
   updateMission();
   try {

@@ -11,7 +11,7 @@ async function installOldSave(page: Page) {
   await page.goto('/'); await expect(page.locator('#world')).toHaveAttribute('data-ready', 'true');
   await page.evaluate(async save => {
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open('jelajah-sains', 1);
+      const request = indexedDB.open('jelajah-sains');
       request.onsuccess = () => {
         const db = request.result, tx = db.transaction('saves', 'readwrite');
         tx.objectStore('saves').put(save, 'M01');
