@@ -1,6 +1,6 @@
 /** World units are approximately metres. Student heights measure the neutral body, excluding hair/hats/bags. NPC legacy heights are retained. */
 export const characterConfig = {
-  heights: { explorer: 1.60, explorerGirl: 1.60, nara: 1.70, wira: 1.75, sari: 1.68, damar:1.74, lestari:1.68, bima:1.72, raka:1.72 },
+  heights: { explorer: 1.60, explorerGirl: 1.60, nara: 1.70, wira: 1.75, sari: 1.68, damar:1.74, lestari:1.68, bima:1.72, raka:1.72, mira:1.68 },
   groundY: .10,
   cameraTargetHeight: 1.02,
   labelGap: .30,

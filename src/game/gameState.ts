@@ -1,6 +1,6 @@
 import {parseEconomy,importEconomy,assertCoinXP,type Economy} from './coinEconomy';
-import {parseAppearance,type Appearance} from './appearance';
-export const BACKUP_VERSION=19 as const;
+import {parseAppearance,validateOwnedAppearance,type Appearance} from './appearance';
+export const BACKUP_VERSION=20 as const;
 import {initialMarket,parseMarket,type MarketProgress} from './marketMission';
 import {initialSpace,parseSpace,type SpaceProgress} from './spaceMission';
 import {initialGeo,parseGeo,type GeoProgress} from './geoparkMission';
@@ -35,7 +35,7 @@ export function importBackup(raw: unknown, current: GameState, options:{replaceP
   if (!raw || typeof raw !== 'object') throw new Error('Berkas bukan cadangan Jelajah Sains.');
   const b = raw as {version:number;missions?:Record<string,unknown>;world:unknown;appearance?:unknown;economy?:unknown};
   if (b.version === 1) return { game: { ...structuredClone(current), M01: preserveProgressReward(parseProgress(raw),current.M01) }, scope: 'M01' };
-  if (![2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
+  if (![2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].includes(b.version) || !b.missions) throw new Error('Format atau versi cadangan tidak didukung.');
   if(b.version>=19&&options.replaceProfile&&b.economy!==null){const restored=parseEconomy(b.economy);if(current.economy&&restored.profileId!==current.economy.profileId)current=initialGame();}
   if(b.version>=19&&b.economy!==null)assertCoinXP(parseEconomy(b.economy),b.missions);
   const garden = parseGarden(b.missions.M14);
@@ -72,5 +72,5 @@ export function importBackup(raw: unknown, current: GameState, options:{replaceP
   const market=b.version>=17?parseMarket(b.missions.M02):structuredClone(current.M02);
   if(current.M02.reward===100&&market.reward===0){market.reward=100;market.firstCompletedAt=current.M02.firstCompletedAt;market.rewardProof=structuredClone(current.M02.rewardProof);market.epoch=Math.max(market.epoch,current.M02.epoch,1);market.revision=market.epoch+market.history.length;}
   const economy=importEconomy(current.economy,b.version>=19?(b.economy===null?null:parseEconomy(b.economy)):null,options.replaceProfile);
-  return { game: { ...(economy?{economy}:{}), appearance:b.version>=18&&b.appearance!=null?parseAppearance(b.appearance,current.appearance??undefined):structuredClone(current.appearance), M02:parseMarket(market), M01: preserveProgressReward(parseProgress(b.missions.M01),current.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), M16E3:parseSolid(solid), M16E4:parsePontoon(pontoon), M13:parseGeo(geo), M07:parseSpace(space), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':b.version===12?'twelve':b.version===13?'thirteen':b.version===14?'fourteen':b.version===15?'fifteen':b.version===16?'sixteen':'all' };
+  return { game: { ...(economy?{economy}:{}), appearance:b.version>=18&&b.appearance!=null?(b.version>=20?validateOwnedAppearance(b.appearance,economy?.owned??[],current.appearance??undefined):parseAppearance(b.appearance,current.appearance??undefined,economy?.owned??[])):current.appearance?parseAppearance(current.appearance,current.appearance,economy?.owned??[]):null, M02:parseMarket(market), M01: preserveProgressReward(parseProgress(b.missions.M01),current.M01), M14: parseGarden(garden), Rimba:parseRimba(rimba), S13:parseRiver(river), S14:parseBuoyancy(buoyancy), S15:parseIrrigation(irrigation), M17E1:parseWorkshop(workshop), M17E2:parseElectromagnet(magnet), M17E3:parseEnergy(energy), S16:parseCoastal(coast), M16E1:parsePressure(pressure), M16E2:parseHydraulic(hydraulic), M16E3:parseSolid(solid), M16E4:parsePontoon(pontoon), M13:parseGeo(geo), M07:parseSpace(space), world: parseTravel(b.world) }, scope: b.version===2?'both':b.version===3?'three':b.version===4?'four':b.version===5?'five':b.version===6?'six':b.version===7?'seven':b.version===8?'eight':b.version===9?'nine':b.version===10?'ten':b.version===11?'eleven':b.version===12?'twelve':b.version===13?'thirteen':b.version===14?'fourteen':b.version===15?'fifteen':b.version===16?'sixteen':'all' };
 }

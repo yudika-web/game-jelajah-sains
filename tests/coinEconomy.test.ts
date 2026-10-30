@@ -77,7 +77,7 @@ describe('receipt and integer validation',()=>{
 });
 describe('backup monotonic ledger contract',()=>{
  it('exports v19 with identity, receipts, evidence and appearance',()=>{
-  const g=complete();g.economy=awarded();const b=makeBackup(g);expect(BACKUP_VERSION).toBe(19);expect(b.version).toBe(19);expect(b.economy?.profileId).toBe(profile);expect(importBackup(b,initialGame()).game).toEqual(g);
+  const g=complete();g.economy=awarded();const b=makeBackup(g);expect(BACKUP_VERSION).toBe(20);expect(b.version).toBe(20);expect(b.economy?.profileId).toBe(profile);expect(importBackup(b,initialGame()).game).toEqual(g);
  });
  it('same-profile old backup cannot remove a later receipt; repeated import never sums balances',()=>{
   const full=awarded(),old=structuredClone(full);old.ledger.pop();old.balance-=50;

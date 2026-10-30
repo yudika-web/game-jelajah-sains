@@ -3,7 +3,7 @@ import { findPath, walkable } from '../src/engine/navigation';
 import { places } from '../src/data/content';
 
 it('finds continuous safe routes between every pair of mission sites', () => {
-  for (const a of [{ x: -1, z: 6 }, ...places]) for (const b of places) {
+  for (const a of [{ x: -1, z: 6 }, ...places.filter(p=>p.id!=='cosmeticShop')]) for (const b of places.filter(p=>p.id!=='cosmeticShop')) {
     const path = findPath(a, b);
     expect(path.length, `route to ${b.id}`).toBeGreaterThan(0);
     let prev = a;

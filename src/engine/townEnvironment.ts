@@ -1,3 +1,4 @@
+import {buildCosmeticShop} from './cosmeticShopWorld';
 import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {createCharacter} from './character';
@@ -9,7 +10,7 @@ import type {PlaceId} from '../data/content';
 /** Existing building footprints: decorative eaves do not enlarge navigation colliders. */
 export const townBuildings=[
  {id:'school',x:-9,z:-9,w:8,d:6,h:4.2,color:'#eddbb2',roof:'#397e7c',title:'SEKOLAH SAINS',front:1},
- {id:'home',x:-12,z:6,w:5,d:5,h:3.3,color:'#edc4aa',roof:'#b56e53',title:'RUMAH BACA WARGA',front:1},
+ {id:'home',x:-12,z:6,w:5,d:5,h:3.3,color:'#edc4aa',roof:'#b56e53',title:'GAYA PENJELAJAH',front:1},
  {id:'market',x:-5,z:13,w:5,d:4,h:3.4,color:'#d1ded1',roof:'#457d91',title:'PASAR SAINS',front:-1},
  {id:'observatory',x:2,z:-13,w:4,d:4,h:3.2,color:'#d1ded1',roof:'#457d91',title:'OBSERVATORIUM',front:1},
 ] as const;
@@ -36,6 +37,7 @@ export function buildTownEnvironment(root:THREE.Group){
  }
  function roof(w:number,h:number,d:number,c:string,x:number,y:number,z:number){const outline=new THREE.Shape();outline.moveTo(-w/2,0);outline.lineTo(0,h);outline.lineTo(w/2,0);outline.closePath();const geo=new THREE.ExtrudeGeometry(outline,{depth:d,bevelEnabled:false,steps:1});shape(geo,c,x,y,z-d/2);}
  for(const house of townBuildings){
+  if(house.id==='home'){buildCosmeticShop(g);continue;}
   const {x,z,w,d,h,front:f}=house,front=z+f*d/2;
   b(w,h,d,house.color,x,h/2,z);b(w+.16,.20,d+.16,'#fff1d4',x,.04,z);b(w+.26,.14,d+.26,'#fff1d4',x,h-.12,z);
   if(house.id==='observatory'){
@@ -87,7 +89,7 @@ export function buildTownEnvironment(root:THREE.Group){
  for(const [x,z]of [[-3,7],[5,9],[-14,-3],[5,-7]] as const){cylinder(.055,.08,2.65,'#548c68',x,1.275,z);b(.45,.08,.45,'#548c68',x,2.7,z);b(.30,.38,.30,'#edc4aa',x,2.47,z);}
  for(const z of [-.65,4.65]){b(28,.10,.14,'#d4c5a4',-3,.055,z);}
  // Three deliberate tree silhouettes: rounded, umbrella and conical; placement follows planted edges.
- const trees=[[-16,-14],[-16,-2],[-16,13],[-10,16],[5,16],[8,7],[6,-8],[-5,-16],[-17,4],[19,-10],[19,2],[19,12]];
+ const trees=[[-16,-14],[-16,-2],[-16,13],[-17,16],[5,16],[8,7],[6,-8],[-5,-16],[-17,4],[19,-10],[19,2],[19,12]];
  trees.forEach(([x,z],i)=>{
   cylinder(.16,.23,2.1,'#917154',x,1,z);const color=i%2?'#82ad70':'#548c68';
   if(i%3===0){shape(new THREE.IcosahedronGeometry(1.45,1),color,x,2.85,z);shape(new THREE.IcosahedronGeometry(.95,0),'#82ad70',x+.5,3.7,z);}
@@ -98,8 +100,7 @@ export function buildTownEnvironment(root:THREE.Group){
  // Shared instanced flowers: optional density only; Low keeps all landmarks and functional props.
  const flowers=new THREE.InstancedMesh(sphere,material('#edbe64'),24);flowers.name='town-flowers';const transform=new THREE.Object3D();
  for(let i=0;i<24;i++){const patch=i<12?[-15,-15]:[9,7];transform.position.set(patch[0]-.8+(i%6)*.30,.93,patch[1]+(i%2?-.24:.24));transform.scale.set(.10,.10,.10);transform.updateMatrix();flowers.setMatrixAt(i,transform.matrix);}g.add(flowers);
- // A reserved facade window in the existing home; no shop or economy.
- sign('RUANG KARYA',-12,1.2,8.86,2.8); // decorative only, no purchasing interaction
+
  for(const [color,geometries]of batches){const mesh=new THREE.Mesh(mergeGeometries(geometries),material(color));mesh.name='town-static-batch';g.add(mesh);geometries.forEach(geo=>geo.dispose());}batches.clear();
  function prop(id:PlaceId,x:number,z:number){const group=new THREE.Group();group.position.set(x,0,z);group.name=`town-prop-${id}`;g.add(group);return group;}
  function table(group:THREE.Group){liveBox(group,1.25,.10,.70,'#b99668',0,.82,0);for(const x of [-.5,.5])liveBox(group,.10,.85,.55,'#548c68',x,.35,0);}

@@ -1,6 +1,8 @@
 # Jelajah Sains
 
-**Tahap 07 — Koin Sains dan hadiah misi**: HUD koin dan Dompet kini tersedia. Misi utama yang sudah diimplementasikan memberi 100 koin sekali, sampingan 30, W03-LOG01 50. M16/M17 memberi koin saat bab lengkap, tanpa koin per episode. XP tetap terpisah. Progres lama yang sah diakui otomatis; reset, reload dan impor ulang tidak menggandakan hadiah. Cadangan aktif **v19**, IndexedDB **skema 2**, tanpa menghapus progres. Toko belum tersedia. [Aturan, bukti dan pengujian](docs/coin-economy-review.md) · [Panduan cadangan/profil](docs/backup-economy.md).
+**Tahap 08 — Gaya Penjelajah:** butik nyata di Kota dengan 12 kosmetik berbayar, Coba gratis, konfirmasi Beli, lalu Pakai. Kostum 180, rambut 60, aksesori 40 koin; seluruh pilihan dasar dan perlengkapan kegiatan tetap gratis. Peta → Kak Mira · Butik mengantar melalui pintu. Penampilan pada Pengaturan menyediakan semua barang yang sudah dimiliki dari mana pun. [Cara bermain, katalog dan bukti](docs/cosmetic-shop-review.md).
+
+**Tahap 07 — Koin Sains dan hadiah misi**: HUD koin dan Dompet kini tersedia. Misi utama yang sudah diimplementasikan memberi 100 koin sekali, sampingan 30, W03-LOG01 50. M16/M17 memberi koin saat bab lengkap, tanpa koin per episode. XP tetap terpisah. Progres lama yang sah diakui otomatis; reset, reload dan impor ulang tidak menggandakan hadiah. Cadangan aktif **v20**, IndexedDB **skema 2**, tanpa menghapus progres. Butik ditambahkan pada tahap 08. [Aturan, bukti dan pengujian](docs/coin-economy-review.md) · [Panduan cadangan/profil](docs/backup-economy.md).
 
 **Visual tahap 06 — Eksplorasi bawah laut dan menyelam**: Peta W05 → Persiapan menyelam → Perlengkapan selam gratis → tangga teluk latihan. Avatar utama berenang dan menyelam 3D, dengan masker, sirip, tabung, batas pusat tubuh 6 m, rute bantu dan Kembali ke Dermaga. Amati ikan, lamun, batu, cahaya dan struktur dermaga tanpa menambah bukti misi atau XP. Kostum pribadi dipulihkan saat perlengkapan dilepas; reload kembali ke dermaga aman. ROV, S16, perahu, kolam S14 dan astronot tetap terpisah. Cadangan tetap **v18**. [Cara bermain, sumber, cuplikan dan pemeriksaan](docs/visual-stage-06-review.md).
 
@@ -14,7 +16,7 @@
 
 **Visual tahap 02 — Kota Sains**: sekolah/perpustakaan, pasar, observatorium, menara air, taman dan benda interaksi kini lebih terbaca; warga membaca, menyapu dan berjalan pada rute pendek. Label tampil dekat, Peta tetap lengkap. Pengaturan Rendah mengurangi detail opsional. [Laporan, perbandingan dan cuplikan](docs/visual-stage-02-review.md). Tidak ada misi, toko atau koin baru.
 
-**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 01–07 kini tersedia; koin sudah ditambahkan, toko belum tersedia.
+**Pembaruan visual tahap 01**: sambungan tanah Rimba dan halaman hidraulik kini bertemu tanpa permukaan bertumpuk. Pengaturan Kualitas Rendah/Normal tetap terpisah dari progres; gunakan ikon Pengaturan. [Laporan dan bukti bergerak](docs/visual-stage-01-review.md) · [Arah visual dan urutan sepuluh tahap](docs/visual-upgrade-plan.md). Tahap 01–08 kini tersedia; koin dan butik sudah terhubung.
 
 **W01 / M02 — Persediaan Es Pasar**: amati mencair dan menguap dengan model partikel, ukur tiga sampel massa/volume, uji tiga sistem dinding, lalu bawa satu paket es melalui jalan pasar. Pak Wira memberi tugas; Bu Nara menerima kiriman. Tiga checkpoint, satu hadiah 100 XP. [Cara bermain, model, sumber dan bukti](docs/market-ice-review.md).
 
@@ -377,8 +379,15 @@ Perjalanan selam W05: **Peta → Persiapan menyelam → Perlengkapan selam → M
 
 ## Koin, Dompet dan cadangan terbaru
 
-Buka ikon koin pada header atau Pengaturan → Dompet. Hadiah baru terlihat setelah transaksi berhasil; total XP bukan saldo koin. Hanya misi lengkap yang terdaftar memberi hadiah. Perlengkapan esensial dan starter lemari tetap gratis. Tidak ada toko atau pembelian pada tahap 07.
+Buka ikon koin pada header atau Pengaturan → Dompet. Hadiah baru terlihat setelah transaksi berhasil; total XP bukan saldo koin. Hanya misi lengkap yang terdaftar memberi hadiah. Perlengkapan esensial dan starter lemari tetap gratis. Tahap 08 menambahkan pembelian kosmetik di butik Kota.
 
-Cadangan **v19** menyertakan identitas profil, ledger, receipt dan bukti. Seluruh format **v1–v18** tetap didukung. Cadangan lama tanpa ekonomi mempertahankan dompet aktif dan merekonsiliasi hak yang belum diberikan. Impor profil sama mempertahankan riwayat yang lebih baru; profil berbeda meminta konfirmasi pemulihan utuh, bukan penjumlahan saldo. [Petunjuk lengkap](docs/backup-economy.md).
+Cadangan **v20** menyertakan identitas profil, ledger hadiah/pembelian, kepemilikan dan bukti. Seluruh format **v1–v19** tetap didukung. Cadangan lama tanpa ekonomi mempertahankan dompet aktif dan merekonsiliasi hak yang belum diberikan. Impor profil sama mempertahankan riwayat yang lebih baru; profil berbeda meminta konfirmasi pemulihan utuh, bukan penjumlahan saldo. [Petunjuk lengkap](docs/backup-economy.md).
 
 Skema IndexedDB naik dari **1 ke 2** untuk menolak penulis versi lama yang belum memeriksa revisi. Store/misi lama dipertahankan. Setelah pembaruan, tutup tab versi lama lalu buka ulang alamat yang sama. Gunakan satu tab permainan untuk menyimpan; tab usang diminta muat ulang. Jangan menghapus data browser untuk mengatasi konflik. Nomor skema database berbeda dari versi format cadangan.
+
+
+## Butik, Penampilan dan Dompet
+
+Di Kota buka **Peta → Kak Mira · Butik**, atau dekati pintu **Gaya Penjelajah**. Masuk, dekati meja dan tekan E/Buka toko. Pilih kategori dan barang, lalu **Coba** untuk preview gratis dari model permainan. **Beli** menampilkan harga dan sisa saldo, kemudian meminta konfirmasi. Membeli tidak mengganti kostum; tekan **Pakai** sesudahnya. Pakai hanya menerapkan barang terpilih yang dimiliki, membatalkan slot lain yang baru dicoba. **Lepas** mengosongkan slot aksesori terkait. **Batal/Kembali** tidak menyimpan percobaan penampilan, tetapi pembelian dan pemakaian yang sudah dikonfirmasi tetap tersimpan.
+
+Koin berasal dari misi, bukan uang nyata. Ikon **Dompet** menampilkan hadiah dan pembelian. Saldo kurang tidak memotong koin. Tab usang wajib memuat ulang sebelum menulis. Reset misi mempertahankan barang, penampilan dan receipt pertama. **Pengaturan → Penampilan** dapat dipakai di semua wilayah untuk mengganti pilihan gratis atau barang milik sendiri. Helm/topi/headset berbagi aturan slot; perlengkapan selam/astronot menyembunyikan kosmetik sementara tanpa menghapusnya. [Kontrak cadangan dan profil](docs/backup-economy.md).

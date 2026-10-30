@@ -20,6 +20,7 @@ function color(value: string) {
   return materials.get(key)!;
 }
 const palettes = {
+  mira:{skin:'#dba478',hair:'#372e2b',coat:'#a6657f',shirt:'#f3e6cd',pants:'#41566b',boots:'#68523d',bag:'#b28c48'},
   raka:{skin:'#dba478',hair:'#372e2b',coat:'#467c9e',shirt:'#e8debd',pants:'#3f4e5a',boots:'#68523d',bag:'#b28c48'},
   bima: {skin:'#dba478',hair:'#372e2b',coat:'#c28b38',shirt:'#dce6df',pants:'#445361',boots:'#68523d',bag:'#b28c48'},
   explorer: { skin:'#efb47d', hair:'#493327', coat:'#27818d', shirt:'#f3e4c4', pants:'#484951', boots:'#795333', bag:'#ce9a36' },
@@ -46,7 +47,7 @@ function drawing(key: string, paint: (c: CanvasRenderingContext2D) => void, fall
 }
 export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, selected?:Appearance): CharacterRig {
   const studentKind=kind==='explorer'||kind==='explorerGirl';
-  const appearance=studentKind?parseAppearance(selected??defaultAppearance(kind==='explorerGirl'?'student-girl':'student-boy')):null;
+  const appearance=studentKind?parseAppearance(selected??defaultAppearance(kind==='explorerGirl'?'student-girl':'student-boy'),undefined,'preview'):null;
   if(appearance)kind=appearance.base==='student-girl'?'explorerGirl':'explorer';
   const outfit=appearance?cosmetic(appearance.outfit)!.visual:null;
   const p = {...palettes[kind],...(appearance?{hair:cosmetic(appearance.hair)!.visual.color??palettes[kind].hair,bag:cosmetic(appearance.backpack)!.visual.color??palettes[kind].bag}:{}),...(outfit?{coat:outfit.coat!,shirt:outfit.shirt!,pants:outfit.pants!,boots:outfit.boots!}:{})}, girl = (kind === 'explorerGirl'||kind==='lestari'), student = kind === 'explorer' || kind==='explorerGirl';
@@ -86,9 +87,19 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, s
       const pieces=[new THREE.BoxGeometry(1.10,.55,.16).translate(0,.24,-.44),new THREE.BoxGeometry(.12,.53,.60).translate(-.49,.24,-.10),new THREE.BoxGeometry(.12,.53,.60).translate(.49,.24,-.10)];
       const merged=mergeGeometries(pieces);pieces.forEach(g=>g.dispose());return merged;
     });
-    mesh(hair,cap,color(p.hair),0,0,0,false,'hair-rear-cap');
+    const rearCap=mesh(hair,cap,color(p.hair),0,0,0,false,'hair-rear-cap');
     crown=box(hair,[1.10,.22,.94],p.hair,0,.51,-.035,false);crown.name='hair-crown';
     fringe=hull(hair,`student-fringe-${style}`,style==='crop'?[[-.55,.28,.38],[-.55,.56,.30],[.45,.56,.30],[.52,.34,.40],[-.1,.34,.47],[-.55,.28,.46]]:[[-.55,.22,.38],[-.55,.56,.33],[.16,.68,.25],[.45,.54,.30],[.45,.29,.39],[-.05,.37,.52],[-.55,.22,.52]],p.hair,false);fringe.name='hair-fringe';
+    if(style==='curls'){
+      crown.visible=false;fringe.visible=false;
+      for(const [x,y,z,r] of [[-.39,.43,.14,.27],[0,.58,.13,.31],[.38,.46,.10,.27],[-.29,.53,-.3,.26],[.27,.56,-.3,.28]])mesh(hair,geometry(`curl/${r}`,()=>new THREE.IcosahedronGeometry(r,1)),color(p.hair),x,y,z,false,'curly-lock');
+    }
+    if(style==='undercut'){crown.scale.y=.5;rearCap.scale.y=.60;fringe.visible=false;fringe=hull(hair,'undercut-quiff',[[-.38,.38,.44],[-.38,.56,.40],[.30,.69,.30],[.50,.52,.32],[.48,.36,.43],[-.06,.43,.53],[-.38,.38,.50]],p.hair,false);fringe.name='undercut-quiff';box(hair,[.15,.19,.65],p.hair,-.49,.13,-.1,false).name='cropped-side';}
+    if(style==='braid'){
+      for(let i=0;i<3;i++){const braid=box(hair,[.30,.31,.28],p.hair,.48+(i%2)*.025,-.36-i*.24,-.24,false,.04);braid.rotation.z=i%2?.14:-.14;braid.name='braid-link';}
+      box(hair,[.30,.08,.28],p.bag,.49,-.95,-.24,false).name='braid-tie';
+    }
+    if(style==='bun')mesh(hair,geometry('student-bun',()=>new THREE.IcosahedronGeometry(.32,1)),color(p.hair),0,.30,-.62,false,'round-bun');
     if(style==='shoulder'){
       box(hair,[1.12,.95,.22],p.hair,0,-.02,-.47,false).name='shoulder-hair';
       for(const x of [-.50,.50])box(hair,[.16,.90,.44],p.hair,x,-.04,-.15,false);
@@ -101,6 +112,26 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, s
       crown.visible=!cosmeticSlotRules.cap.hideCrown;fringe.scale.y=cosmeticSlotRules.cap.fringeScale;
       box(headwear,[1.17,.27,1.01],cosmetic(appearance.headwear)!.visual.color??'#b38a43',0,.58,-.03,false).name='explorer-cap';
       box(headwear,[1.25,.075,1.16],'#d4b463',0,.44,.11,false).name='explorer-brim';
+    }
+    const hatStyle=cosmetic(appearance.headwear)!.visual.style,hatColor=cosmetic(appearance.headwear)!.visual.color??'#bca16c';
+    if(hatStyle==='wide-hat'){
+      crown.visible=false;fringe.scale.y=.66;
+      mesh(headwear,geometry('wide-brim',()=>new THREE.CylinderGeometry(.84,.84,.065,20)),color(hatColor),0,.45,-.02,false,'wide-hat-brim');
+      mesh(headwear,geometry('wide-crown',()=>new THREE.CylinderGeometry(.49,.56,.31,12)),color(hatColor),0,.61,-.02,false,'wide-hat-crown');
+      box(headwear,[1.04,.07,.91],'#70563c',0,.49,-.02,false).name='hat-band';
+    }
+    if(hatStyle==='headset'){
+      const band=mesh(headwear,geometry('headset-band',()=>new THREE.TorusGeometry(.58,.045,6,16,Math.PI)),color(hatColor),0,.13,0,false,'headset-band');band.rotation.z=0;
+      for(const side of [-1,1])box(headwear,[.13,.35,.30],hatColor,side*.59,-.01,0,false).name='headset-earcup';
+      const boom=box(headwear,[.035,.035,.40],hatColor,-.60,-.16,.27,false);boom.rotation.y=.3;box(headwear,[.16,.07,.07],'#2b4048',-.54,-.16,.47,false).name='headset-microphone';
+    }
+    if(cosmetic(appearance.facewear)!.visual.style==='round-frames'){
+      for(const side of [-1,1]){
+        mesh(facewear,geometry('paid-round-frame',()=>new THREE.TorusGeometry(.16,.018,6,20)),color('#946d38'),side*.195,.02,.462,false,'round-frame');
+        box(facewear,[.025,.025,.35],'#946d38',side*.51,.045,.29,false).name='glasses-arm';
+        box(facewear,[.025,.60,.025],'#4d645a',side*.52,-.25,.12,false).name='glasses-cord';
+      }
+      box(facewear,[.09,.023,.025],'#946d38',0,.05,.465,false).name='glasses-bridge';
     }
     if(cosmetic(appearance.facewear)!.visual.style==='glasses'){
       const glasses=drawing(`student-glasses/${appearance.facewear}`,c=>{c.lineWidth=10;c.strokeStyle=cosmetic(appearance.facewear)!.visual.color??'#334e4c';for(const x of [156,356]){c.beginPath();c.ellipse(x,244,66,72,0,0,Math.PI*2);c.stroke();}c.beginPath();c.moveTo(222,238);c.quadraticCurveTo(256,215,290,238);c.stroke();},'#334e4c',true);
@@ -145,7 +176,21 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, s
   texturedBox(torso,[student?1.28:1.32,1.30,.65],p.coat,coat,0,0,0,'torso-block');
   const backpack=group('cosmetic-backpack',torso);
   if(student&&appearance?.backpack!=='back-none'){box(backpack,[.85,.94,.32],p.bag,0,-.04,-.50,false).name='backpack';box(backpack,[.57,.33,.10],'#dbab48',0,-.25,-.70,false).name='backpack-pocket';}
-  if(appearance)cosmetics={hair,headwear,facewear,backpack,equipment,crown,fringe,mode:'none'};
+  const outfitDetails=group('cosmetic-outfit-details',torso);
+  if(appearance){
+    const style=cosmetic(appearance.outfit)!.visual.style;
+    if(style==='field-vest'){for(const x of [-.40,.40]){box(outfitDetails,[.30,.30,.08],'#aba16b',x,-.10,.37,false).name='field-cargo-pocket';box(outfitDetails,[.32,.065,.10],'#696d48',x,.06,.38,false);}box(outfitDetails,[1.28,.09,.69],'#735c3e',0,-.50,0,false);}
+    if(style==='lab-coat'){for(const x of [-.46,.46]){const lapel=box(outfitDetails,[.22,.45,.07],'#ffffff',x,.37,.38,false);lapel.rotation.z=x>0?-.28:.28;box(outfitDetails,[.35,.30,.09],'#f7faf2',x,-.38,.38,false);}box(outfitDetails,[.24,.18,.03],'#d5b455',.40,.10,.44,false).name='lab-badge';}
+    if(style==='apron'){box(outfitDetails,[.83,.91,.08],'#c4a56b',0,-.13,.38,false).name='gardener-apron';box(outfitDetails,[.60,.27,.10],'#967944',0,-.34,.45,false);for(const x of [-.35,.35])box(outfitDetails,[.09,.32,.07],'#c4a56b',x,.47,.37,false);}
+    if(style==='workwear'){for(const x of [-.48,.48])box(outfitDetails,[.12,.94,.05],'#e7cc70',x,.10,.37,false);box(outfitDetails,[1.24,.12,.71],'#765b3c',0,-.44,0,false).name='technician-toolbelt';for(const x of [-.38,.38])box(outfitDetails,[.24,.23,.11],'#ab8249',x,-.43,.41,false);}
+    if(cosmetic(appearance.backpack)!.visual.style==='compartments'){
+      for(const side of [-1,1])box(backpack,[.24,.54,.30],'#335560',side*.51,-.13,-.52,false).name='pack-side-compartment';
+      box(backpack,[.70,.12,.12],'#c4b076',0,.26,-.72,false).name='pack-roll';box(backpack,[.13,.70,.05],'#d4c48b',0,-.04,-.77,false).name='pack-strap';
+    }
+    cosmetics={hair,headwear,facewear,backpack,outfitDetails,equipment,crown,fringe,mode:'none'};
+  }
+  if(kind==='mira'){box(head,[.49,.44,.43],p.hair,0,.20,-.63).name='mira-bun';box(torso,[.82,.90,.07],'#e1b9a3',0,-.15,.37).name='tailor-apron';box(torso,[.45,.25,.09],'#9b6175',0,-.35,.42);}
+
   if(kind==='raka'){box(torso,[.40,.46,.09],'#e8ddb6',.38,-.15,.39).name='field-notebook';box(torso,[.05,.46,.11],'#375c72',.16,-.15,.39).name='notebook-spine';}
   if(kind==='nara') {
     const skirt=geometry('nara-skirt',()=> {

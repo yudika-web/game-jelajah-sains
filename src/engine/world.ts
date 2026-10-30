@@ -8,6 +8,7 @@ import {evaWalkable} from './evaNavigation';
 import {spaceCameraBoxes} from './spaceStation';
 import {SpaceInstrumentCamera} from './spaceInstrumentCamera';
 import {setTemporaryEquipment} from './character';
+import {shopObstacles} from '../data/shopRegion';
 import {WardrobePreview} from './wardrobePreview';
 import {appearanceKey,parseAppearance,type Appearance} from '../game/appearance';
 import {disposeRegion as releaseAvatar} from './disposeRegion';
@@ -234,7 +235,7 @@ export class World {
   rotateWardrobe(angle:number){this.wardrobePreview?.rotate(angle);}
   closeWardrobe(){this.wardrobePreview?.dispose();this.wardrobePreview=null;this.wardrobeStage=null;this.renderer.setClearColor(this.wardrobeClear);this.canvas.dataset.wardrobe='false';delete this.canvas.dataset.previewAppearance;this.stop();}
   setPlayerAppearance(value:Appearance){
-    const a=parseAppearance(value,value);
+    const a=parseAppearance(value,value,'preview');
     if(appearanceKey(a)!==appearanceKey(this.playerRig.appearance!)){
       this.stop();const old=this.playerRig;
       this.playerRig=createCharacter(a.base==='student-girl'?'explorerGirl':'explorer',undefined,a);
@@ -313,7 +314,7 @@ export class World {
     ctx.fillText(text, c.width/2, c.height/2+1);
     const texture = new THREE.CanvasTexture(c); texture.colorSpace = THREE.SRGBColorSpace;
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
-    sprite.position.set(x, y, z); const npcLabel=id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari'||id==='bima';
+    sprite.position.set(x, y, z); const npcLabel=id==='cosmeticShop'||id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari'||id==='bima';
     sprite.scale.set(id&&marketPlaces.some(p=>p.id===id)?1.9:terminalLabel?.55:plantLabel?.65:npcLabel?2:3.5,id&&marketPlaces.some(p=>p.id===id)?.356:terminalLabel?.275:plantLabel?.325:npcLabel?.375:.66,1);
     sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
@@ -337,11 +338,12 @@ export class World {
     for (let i = 0; i < 5; i++) b(2.2, 0.05, 0.12, '#987557', 8.4, 0.08, -14 + i * 1.4);
     this.townView=buildTownEnvironment(s);
     this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-11.125,0,-.30),new THREE.Vector3(-9.875,2.1,.30)));
-    for(const house of townBuildings)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
+    for(const o of shopObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o===shopObstacles[5]?.99:2.9,o.z+o.depth/2)));
+    for(const house of townBuildings.filter(h=>h.id!=='home'))this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
     for (const place of places) {
-      if (place.id === 'nara' || place.id === 'warga') {
-        const rig = createCharacter(place.id === 'nara' ? 'nara' : 'wira', place.id);
-        rig.root.position.set(place.x, 0, place.z);
+      if (place.id === 'nara' || place.id === 'warga' || place.id==='cosmeticShop') {
+        const rig = createCharacter(place.id==='cosmeticShop'?'mira':place.id === 'nara' ? 'nara' : 'wira', place.id);
+        rig.root.position.set(place.x, 0, place.id==='cosmeticShop'?4.05:place.z);
         this.npcs.push({ id: place.id, rig, animator: new CharacterAnimator(rig, place.id === 'nara' ? 1.3 : 3.8), timer: 0 });
         s.add(rig.root);
       } else if (place.id === 'gardenGate'||place.id==='rimbaGate'||place.id==='riverGate'||place.id==='workshopGate') {

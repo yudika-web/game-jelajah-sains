@@ -1,3 +1,4 @@
+import {shopObstacles} from '../data/shopRegion';
 import {marketObstacles} from '../data/marketRegion';
 import { characterConfig } from './characterConfig';
 export interface Point { x: number; z: number; }
@@ -9,7 +10,7 @@ export const obstacles: Obstacle[] = [
 
   {x:6.2,z:15,width:.3,depth:.3}, {x:9.8,z:15,width:.3,depth:.3}, // W03 gate pillars
   { x: -9, z: -9, width: 8, depth: 6 },
-  { x: -12, z: 6, width: 5, depth: 5 },
+  ...shopObstacles,
   { x: -5, z: 13, width: 5, depth: 4 },
   { x: 2, z: -13, width: 4, depth: 4 },
   { x: 14, z: 0, width: 4, depth: 40 },

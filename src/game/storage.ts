@@ -1,15 +1,15 @@
-import {parseAppearance} from './appearance';
+import {validateOwnedAppearance} from './appearance';
 import {initialGame,parseTravel,type GameState} from './gameState';
 import {parseProgress,type Progress} from './mission';
 import {missionRecords,missionEntries} from './missionRecords';
-import {newEconomy,parseEconomy,importEconomy,reconcileCoins,assertCoinXP,type Economy,type CoinReceipt} from './coinEconomy';
+import {newEconomy,parseEconomy,importEconomy,reconcileCoins,assertCoinXP,purchaseCosmetic,type PurchaseReceipt,type Economy,type CoinReceipt} from './coinEconomy';
 
 // Schema 2 fences old compiled clients that write without a revision check.
 // The existing generic store and every mission key are retained, not recreated.
 export const DATABASE_VERSION=2;
 interface SaveMeta {version:1;revision:number;profileId:string;}
 export interface StoredGame extends GameState {economy:Economy;saveRevision:number;coinGrants:CoinReceipt[];}
-export interface SaveResult {economy:Economy;saveRevision:number;coinGrants:CoinReceipt[];}
+export interface SaveResult {economy:Economy;saveRevision:number;coinGrants:CoinReceipt[];purchaseReceipt?:PurchaseReceipt;}
 export class SaveConflict extends Error {
  constructor(){super('Progres sudah berubah di tab lain. Tab ini tidak boleh menimpa data terbaru. Muat ulang tab ini untuk melanjutkan, dan gunakan satu tab permainan.');}
 }
@@ -22,11 +22,11 @@ const open=()=>new Promise<IDBDatabase>((resolve,reject)=>{
 });
 const keys=[...Object.keys(missionRecords),'appearance','world','economy','save-meta'];
 const historyKey=(profile:string)=>`economy-history:${profile}`;
-function decode(values:Record<string,unknown>):GameState {
+function decode(values:Record<string,unknown>,owned:readonly string[]=[]):GameState {
  const game=initialGame();
  for(const [id,record] of Object.entries(missionRecords))if(values[id]!==undefined)
   (game as unknown as Record<string,unknown>)[record.property]=record.parse(values[id]);
- if(values.appearance!=null)game.appearance=parseAppearance(values.appearance);
+ if(values.appearance!=null)game.appearance=validateOwnedAppearance(values.appearance,owned);
  if(values.world!==undefined)game.world=parseTravel(values.world);
  return game;
 }
@@ -48,20 +48,21 @@ async function transaction<T>(mode:IDBTransactionMode,apply:(values:Record<strin
 }
 export async function loadGame():Promise<StoredGame>{
  return transaction('readwrite',(values,store)=>{
-  const game=decode(values),meta=metaOf(values['save-meta']);
+  const meta=metaOf(values['save-meta']);
   if(!meta&&values.economy!==undefined)throw Error('Dompet tanpa revisi penyimpanan tidak dapat dipulihkan otomatis.');
   if(meta&&values.economy===undefined)throw Error('Dompet profil hilang; data tidak ditimpa otomatis. Pulihkan cadangan yang utuh.');
   const wallet=values.economy===undefined?newEconomy():parseEconomy(values.economy);
+  const game=decode(values,wallet.owned);
   assertCoinXP(wallet,Object.fromEntries(Object.entries(missionRecords).map(([id,r])=>[id,game[r.property]])));
   if(meta&&meta.profileId!==wallet.profileId)throw Error('Profil dan revisi dompet tidak sesuai.');
   const {economy,grants}=reconcileCoins(wallet,game,'legacy-reconciliation');
   let revision=meta?.revision??0;
-  if(!meta||grants.length){revision++;if(!Number.isSafeInteger(revision))throw Error('Batas revisi penyimpanan tercapai.');store.put(economy,'economy');store.put(economy,historyKey(economy.profileId));store.put({version:1,revision,profileId:economy.profileId} satisfies SaveMeta,'save-meta');}
+  if(!meta||grants.length||(values.economy as {version?:number}|undefined)?.version!==2){revision++;if(!Number.isSafeInteger(revision))throw Error('Batas revisi penyimpanan tercapai.');store.put(economy,'economy');store.put(economy,historyKey(economy.profileId));store.put({version:1,revision,profileId:economy.profileId} satisfies SaveMeta,'save-meta');}
   return {...game,economy,saveRevision:revision,coinGrants:grants};
  });
 }
-export async function saveGame(game:GameState,options:{importing?:boolean;replaceProfile?:boolean}={}):Promise<SaveResult>{
- const entries=missionEntries(game),appearance=game.appearance?parseAppearance(game.appearance):null,world=parseTravel(game.world);
+export async function saveGame(game:GameState,options:{importing?:boolean;replaceProfile?:boolean;purchase?:{itemId:string;priceVersion:number}}={}):Promise<SaveResult>{
+ const entries=missionEntries(game),world=parseTravel(game.world);
  if(game.economy)parseEconomy(game.economy);
  return transaction('readwrite',(values,store)=>{
   const meta=metaOf(values['save-meta']);
@@ -79,19 +80,23 @@ export async function saveGame(game:GameState,options:{importing?:boolean;replac
    wallet=importEconomy(latest,incoming,options.replaceProfile)!;
   }
   assertCoinXP(wallet,Object.fromEntries(entries));
-  const validated=decode(Object.fromEntries([...entries,['appearance',appearance],['world',world]]));
-  const {economy,grants}=reconcileCoins(wallet,validated,options.importing?'legacy-reconciliation':'mission-completion');
+  const validated=decode(Object.fromEntries([...entries,['world',world]]));
+  const reconciled=reconcileCoins(wallet,validated,options.importing?'legacy-reconciliation':'mission-completion');
+  const purchased=options.purchase?purchaseCosmetic(reconciled.economy,options.purchase.itemId,options.purchase.priceVersion):null;
+  const economy=purchased?.economy??reconciled.economy,grants=reconciled.grants;
+  const personal=options.purchase?values.appearance:game.appearance;
+  const appearance=personal?validateOwnedAppearance(personal,economy.owned):null;
   const revision=meta.revision+1;if(!Number.isSafeInteger(revision))throw Error('Batas revisi penyimpanan tercapai.');
   for(const [key,value] of entries)store.put(value,key);
   store.put(appearance,'appearance');store.put(world,'world');store.put(economy,'economy');
   if(latest.profileId!==economy.profileId)store.put(latest,historyKey(latest.profileId));
   store.put(economy,historyKey(economy.profileId));
   store.put({version:1,revision,profileId:economy.profileId} satisfies SaveMeta,'save-meta');
-  return {economy,saveRevision:revision,coinGrants:grants};
+  return {economy,saveRevision:revision,coinGrants:grants,purchaseReceipt:purchased?.receipt};
  },options.importing&&game.economy?[historyKey(game.economy.profileId)]:[]);
 }
 /** Legacy helper follows the same guarded, atomic path. */
 export async function loadProgress():Promise<Progress|null>{return transaction('readonly',v=>v.M01===undefined?null:parseProgress(v.M01),[],['M01']);}
 export async function saveProgress(p:Progress,expectedRevision:number):Promise<void>{const current=await loadGame();current.M01=p;current.saveRevision=expectedRevision;await saveGame(current);}
 /** The gallery is read-only and never initializes or migrates a wallet. */
-export async function loadAppearance(){return transaction('readonly',values=>values.appearance==null?null:parseAppearance(values.appearance),[],['appearance']);}
+export async function loadAppearance(){return transaction('readonly',values=>values.appearance==null?null:validateOwnedAppearance(values.appearance,values.economy?parseEconomy(values.economy).owned:[]),[],['appearance','economy']);}

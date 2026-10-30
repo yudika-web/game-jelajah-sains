@@ -5,7 +5,7 @@ import type {TemporaryEquipment} from '../data/appearanceCatalog';
 import type * as THREE from 'three';
 import { buildReferenceCharacter } from './characterModel';
 
-export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari' | 'damar' | 'lestari' | 'bima' | 'raka';
+export type CharacterKind = 'explorer' | 'explorerGirl' | 'nara' | 'wira' | 'sari' | 'damar' | 'lestari' | 'bima' | 'raka' | 'mira';
 export interface ArmRig { shoulder: THREE.Group; elbow: THREE.Group; hand: THREE.Group; toolSocket: THREE.Group; }
 export interface LegRig { hip: THREE.Group; knee: THREE.Group; ankle: THREE.Group; }
 export interface CharacterRig {
@@ -13,7 +13,7 @@ export interface CharacterRig {
   appearance:Appearance|null;
   spaceGear?:AstronautEquipment;
   diveGear?:DivingEquipment;
-  cosmetics?:{hair:THREE.Group;headwear:THREE.Group;facewear:THREE.Group;backpack:THREE.Group;equipment:THREE.Group;crown:THREE.Object3D;fringe:THREE.Object3D;mode:TemporaryEquipment};
+  cosmetics?:{hair:THREE.Group;headwear:THREE.Group;facewear:THREE.Group;backpack:THREE.Group;outfitDetails:THREE.Group;equipment:THREE.Group;crown:THREE.Object3D;fringe:THREE.Object3D;mode:TemporaryEquipment};
   /** Navigation/interaction root: visual animation never translates this group. */
   root: THREE.Group;
   visual: THREE.Group;
@@ -42,6 +42,6 @@ export function setTemporaryEquipment(rig:CharacterRig,mode:TemporaryEquipment){
  applyAstronautEquipment(rig,false);applyDivingEquipment(rig,false);
  if(mode==='astronaut')applyAstronautEquipment(rig,true);if(mode==='dive')applyDivingEquipment(rig,true);
  if(mode==='dive')c.equipment.children.forEach(o=>o.visible=false);
- c.mode=mode;c.equipment.visible=mode!=='none';c.hair.visible=mode==='none';c.headwear.visible=mode==='none';c.facewear.visible=mode==='none';c.backpack.visible=mode==='none';
+ c.outfitDetails.visible=mode==='none';c.mode=mode;c.equipment.visible=mode!=='none';c.hair.visible=mode==='none';c.headwear.visible=mode==='none';c.facewear.visible=mode==='none';c.backpack.visible=mode==='none';
  rig.root.userData.equipment=mode;
 }

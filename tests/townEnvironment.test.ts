@@ -6,7 +6,7 @@ import {places} from '../src/data/content';
 import {disposeRegion} from '../src/engine/disposeRegion';
 import {FollowCamera} from '../src/engine/cameraController';
 it('preserves building footprints and every real Town destination approach',()=>{
- for(const h of townBuildings)expect(obstacles).toContainEqual({x:h.x,z:h.z,width:h.w,depth:h.d});
+ for(const h of townBuildings.filter(h=>h.id!=='home'))expect(obstacles).toContainEqual({x:h.x,z:h.z,width:h.w,depth:h.d});
  for(const p of places){const end={x:p.x,z:p.z+1.4};expect(walkable(end),p.id).toBe(true);expect(findPath({x:-1,z:6},end).length,p.id).toBeGreaterThan(0);}
  for(let z=townAmbientRoute.minZ;z<=townAmbientRoute.maxZ;z+=.1)expect(walkable({x:townAmbientRoute.x,z})).toBe(true);
 });

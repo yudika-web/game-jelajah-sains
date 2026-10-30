@@ -14,7 +14,7 @@ describe('stable free catalog and slot validation',()=>{
  it('has two outfits, four hair silhouettes, two removable accessories and a backpack option for both bases',()=>{
   expect(new Set(appearanceCatalog.map(i=>i.id)).size).toBe(appearanceCatalog.length);
   for(const base of ['student-boy','student-girl'] as const){expect(appearanceItems('outfit',base)).toHaveLength(2);expect(appearanceItems('hair',base)).toHaveLength(4);for(const slot of cosmeticSlots)expect(appearanceItems(slot,base).length).toBeGreaterThan(0);}
-  expect(appearanceCatalog.every(i=>i.access==='free')).toBe(true);expect(defaultAppearance('student-girl').outfit).not.toBe(defaultAppearance().outfit);expect(defaultAppearance('student-girl').hair).not.toBe(defaultAppearance().hair);
+  expect(appearanceCatalog.filter(i=>i.access==='free')).toHaveLength(12);expect(defaultAppearance('student-girl').outfit).not.toBe(defaultAppearance().outfit);expect(defaultAppearance('student-girl').hair).not.toBe(defaultAppearance().hair);
  });
  it('rejects cross-slot, unknown, inherited and future IDs without altering the chosen appearance',()=>{
   const a=custom(),before=structuredClone(a);expect(chooseCosmetic(a,'headwear','outfit-teal')).toBe(a);expect(chooseCosmetic(a,'hair','__proto__')).toBe(a);
@@ -55,7 +55,7 @@ describe('same body, rig and tools for every free combination',()=>{
  });
 });
 describe('appearance in backup v18 and independent IndexedDB record',()=>{
- it('round-trips all mission data and appearance without changing mission versions',()=>{const g={...initialGame(),appearance:custom()},b=makeBackup(g);expect(b.version).toBe(19);expect(BACKUP_VERSION).toBe(19);expect(importBackup(b,initialGame()).game).toEqual(g);});
+ it('round-trips all mission data and appearance without changing mission versions',()=>{const g={...initialGame(),appearance:custom()},b=makeBackup(g);expect(b.version).toBe(20);expect(BACKUP_VERSION).toBe(20);expect(importBackup(b,initialGame()).game).toEqual(g);});
  it('every previously supported v1-v17 fixture retains an existing appearance',()=>{
   const g={...initialGame(),appearance:custom()},seen=new Set<number>();
   const fixtures=readdirSync('tests/fixtures').filter(f=>f.endsWith('.json')).map(f=>JSON.parse(readFileSync('tests/fixtures/'+f,'utf8')));fixtures.push(JSON.parse(readFileSync('docs/evidence/market/completed-v17.json','utf8')));

@@ -1,3 +1,5 @@
+import {cosmetic} from '../data/appearanceCatalog';
+import {cosmeticPriceHistory,historicalCosmeticPrice} from '../data/paidCosmetics';
 import {missionRecords,type RecordId} from './missionRecords';
 import type {GameState} from './gameState';
 
@@ -25,7 +27,9 @@ export interface CoinReceipt {
  id:string; kind:'mission-reward'; missionId:string; amount:number; ruleVersion:1;
  source:'mission-completion'|'legacy-reconciliation'; at:string; evidence:CoinEvidence;
 }
-export interface Economy {version:1;profileId:string;balance:number;ledger:CoinReceipt[];}
+export interface PurchaseReceipt {id:string;kind:'cosmetic-purchase';itemId:string;amount:number;priceVersion:number;source:'boutique';at:string;}
+export type EconomyTransaction=CoinReceipt|PurchaseReceipt;
+export interface Economy {version:2;profileId:string;balance:number;ledger:EconomyTransaction[];owned:string[];}
 const profilePattern=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const fail=():never=>{throw Error('Dompet tidak valid: profil, bukti, riwayat atau saldo tidak konsisten.');};
 const replayedReceipts=new Set<RecordId>(['M01','M02','M07','M13','S16']);
@@ -44,7 +48,7 @@ export function newProfileId(){
 }
 export function newEconomy(profileId=newProfileId()):Economy {
  if(!profilePattern.test(profileId))return fail();
- return {version:1,profileId,balance:0,ledger:[]};
+ return {version:2,profileId,balance:0,ledger:[],owned:[]};
 }
 export function coinRule(id:string){return coinRules.find(r=>r.id===id);}
 export function eligibleEvidence(rule:CoinRule,raw:unknown):boolean {
@@ -66,31 +70,54 @@ export function evidenceFor(rule:CoinRule,game:GameState):CoinEvidence|null {
 }
 /** Reset may clear learning evidence, but an earned coin cannot lose its XP receipt. */
 export function assertCoinXP(economy:Economy,records:Record<string,unknown>){
- for(const receipt of economy.ledger)for(const id of coinRule(receipt.missionId)!.records){
+ for(const receipt of economy.ledger){if(receipt.kind!=='mission-reward')continue;for(const id of coinRule(receipt.missionId)!.records){
   const expected=(receipt.evidence[id] as {reward:number}).reward;
   if(!expected||(records[id] as {reward?:unknown}|undefined)?.reward!==expected)
    throw Error('Bukti XP dan receipt koin tidak konsisten. Impor ditolak tanpa mengubah progres.');
- }
+ }}
 }
 /** Balance is checked against the immutable ledger, never accepted on its own. */
 export function parseEconomy(raw:unknown):Economy {
  if(!raw||typeof raw!=='object')return fail();
- const e=raw as Economy;
- if(e.version!==1||typeof e.profileId!=='string'||!profilePattern.test(e.profileId)||
-  !Number.isSafeInteger(e.balance)||e.balance<0||!Array.isArray(e.ledger)||e.ledger.length>coinRules.length)return fail();
- const seen=new Set<string>();let balance=0;
+ const e=raw as Omit<Economy,'version'|'owned'>&{version:1|2;owned?:string[]};
+ const historicalItems=new Set(Object.values(cosmeticPriceHistory).flatMap(prices=>Object.keys(prices)));
+ if(![1,2].includes(e.version)||typeof e.profileId!=='string'||!profilePattern.test(e.profileId)||
+  !Number.isSafeInteger(e.balance)||e.balance<0||!Array.isArray(e.ledger)||e.ledger.length>coinRules.length+historicalItems.size)return fail();
+ const seen=new Set<string>(),owned:string[]=[];let balance=0;
  for(const r of e.ledger){
-  if(!r||typeof r!=='object')return fail();
-  const rule=coinRule(r.missionId);
-  if(!rule||r.kind!=='mission-reward'||r.ruleVersion!==1||r.amount!==coinRuleVersions[1][rule.kind]||
-   r.id!==rewardId(e.profileId,rule.id)||seen.has(r.id)||
-   !['mission-completion','legacy-reconciliation'].includes(r.source)||
-   typeof r.at!=='string'||!Number.isFinite(Date.parse(r.at))||new Date(r.at).toISOString()!==r.at||
-   !eligibleEvidence(rule,r.evidence))return fail();
-  seen.add(r.id);balance+=r.amount;if(!Number.isSafeInteger(balance))return fail();
+  if(!r||typeof r!=='object'||typeof r.id!=='string'||seen.has(r.id)||typeof r.at!=='string'||!Number.isFinite(Date.parse(r.at))||new Date(r.at).toISOString()!==r.at)return fail();
+  if(r.kind==='mission-reward'){
+   const rule=coinRule(r.missionId);
+   if(!rule||r.ruleVersion!==1||r.amount!==coinRuleVersions[1][rule.kind]||r.id!==rewardId(e.profileId,rule.id)||!['mission-completion','legacy-reconciliation'].includes(r.source)||!eligibleEvidence(rule,r.evidence))return fail();
+   balance+=r.amount;
+  }else if(r.kind==='cosmetic-purchase'&&e.version===2){
+   if(typeof r.itemId!=='string'||!Number.isSafeInteger(r.priceVersion)||r.priceVersion<1)return fail();
+   const price=historicalCosmeticPrice(r.itemId,r.priceVersion);
+   if(price===undefined||r.amount!==price||r.id!==purchaseId(e.profileId,r.itemId)||r.source!=='boutique'||owned.includes(r.itemId))return fail();
+   balance-=r.amount;owned.push(r.itemId);
+  }else return fail();
+  seen.add(r.id);if(!Number.isSafeInteger(balance)||balance<0)return fail();
  }
+ owned.sort();
  if(balance!==e.balance)return fail();
- return structuredClone(e);
+ if(e.version===2&&(!Array.isArray(e.owned)||JSON.stringify(e.owned)!==JSON.stringify(owned)))return fail();
+ if(e.version===1&&e.owned?.length)return fail();
+ return {version:2,profileId:e.profileId,balance,ledger:structuredClone(e.ledger),owned};
+}
+export const purchaseId=(profile:string,item:string)=>`${profile}:purchase:${item}`;
+export class CosmeticPurchaseError extends Error {
+ constructor(readonly reason:'owned'|'funds'|'catalog'|'price',message:string){super(message);}
+}
+/** The caller supplies an ID and consent version, never a price or resulting balance. */
+export function purchaseCosmetic(economy:Economy,itemId:string,expectedPriceVersion:number,at=new Date().toISOString()){
+ const next=parseEconomy(economy),item=cosmetic(itemId);
+ if(!item||item.available===false||item.access!=='paid')throw new CosmeticPurchaseError('catalog','Barang tidak tersedia untuk dibeli.');
+ if(item.priceVersion!==expectedPriceVersion||item.price===undefined||historicalCosmeticPrice(item.id,item.priceVersion)!==item.price)throw new CosmeticPurchaseError('price','Versi harga berubah atau tidak valid. Tinjau katalog lagi.');
+ if(next.owned.includes(item.id))throw new CosmeticPurchaseError('owned','Barang ini sudah dimiliki. Pembelian tidak diulang.');
+ if(next.balance<item.price)throw new CosmeticPurchaseError('funds',`Koin kurang ${item.price-next.balance}. Koin diperoleh dari misi, bukan uang nyata.`);
+ const receipt:PurchaseReceipt={id:purchaseId(next.profileId,item.id),kind:'cosmetic-purchase',itemId:item.id,amount:item.price,priceVersion:item.priceVersion,source:'boutique',at};
+ next.ledger.push(receipt);next.balance-=item.price;next.owned.push(item.id);next.owned.sort();
+ return {economy:parseEconomy(next),receipt};
 }
 export function reconcileCoins(economy:Economy,game:GameState,source:CoinReceipt['source'],at=new Date().toISOString()) {
  const next=parseEconomy(economy),grants:CoinReceipt[]=[];

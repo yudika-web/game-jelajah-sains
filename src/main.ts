@@ -1,11 +1,13 @@
 import './coin.css';
 import {createWalletUI} from './game/walletUI';
-import {ProfileReplacementRequired,type Economy} from './game/coinEconomy';
+import {ProfileReplacementRequired,CosmeticPurchaseError,type Economy} from './game/coinEconomy';
 import {createDivingUI} from './game/divingUI';
 import {divePoints,type DivePointId} from './data/diving';
 import {createSpaceExpeditionUI} from './game/spaceExpeditionUI';
 import {evaPoints,type EvaPointId} from './data/spaceExpedition';
-import {defaultAppearance,parseAppearance,type Appearance} from './game/appearance';
+import {defaultAppearance,validateOwnedAppearance,type Appearance} from './game/appearance';
+import {insideShop} from './data/shopRegion';
+import {createCosmeticShopUI} from './game/cosmeticShopUI';
 import {createWardrobeUI} from './game/wardrobeUI';
 import {initialMarket,marketTransition,marketSteps,marketCheckpoint,marketPlaceFor,settleMarket,type MarketEvent} from './game/marketMission';
 import {createMarketUI,marketInventory} from './game/marketUI';
@@ -243,8 +245,8 @@ function updateMission() {
   $('mission-steps').querySelectorAll<HTMLButtonElement>('[data-guide]').forEach(b => { b.onclick = () => navigate(b.dataset.guide as PlaceId); });
 }
 const walletUI=createWalletUI({open:openPanel,started:()=>started});
-const divingUI=createDivingUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),toast});
-const expeditionUI=createSpaceExpeditionUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),town:()=>changeRegion('town'),toast});
+const divingUI=createDivingUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen()||shopUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),toast});
+const expeditionUI=createSpaceExpeditionUI({world:()=>world,started:()=>started,blocked:()=>panel.open||wardrobeUI.isOpen()||shopUI.isOpen(),open:openPanel,close:closePanel,clear:()=>clearInput(),town:()=>changeRegion('town'),toast});
 function closePanel() { divingUI.pause(); marketUI.pause();spaceUI.pause();geoparkUI.pause();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();pressureUI.cancel();coastalUI.cancel();energyUI.pause();electromagnetUI.pause();panel.close(); if (world) { world.paused = !started||storageBlocked; world.endInteraction(); } }
 function openPanel(title: string, html: string, kicker = 'CATATAN PENJELAJAH') {
   divingUI.pause();flushMarketCarry();marketUI.pause();spaceUI.pause();geoparkUI.pause();pontoonUI.pause();solidUI.pause();hydraulicUI.pause();pressureUI.cancel();coastalUI.cancel();energyUI.pause();electromagnetUI.pause();buoyancyUI.cancel();irrigationUI.cancel();riverUI.cancel();rimbaSession.flush(); clearInput(); if (world) world.paused = true;
@@ -307,6 +309,8 @@ function interactAt(id: PlaceId) {
   const place = world?.places.find(p => p.id === id);
   if (!world || !started || travelling || !place || Math.hypot(world.position.x-place.x,world.position.z-place.z)>world.interactionRadius+.05) return;
   if(world.region==='town'&&(marketPlaces.some(p=>p.id===id)||travel.activeMission==='M02'&&(id==='warga'||id==='nara'))){travel.activeMission='M02';updateMission();world.beginInteraction(id,id==='warga'||id==='nara'?'greet':'measure');marketUI.interact(id);return;}
+  if(id==='shopEntrance'){clearInput();world.goTo({x:-12,z:6.5},()=>interactAt('cosmeticShop'));return;}
+  if(id==='cosmeticShop'){if(!insideShop(world.position)){toast('Masuk melalui pintu butik, lalu dekati meja Kak Mira.');return;}shopUI.open();return;}
   if(id==='wardrobe'){wardrobeUI.open();return;}
   if(id==='observatory'||id==='spaceReturn'){
     world.beginInteraction(id,'read');
@@ -568,12 +572,29 @@ function dispatchPressure(e:PressureEvent,place?:PlaceId){
 }
 function returnRov(reason:'command'|'home'='command'){pressureUI.cancel();clearInput();world?.recoverRov();if(pressure.deployed)dispatchPressure({type:'return',reason});if(world)world.paused=panel.open||!started;}
 const pressureUI=createPressureUI({chapter:pressureChapterLabel,get:()=>pressure,send:dispatchPressure,open:openPanel,close:closePanel,isOpen:()=>panel.open,navigate,robot:()=>world?.rov??null,launch:()=>{const p=world?.places.find(p=>p.id==='rovControl');if(!world||world.region!=='coast'||!p||Math.hypot(world.position.x-p.x,world.position.z-p.z)>world.interactionRadius+.05){toast('Dekati Pos kendali ROV terlebih dahulu.');return false;}clearInput();if(!dispatchPressure({type:'launch'},'rovControl'))return false;world.position.set(p.x,0,p.z+1.4);return world.launchRov();},recover:()=>returnRov(),go:id=>{clearInput();return world?.rov.navigate(id)??false;},stabilize:id=>{clearInput();return world?.rov.stabilize(id)??false;},depth:delta=>world?.rovDepth(delta),stop:()=>clearInput(),lock:active=>{clearInput();if(world)world.paused=active||panel.open||!started;},snapshot:()=>world?.rovSnapshot()??{xMm:0,zMm:0,depthMm:0,pressurePa:0}});
-const wardrobeUI=createWardrobeUI({
+function saveCosmeticChange(action:'buy'|'wear',value:Appearance|string,priceVersion=1):Promise<void>{
+ const operation=saveChain.then(async()=>{
+  if(storageBlocked||importBusy)throw Error('Penyimpanan belum tersedia. Perubahan belum diterapkan.');
+  try{
+   const next=action==='wear'?validateOwnedAppearance(value,economy?.owned??[]):appearance;
+   const result=await saveGame({...currentGame(),appearance:next},action==='buy'?{purchase:{itemId:value as string,priceVersion}}:{});
+   economy=result.economy;saveRevision=result.saveRevision;walletUI.commit(economy,result.coinGrants);
+   if(action==='wear'){appearance=next;world?.setPlayerAppearance(appearance);}
+   document.body.dataset.saveState='committed';saveLabel('● Penampilan dan dompet tersimpan');
+  }catch(e){if(e instanceof CosmeticPurchaseError)throw e;storageError(e,false);if(e instanceof SaveConflict)throw e;throw Error('Penyimpanan gagal. Saldo, barang dan penampilan belum berubah. Tutup toko lalu muat ulang data tersimpan.');}
+ });
+ saveChain=operation.catch(()=>{});return operation;
+}
+const cosmeticStudio={
  get:()=>appearance,
  lock:()=>{openPanel('Penampilan','');closePanel();clearInput();if(world)world.paused=true;},
- unlock:()=>{clearInput();if(world){world.endInteraction();world.paused=!started;}},
- preview:(a,stage)=>world?.showWardrobe(a,stage),rotate:a=>world?.rotateWardrobe(a),end:()=>world?.closeWardrobe(),
- apply:async a=>{if(storageBlocked)throw new Error('Penyimpanan belum tersedia. Penampilan belum diterapkan.');const old=appearance;appearance=parseAppearance(a,a);persist();await saveChain;if($('save-status').classList.contains('failed')){appearance=old;throw new Error('Penampilan belum tersimpan. Coba lagi.');}world?.setPlayerAppearance(appearance);},
+ unlock:()=>{clearInput();if(world){world.endInteraction();world.paused=!started||storageBlocked;}},
+ preview:(a:Appearance,stage:HTMLElement)=>world?.showWardrobe(a,stage),rotate:(a:number)=>world?.rotateWardrobe(a),end:()=>world?.closeWardrobe(),
+ apply:(a:Appearance)=>saveCosmeticChange('wear',a),
+};
+const wardrobeUI=createWardrobeUI({...cosmeticStudio,owned:()=>economy?.owned??[]});
+const shopUI=createCosmeticShopUI({...cosmeticStudio,wallet:()=>economy,allowed:()=>!!world&&world.region==='town'&&insideShop(world.position)&&!storageBlocked,
+ buy:(id,version)=>saveCosmeticChange('buy',id,version),
 });
 function settings() {
   world?.endInteraction();
@@ -603,9 +624,9 @@ function settings() {
   $('export').onclick = async () => {
     await saveChain;if(importBusy)return;if(!economy){$('settings-feedback').textContent='Data belum dapat dibaca. Cadangan kosong tidak dibuat; data lama tetap disimpan.';return;}
     const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup(currentGame()), null, 2)], { type: 'application/json' }));
-    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-cadangan-v19.json'; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'jelajah-sains-cadangan-v20.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    $('settings-feedback').textContent = 'Cadangan v19 dibuat, termasuk profil, dompet, bukti hadiah dan penampilan. Simpan berkas di tempat yang aman.';
+    $('settings-feedback').textContent = 'Cadangan v20 dibuat, termasuk profil, dompet, bukti hadiah dan penampilan. Simpan berkas di tempat yang aman.';
   };
   $('import').onclick = () => $<HTMLInputElement>('import-file').click();
   async function applyImport(raw:unknown,replaceProfile=false){
@@ -621,7 +642,7 @@ function settings() {
     appearance=g.appearance??appearance;world?.setPlayerAppearance(appearance);progress=g.M01;garden=g.M14;travel=g.world;rimba=g.Rimba;river=g.S13;buoyancy=g.S14;irrigation=g.S15;workshop=g.M17E1;electromagnet=g.M17E2;energy=g.M17E3;coastal=g.S16;pressure=g.M16E1;hydraulic=g.M16E2;solid=g.M16E3;pontoon=g.M16E4;geopark=g.M13;space=g.M07;marketCarryMm=0;market=g.M02;clearInput();
     world?.setRimba(rimba);world?.setRegion(travel.region);refreshWorld();updateRegionUI();updateMission();saveLabel('● Tersimpan · cadangan dan dompet');
       $('settings-feedback').textContent = (imported.scope==='M01'?'Cadangan valid dimuat: hanya M01 versi 1. M14, Pos Rimba, dan wilayah saat ini tetap dipertahankan. S13 juga tetap tersimpan.':imported.scope==='both'?'Cadangan valid dimuat: M01 dan M14 versi 2. Pos Rimba tetap dipertahankan. S13 juga tetap tersimpan.':imported.scope==='three'?'Cadangan valid dimuat: M01, M14, Pos Rimba, dan wilayah versi 3 dipulihkan. S13 tetap tersimpan.':imported.scope==='four'?'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, dan wilayah versi 4 dipulihkan.':imported.scope==='five'?'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, S14, dan wilayah versi 5 dipulihkan.':imported.scope==='six'?'Cadangan valid dimuat: enam misi lama versi 6; M17-E1 tetap dipertahankan.':imported.scope==='seven'?'Cadangan valid dimuat: tujuh misi/episode versi 7; M17-E2 tetap dipertahankan.':imported.scope==='eight'?'Cadangan valid dimuat: delapan misi versi 8; M17-E3 tetap dipertahankan.':imported.scope==='nine'?'Cadangan valid versi 9 dimuat. S16 yang tidak tercakup tetap dipertahankan.':imported.scope==='ten'?'Cadangan valid versi 10 dimuat. M16-E1 dan M16-E2 yang tidak tercakup tetap dipertahankan.':imported.scope==='eleven'?'Cadangan valid versi 11 dimuat. M16-E2 dan M16-E3 yang tidak tercakup tetap dipertahankan.':imported.scope==='sixteen'?'Cadangan valid versi 16 dimuat. M02 yang tidak tercakup tetap dipertahankan.':imported.scope==='fifteen'?'Cadangan valid versi 15 dimuat. M07 yang tidak tercakup tetap dipertahankan.':imported.scope==='fourteen'?'Cadangan valid versi 14 dimuat. M13 yang tidak tercakup tetap dipertahankan.':imported.scope==='thirteen'?'Cadangan valid versi 13 dimuat. M16-E4 yang tidak tercakup tetap dipertahankan.':imported.scope==='twelve'?'Cadangan valid versi 12 dimuat. M16-E3 yang tidak tercakup tetap dipertahankan.':'Cadangan valid dimuat: M01, M14, Pos Rimba, S13, S14, S15, M17-E1, M17-E2, M17-E3, S16, M16-E1, M16-E2, M16-E3, M16-E4, M13, M07, M02, dan wilayah dipulihkan. Hadiah pertama tidak digandakan.')+(imported.scope!=='all'?' M17-E1, M17-E2, M17-E3, S16, M16-E1, M16-E2, M16-E3, M16-E4, M13, M07, M02, dan misi lain yang tidak tercakup tetap dipertahankan.':'');
-      $('settings-feedback').textContent+=' Cadangan v19 memuat profil dan dompet; v18 memuat penampilan; cadangan lama mempertahankan penampilan saat ini. ID yang tidak dikenal memakai pilihan aman.';
+      $('settings-feedback').textContent+=' Cadangan v20 memuat pembelian, kepemilikan, profil dan dompet; v19 memuat hadiah koin; v18 memuat penampilan; cadangan lama mempertahankan penampilan saat ini. ID yang tidak dikenal memakai pilihan aman.';
     $('settings-feedback').append(document.createTextNode(' Dompet direkonsiliasi berdasarkan riwayat transaksi; saldo tidak dijumlahkan.'));
    }catch(error){
     if(error instanceof ProfileReplacementRequired){
@@ -742,6 +763,7 @@ async function initialize() {
       $<HTMLButtonElement>('interact').disabled = !place;
     };
     clearInput = bindInput(world, $('joystick'), interaction, key => {
+      if(shopUI.isOpen()){if(key==='escape')shopUI.cancel();return;}
       if(wardrobeUI.isOpen()){if(key==='escape')wardrobeUI.cancel();return;}
       if (key === 'escape') { if(buoyancyUI.trial.phase!=='idle'){buoyancyUI.cancel();return;} if(irrigationUI.sampling.phase!=='idle'){irrigationUI.cancel();return;} if(riverUI.session.active){riverUI.cancel();return;} if (panel.open) closePanel(); else if (started) settings(); return; }
       if (!started || panel.open) return;
