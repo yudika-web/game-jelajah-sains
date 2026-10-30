@@ -447,6 +447,7 @@ export class World {
     if(fromGate&&region==='town'&&previous==='space'){this.position.set(2,0,-8.4);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
     if(fromGate&&region==='river'&&previous==='coast'){this.position.set(0,0,12);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
     this.player.position.copy(this.position); this.canvas.dataset.region = region;
+    const regionGeometries=new Set<THREE.BufferGeometry>();this.regionRoot.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line||o instanceof THREE.Points)regionGeometries.add(o.geometry);});this.canvas.dataset.regionGeometryCount=String(regionGeometries.size);
   }
   private updateRimbaCamera() {
     this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z>20?1.2:o.width===4?3.5:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));

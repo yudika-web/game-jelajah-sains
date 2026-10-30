@@ -13,6 +13,7 @@ export function createWalletUI(ctx:Context){
  }
  button.onclick=show;button.disabled=true;
  return {show,started:showNotice,commit(next:Economy,grants:CoinReceipt[]=[],migration=false){
+  if(wallet&&wallet.profileId!==next.profileId){pending='';notice.textContent='';notice.hidden=true;clearTimeout(timer);}
   wallet=structuredClone(next);balance.textContent=number(wallet.balance);button.disabled=false;button.setAttribute('aria-label',`Dompet: ${number(wallet.balance)} koin`);
   if(grants.length){const sum=grants.reduce((s,r)=>s+r.amount,0);pending=migration?`Progres lama diakui — +${number(sum)} koin dari ${grants.length} misi: ${grants.map(r=>r.missionId).join(', ')}.`:`Misi selesai — +${number(sum)} koin (${grants.map(r=>r.missionId).join(', ')}).`;showNotice();}
  }};

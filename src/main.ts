@@ -450,9 +450,10 @@ async function changeRegion(target: RegionId) {
   $('travel-transition').textContent=`Menuju ${regions[target].name}…`;$('travel-transition').hidden=false;
   if(!world.reducedMotion) await new Promise(resolve=>setTimeout(resolve,300));
   try {
-    world.setRegion(target,true);travel.region=target;travel.activeMission=travel.activeMission==='M02'&&target==='town'?'M02':target==='space'||travel.activeMission==='M07'&&target==='town'?'M07':travel.activeMission==='M13'&&target==='workshop'?'M13':target==='geopark'?'M13':target==='coast'?'S16':target==='workshop'?'M17-E1':target==='garden'?'M14':target==='rimba'?'W03-LOG01':target==='river'?'S13':'M01';
-    refreshWorld();updateRegionUI();updateMission();persist();
-  } finally {$('travel-transition').hidden=true;travelling=false;world.paused=!started;}
+    const previousTravel={...travel};travel={region:target,activeMission:travel.activeMission==='M02'&&target==='town'?'M02':target==='space'||travel.activeMission==='M07'&&target==='town'?'M07':travel.activeMission==='M13'&&target==='workshop'?'M13':target==='geopark'?'M13':target==='coast'?'S16':target==='workshop'?'M17-E1':target==='garden'?'M14':target==='rimba'?'W03-LOG01':target==='river'?'S13':'M01'};
+    persist();await saveChain;if(storageBlocked){travel=previousTravel;return;}
+    world.setRegion(target,true);refreshWorld();updateRegionUI();updateMission();
+  } finally {$('travel-transition').hidden=true;travelling=false;world.paused=!started||storageBlocked;}
 }
 function dispatchGarden(event: GardenEvent, place?: PlaceId) {
   if(place) {
