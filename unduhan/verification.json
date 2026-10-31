@@ -1,15 +1,17 @@
 {
-  "checkedAtUTC": "2026-10-29T10:19:21.082070+00:00",
-  "gameSourceCommit": "9b5da7e3c4d4c9af3ca6a7fdc6b904aabbf26252",
-  "visualStage": 4,
-  "backupFormat": 18,
-  "bytes": 613737,
-  "sha256": "52777b92a51315b4240cf793f3f5164149ceef253c86bc4e933b6a4ce71521d7",
+  "checkedAtUTC": "2026-10-31T23:18:08.977537+00:00",
+  "gameSourceCommit": "67c23b87ae6559fcbc76705adc8e16698636987c",
+  "visualStage": 9,
+  "backupFormat": 20,
+  "bytes": 649601,
+  "sha256": "206fd0dae839ded6add2615b48698ece2345923ad5525ba2ddbe6bb1f2e31ec8",
   "members": 20,
-  "maxMemberLength": 43,
+  "maxMemberLength": 40,
   "crc": "passed",
+  "manifestHashes": "passed",
+  "matchesPreparedDist": true,
   "launcherTests": 16,
-  "browserTests": 2,
+  "browserTests": 5,
   "browserViewports": [
     [
       1280,
@@ -21,9 +23,10 @@
     ]
   ],
   "extractedInUnicodeSpacedFolder": true,
+  "externalNetworkBlockedForBrowserTests": true,
   "npmRequiredForPlayer": false,
   "nodeRequired": ">=22.12.0",
-  "distMatchesVisualStage04Release": true,
-  "allThreeSpaceTexturesLoadedOffline": true,
-  "physicalWindowsExplorerTested": false
+  "physicalWindowsExplorerTested": false,
+  "physicalLANTested": false,
+  "physicalHPIFPTested": false
 }

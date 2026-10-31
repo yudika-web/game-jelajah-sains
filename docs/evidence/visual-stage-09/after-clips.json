@@ -1,0 +1,58 @@
+[
+  {
+    "file": "after-coast.mp4",
+    "durationSeconds": 22.72,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "500cf283cacf0c699b70c256e5425ddd1a7ff4b58ce4acde504fdfd52137e6a6"
+  },
+  {
+    "file": "after-garden.mp4",
+    "durationSeconds": 26.08,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "d7640e4bcc7f191a064d649bd848c66fd2ec90cba6a393f7848f06c6f3c07bea"
+  },
+  {
+    "file": "after-geopark.mp4",
+    "durationSeconds": 23.28,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "cdd28ae40a173537ad69e47107bcfe93749144fdd90f7959e8749a416a2c7898"
+  },
+  {
+    "file": "after-rimba.mp4",
+    "durationSeconds": 23.92,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "1350de4bd0461cf8de2474f0bc515d47c919a33179c99cb18e98c14d99b5c721"
+  },
+  {
+    "file": "after-river.mp4",
+    "durationSeconds": 22.4,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "0c520d2915383be44fbf0acb614ddfd06e3e2b58477770acf2deeea9945de908"
+  },
+  {
+    "file": "after-space.mp4",
+    "durationSeconds": 35.76,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "90d6fdbf922f6987029f7ff54d829bf8560b54d18bf71bf744b4ec73be7e729d"
+  },
+  {
+    "file": "after-town.mp4",
+    "durationSeconds": 28.04,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "474b1f5e78d192fbe92a9c04a1e3588796d7035d81d6c6924673cafae5c2f70e"
+  },
+  {
+    "file": "after-workshop.mp4",
+    "durationSeconds": 22.2,
+    "trimStartSeconds": 8,
+    "retimed": false,
+    "sha256": "c21a60e56f9938d4e4ddf2308586d53f14f7b1cfc5d7d5873942f72bb5de098f"
+  }
+]

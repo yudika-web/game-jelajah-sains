@@ -1,0 +1,179 @@
+{
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "garden": {
+        "owned": 118,
+        "geometries": 104,
+        "textures": 39,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "rimba": {
+        "owned": 186,
+        "geometries": 111,
+        "textures": 40,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "river": {
+        "owned": 217,
+        "geometries": 111,
+        "textures": 48,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "workshop": {
+        "owned": 258,
+        "geometries": 145,
+        "textures": 48,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "geopark": {
+        "owned": 107,
+        "geometries": 96,
+        "textures": 50,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "town": {
+        "owned": 138,
+        "geometries": 109,
+        "textures": 56,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "coast": {
+        "owned": 170,
+        "geometries": 136,
+        "textures": 53,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "space": {
+        "owned": 141,
+        "geometries": 113,
+        "textures": 72,
+        "roots": "1",
+        "avatars": "1"
+      }
+    },
+    {
+      "garden": {
+        "owned": 118,
+        "geometries": 118,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "rimba": {
+        "owned": 186,
+        "geometries": 125,
+        "textures": 50,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "river": {
+        "owned": 217,
+        "geometries": 121,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "workshop": {
+        "owned": 258,
+        "geometries": 153,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "geopark": {
+        "owned": 107,
+        "geometries": 102,
+        "textures": 50,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "town": {
+        "owned": 138,
+        "geometries": 109,
+        "textures": 56,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "coast": {
+        "owned": 170,
+        "geometries": 136,
+        "textures": 53,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "space": {
+        "owned": 141,
+        "geometries": 136,
+        "textures": 53,
+        "roots": "1",
+        "avatars": "1"
+      }
+    },
+    {
+      "garden": {
+        "owned": 118,
+        "geometries": 118,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "rimba": {
+        "owned": 186,
+        "geometries": 125,
+        "textures": 50,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "river": {
+        "owned": 217,
+        "geometries": 121,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "workshop": {
+        "owned": 258,
+        "geometries": 153,
+        "textures": 52,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "geopark": {
+        "owned": 107,
+        "geometries": 102,
+        "textures": 50,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "town": {
+        "owned": 138,
+        "geometries": 109,
+        "textures": 56,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "coast": {
+        "owned": 170,
+        "geometries": 136,
+        "textures": 53,
+        "roots": "1",
+        "avatars": "1"
+      },
+      "space": {
+        "owned": 141,
+        "geometries": 113,
+        "textures": 72,
+        "roots": "1",
+        "avatars": "1"
+      }
+    }
+  ]
+}

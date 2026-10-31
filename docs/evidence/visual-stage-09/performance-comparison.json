@@ -1,0 +1,257 @@
+{
+  "physicalDevice": false,
+  "renderer": "Chromium Linux ANGLE SwiftShader; software rasterization",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "conditions": "Same fixture, spawn, camera yaw 0.25, Normal / DPR 1; three 1.8s RAF samples per region; no video, screenshot, test or build during measurement; baseline and current run sequentially. Low is current code only.",
+  "baselineCommit": "d89eede17bae1890c79bb64b5357d06f14ac4bb9",
+  "gameSourceCommit": "67c23b87ae6559fcbc76705adc8e16698636987c",
+  "node": "v24.19.0",
+  "chromium": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "cpu": "AMD EPYC 9V45 96-Core Processor",
+  "logicalCPUs": 4,
+  "rows": [
+    {
+      "region": "garden",
+      "perf-before": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 184,
+        "triangles": 6226,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 249,
+        "triangles": 11770,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 50,
+        "p95Ms": 83.20000000000073,
+        "drawCalls": 206,
+        "triangles": 10300,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "rimba",
+      "perf-before": {
+        "medianMs": 49.899999999999636,
+        "p95Ms": 66.69999999999891,
+        "drawCalls": 142,
+        "triangles": 6552,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 50,
+        "p95Ms": 83.29999999999927,
+        "drawCalls": 172,
+        "triangles": 10756,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 168,
+        "triangles": 10028,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "river",
+      "perf-before": {
+        "medianMs": 49.899999999999636,
+        "p95Ms": 83.29999999999927,
+        "drawCalls": 168,
+        "triangles": 5714,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 231,
+        "triangles": 8450,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 190,
+        "triangles": 7144,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "workshop",
+      "perf-before": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 195,
+        "triangles": 4912,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 49.99999999999818,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 233,
+        "triangles": 7030,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 50,
+        "p95Ms": 66.70000000000073,
+        "drawCalls": 192,
+        "triangles": 5768,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "geopark",
+      "perf-before": {
+        "medianMs": 33.399999999999636,
+        "p95Ms": 66.60000000000218,
+        "drawCalls": 163,
+        "triangles": 4554,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 49.899999999999636,
+        "p95Ms": 66.60000000000036,
+        "drawCalls": 226,
+        "triangles": 6942,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 33.399999999999636,
+        "p95Ms": 50.100000000000364,
+        "drawCalls": 183,
+        "triangles": 5464,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "town",
+      "perf-before": {
+        "medianMs": 83.29999999999927,
+        "p95Ms": 100,
+        "drawCalls": 372,
+        "triangles": 13520,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 66.70000000000073,
+        "p95Ms": 83.39999999999964,
+        "drawCalls": 377,
+        "triangles": 14038,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 66.70000000000073,
+        "p95Ms": 100.10000000000036,
+        "drawCalls": 370,
+        "triangles": 13450,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "coast",
+      "perf-before": {
+        "medianMs": 33.400000000001455,
+        "p95Ms": 66.60000000000036,
+        "drawCalls": 192,
+        "triangles": 4452,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 33.400000000001455,
+        "p95Ms": 66.60000000000036,
+        "drawCalls": 191,
+        "triangles": 4768,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 49.900000000001455,
+        "p95Ms": 66.60000000000218,
+        "drawCalls": 191,
+        "triangles": 4768,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    },
+    {
+      "region": "space",
+      "perf-before": {
+        "medianMs": 83.30000000000109,
+        "p95Ms": 100,
+        "drawCalls": 164,
+        "triangles": 56112,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-after": {
+        "medianMs": 83.30000000000109,
+        "p95Ms": 100,
+        "drawCalls": 164,
+        "triangles": 56112,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "normal"
+      },
+      "perf-low": {
+        "medianMs": 66.69999999999891,
+        "p95Ms": 83.39999999999964,
+        "drawCalls": 158,
+        "triangles": 16714,
+        "pixelRatio": 1,
+        "cameraYaw": "0.250",
+        "quality": "low"
+      }
+    }
+  ]
+}

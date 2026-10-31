@@ -1,0 +1,53 @@
+{
+  "gameSourceCommit": "67c23b87ae6559fcbc76705adc8e16698636987c",
+  "backupFormat": 20,
+  "indexedDBSchema": 2,
+  "unit": {
+    "command": "npm test",
+    "passed": 889,
+    "files": 30
+  },
+  "launcher": {
+    "command": "npm run test:launcher",
+    "passed": 16
+  },
+  "build": "npm run build: passed",
+  "productionPreparation": "npm run prepare:local: passed; previous dist retained until replacement validated",
+  "browser": [
+    {
+      "command": "npm run test:e2e -- tests/visualStage09.spec.ts",
+      "passed": 7
+    },
+    {
+      "command": "npm run test:e2e -- tests/garden.spec.ts tests/rimba.spec.ts tests/river.spec.ts tests/workshop.spec.ts tests/geopark.spec.ts tests/space.spec.ts tests/electromagnet.spec.ts tests/energy.spec.ts --grep \"M14 IFP complete|W03 IFP:|W04 IFP complete|W06 IFP complete|M13 complete|M07 complete|M17-E2 IFP:|M17-E3 IFP complete\"",
+      "passed": 8
+    },
+    {
+      "command": "npm run test:e2e -- tests/garden.spec.ts tests/energy.spec.ts --grep \"M14 IFP complete|M17-E3 IFP complete\"",
+      "passed": 2,
+      "reason": "Repeat affected full flows after final activity clock correction"
+    },
+    {
+      "command": "npm run test:e2e -- tests/running.spec.ts tests/boat.spec.ts tests/pressure.spec.ts tests/swimming.spec.ts tests/visualStage05.spec.ts tests/visualStage06.spec.ts tests/visualStage01.spec.ts tests/visualStage02.spec.ts --grep \"keyboard: actual|panels, editable|IFP runs|school wall|HP toggle|laptop boat:|laptop ROV:|laptop swimming:|stage05: watched trip|stage06: actual kit|stage 01 joined|stage 02: all Town\"",
+      "passed": 12
+    },
+    {
+      "command": "npm run test:e2e -- tests/runtimePackage.spec.ts",
+      "passed": 5,
+      "externalNetworkBlocked": true
+    }
+  ],
+  "fullBrowserSuiteRerun": false,
+  "physicalDeviceTested": false,
+  "rendering": "Chromium Linux SwiftShader",
+  "visualEvidence": {
+    "screenshots": 52,
+    "videos": 16,
+    "fromGame": true,
+    "mockups": false
+  },
+  "knownWarnings": [
+    "THREE.Clock deprecation",
+    "Vite chunk-size warning"
+  ]
+}

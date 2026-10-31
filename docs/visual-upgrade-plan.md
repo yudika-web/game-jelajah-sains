@@ -1,6 +1,6 @@
 # Rencana pembaruan visual Jelajah Sains
 
-Diperbarui 29 Oktober 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v18 (termasuk penampilan), satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01–04** sudah diimplementasikan; tahap saat ini hanya **04**.
+Diperbarui 1 November 2026 (Asia/Bangkok). Dasar aktual: delapan wilayah, 17 misi termasuk M02, cadangan v20 (penampilan, koin dan pembelian), satu renderer/loop dan akar wilayah aktif. Brief lampiran menjadi acuan arah; daftar rencana bukan bukti fitur sudah tersedia. Dokumen ini menetapkan urutan, bukan persetujuan menjalankan seluruh tahap sekaligus. Tahap **01–09** sudah diimplementasikan; pekerjaan saat ini hanya **09**. Tahap 10 menunggu lingkup berikutnya.
 
 ## Arah seni dan proporsi
 
@@ -10,7 +10,7 @@ Satu unit dunia kira-kira satu meter. Pertahankan siswa/siswi 1,60; tinggi mento
 
 ## Palet delapan wilayah
 
-Palet berikut adalah sasaran tahapan mendatang, **belum diterapkan sekaligus**. Warna objek eksperimen tidak boleh menyamarkan data atau menjadi satu-satunya penanda jawaban.
+Palet berikut memandu identitas wilayah; implementasi tahap 09 menyesuaikan warna dasar yang sudah ada, tanpa mengganti seluruh aset lama sekaligus. Warna objek eksperimen tidak boleh menyamarkan data atau menjadi satu-satunya penanda jawaban.
 
 | Wilayah | Dasar / bentuk utama | Aksen / fungsi |
 | --- | --- | --- |
@@ -41,9 +41,10 @@ Shadow map dinamis belum aktif pada baseline. Bayangan kontak karakter tetap ada
 | Bayangan kontak / jarak kamera | tetap | tetap |
 | Detail Kota (tahap 02) | 3 warga dekoratif + 24 bunga instanced | 2 warga; pejalan dan bunga opsional disembunyikan |
 | W08 (tahap 04) | Bumi/Matahari 64×40, Bulan 48×32; halo dan atmosfer | bola 32×20, tanpa halo/atmosfer, awan diperingan |
+| Tambahan tahap 09 | 1 aktor di masing-masing Kebun/Rimba/Sungai/Bengkel/Geopark/Antariksa; ≤6 daun bergerak | aktor tambahan dan latar opsional disembunyikan; objek misi tetap |
 | Tujuan | keterbacaan normal | mengurangi jumlah piksel dan detail opsional |
 
-Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar DPR 1 keduanya bisa sama. Rendah dapat memperjelas gerigi tepi; pengaturan bukan obat z-fighting atau jaminan FPS. Preferensi `lowQuality` lama tetap kompatibel di localStorage terpisah dari progres IndexedDB; cadangan kini v18 dengan penampilan terpisah dari misi. Pengurangan gerakan tetap opsi tersendiri.
+Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar DPR 1 keduanya bisa sama. Rendah dapat memperjelas gerigi tepi; pengaturan bukan obat z-fighting atau jaminan FPS. Preferensi `lowQuality` lama tetap kompatibel di localStorage terpisah dari progres IndexedDB; cadangan kini v20 dengan penampilan, dompet dan receipt terpisah dari misi. Pengurangan gerakan tetap opsi tersendiri.
 
 ## Urutan kerja dan gerbang pemeriksaan
 
@@ -55,38 +56,42 @@ Gunakan Pengaturan → Kualitas Rendah; tanpa centang berarti Normal. Pada layar
 6. **Perbaiki bawah laut dan aktivitas menyelam** — **diimplementasikan tahap 06**: teluk pasir/lamun, avatar bersirip, kendali 3D, pengamatan, air stabil dan pemulihan. [Laporan](visual-stage-06-review.md). baca ulang izin gerak air, kamera, keselamatan model dan kompatibilitas ROV.
 7. **Tambahkan koin hadiah misi — diimplementasikan** — registry reward misi/bab, ledger profil, transaksi/revisi, migrasi, Dompet dan cadangan v19. XP tetap terpisah; toko tersedia melalui tahap 08. [Laporan tahap 07](coin-economy-review.md).
 8. **Tambahkan toko kosmetik — diimplementasikan** — butik Kota, 12 barang berbayar, receipt debit/kepemilikan, preview bersama dan cadangan v20. [Laporan tahap 08](cosmetic-shop-review.md).
-9. **Sebarkan detail dan aktivitas ke seluruh wilayah** — gunakan Kota sebagai acuan, satu wilayah per iterasi, batas GPU dan navigasi diperiksa.
+9. **Sebarkan detail dan aktivitas ke seluruh wilayah — diimplementasikan tahap 09** — kit geometri statis, buku/benda fungsional, vegetasi/batuan beragam, satu aktor dekoratif tambahan per wilayah terpilih, tanpa sumber data misi. Lihat [audit delapan wilayah, bukti dan batas pemeriksaan](visual-stage-09-review.md).
 10. **Periksa integrasi keseluruhan** — regresi luas, semua format cadangan, pergantian wilayah, launcher/offline, perangkat dan bukti penutup.
 
 Setiap tahap memiliki commit/review sendiri, bukti dari game aktual, build dan pemeriksaan terdampak. Tahap berikutnya baru dikerjakan atas permintaan berikutnya. Tahap 01–02 tidak menambahkan misi/koin/lemari/toko; tahap 03 menambahkan lemari gratis saja.
 
-## Keadaan setelah tahap 02
+## Riwayat keadaan setelah tahap 02
 
-Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Tahap 03 sudah tersedia. Tahap 04–06 tersedia; tahap 07 dan seterusnya menunggu permintaan berikutnya.
+Kota menjadi contoh kualitas awal: geometri lokal bervariasi, palet 19 warna bersama, fasad yang terbaca dan aktivitas terbatas dalam loop yang sama. Tajuk koplanar lama dan volume kamera meja yang terlalu tinggi diperbaiki. Palet sasaran pada tabel tetap panduan artistik, bukan kewajiban mengubah seluruh wilayah sekaligus. Tinjau performa pada perangkat sasaran sebelum menyebarkan detail ke wilayah lain. Catatan ini adalah keadaan historis tahap 02. Ringkasan terkini ada di awal dokumen dan laporan tahap 09.
 
-## Keadaan setelah tahap 03
+## Riwayat keadaan setelah tahap 03
 
-Siswa/siswi berbagi tubuh netral 1,60 unit tanpa rambut, topi atau tas dalam pengukuran; NPC legacy dipertahankan. Katalog starter memuat 12 ID gratis yang stabil, kompatibel dengan kedua varian. Preview tidak memakai renderer kedua. Memilih ulang penampilan tidak mengubah kemampuan atau XP. Cadangan v18 menambah record penampilan; versi lama mempertahankan record yang tidak tercakup. Toko, koin, pakaian aktivitas penuh dan perluasan Antariksa/selam belum dibuat.
+Siswa/siswi berbagi tubuh netral 1,60 unit tanpa rambut, topi atau tas dalam pengukuran; NPC legacy dipertahankan. Katalog starter memuat 12 ID gratis yang stabil, kompatibel dengan kedua varian. Preview tidak memakai renderer kedua. Memilih ulang penampilan tidak mengubah kemampuan atau XP. Cadangan v18 menambah record penampilan; versi lama mempertahankan record yang tidak tercakup. Kalimat tahap 03 ini adalah catatan historis: koin/toko serta perlengkapan Antariksa/selam kemudian tersedia pada tahap 05–08.
 
-## Keadaan setelah tahap 04
+## Riwayat keadaan setelah tahap 04
 
 W08 memiliki ruang observasi dengan atap potongan terbuka, tiga konsol berbeda dan alat detail kamera pada renderer yang sama. Daratan berasal dari Natural Earth lokal; awan dan kawah ilustratif. Tampilan dan input tetap terpisah dari bukti M07. Format cadangan tetap v18. Sumber NASA dicoba namun ditolak CONNECT 403; telaah halaman primer masih terbatas. Tidak ada perjalanan astronot, docking atau tahap 05 baru.
 
 
-## Keadaan setelah tahap 05
+## Riwayat keadaan setelah tahap 05
 
 Perjalanan kendaraan dan docking dapat dimainkan pergi/pulang; perlengkapan gratis mempertahankan kostum pribadi. Airlock memiliki penguncian dua pintu. Zona luar stasiun memakai navigasi dan tabrakan tiga dimensi, penambat terbatas dan stabilisasi aktif. Renderer/loop, delapan wilayah, seluruh misi, XP dan format cadangan v18 dipertahankan. Tidak ada kegiatan menyelam, ekonomi atau toko pada tahap ini. Pernyataan tahap 04 tentang belum adanya docking merupakan catatan baseline historis.
 
 
-## Keadaan setelah tahap 06
+## Riwayat keadaan setelah tahap 06
 
 W05 memiliki teluk selam terbatas yang terpisah dari ROV, jalur perahu dan bukti S16. Permukaan memakai bidang dua sisi stabil, kamera memiliki hysteresis air, geometri/material wilayah dibagi, dan perlengkapan memakai rig modular yang sama. Semua data misi/XP serta format cadangan v18 dipertahankan. Koin/toko dan wilayah baru tidak ditambahkan. Pernyataan tahap sebelumnya tentang belum adanya selam manusia merupakan catatan historis.
 
-## Keadaan setelah tahap 07
+## Riwayat keadaan setelah tahap 07
 
 Ekonomi lokal terhubung dengan penyelesaian misi. Registry hanya memuat 12 hadiah misi/bab yang sudah tersedia, bukan seluruh nomor rancangan. Koin dan receipt disimpan atomik dengan progres serta XP; impor mempertahankan ledger append-only dan checkpoint profil. Cadangan kini v19, skema IndexedDB 2. Stage visual 01–06 tetap tersedia. Tahap 08 toko, transaksi belanja, koin harian dan misi baru belum dikerjakan.
 
 
-## Keadaan setelah tahap 08
+## Riwayat keadaan setelah tahap 08
 
-Gaya Penjelajah memakai bangunan dekoratif dalam tapak Kota yang sama, kini dengan pintu nyata dan penghalang dinding. Katalog gratis tidak dikunci ulang. Pembelian menggunakan ledger model 2, cadangan v20, skema IndexedDB tetap 2. Penampilan dunia/lemari/toko/galeri memakai pembangun yang sama. Perlengkapan kegiatan tetap terpisah. Pernyataan belum adanya toko pada laporan tahap 03–07 merupakan baseline historis. Tahap 09–10 belum dikerjakan.
+Gaya Penjelajah memakai bangunan dekoratif dalam tapak Kota yang sama, kini dengan pintu nyata dan penghalang dinding. Katalog gratis tidak dikunci ulang. Pembelian menggunakan ledger model 2, cadangan v20, skema IndexedDB tetap 2. Penampilan dunia/lemari/toko/galeri memakai pembangun yang sama. Perlengkapan kegiatan tetap terpisah. Pernyataan belum adanya toko pada laporan tahap 03–07 merupakan baseline historis. Pada akhir tahap 08, tahap 09–10 belum dikerjakan; keadaan terbaru ada di bawah.
+
+## Keadaan setelah tahap 09
+
+Delapan wilayah memakai identitas bentuk dan perlengkapan masing-masing. Tambahan lingkungan statis digabung menurut material (maksimal 24 batch per kit); tidak ada partikel/lapisan transparan baru atau shadow map tambahan. Aktivitas terbatas memakai rig bersama di loop yang sama, berhenti pada jeda, wilayah nonaktif dan pengurangan gerakan. Tapak benda padat baru dicatat bersama navigasi; detail kecil fasad tidak memperbesar bangunan. Buku Geopark dipindahkan menjauh dari pos untuk mengatasi kamera terjepit. Materi, algoritme bukti, XP, ekonomi v20, penampilan dan mode kendaraan dipertahankan. Tahap 10 belum dijalankan.

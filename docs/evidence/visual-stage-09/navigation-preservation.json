@@ -1,0 +1,70 @@
+{
+  "physicalDevice": false,
+  "method": "Browser UI legacy import, actual map route, interaction, reload; no evidence actions",
+  "regions": [
+    {
+      "region": "garden",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "96",
+      "textures": "18"
+    },
+    {
+      "region": "rimba",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "95",
+      "textures": "14"
+    },
+    {
+      "region": "river",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "100",
+      "textures": "24"
+    },
+    {
+      "region": "workshop",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "129",
+      "textures": "18"
+    },
+    {
+      "region": "geopark",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "83",
+      "textures": "21"
+    },
+    {
+      "region": "town",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "99",
+      "textures": "39"
+    },
+    {
+      "region": "coast",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "110",
+      "textures": "20"
+    },
+    {
+      "region": "space",
+      "roots": "1",
+      "avatars": "1",
+      "geometries": "80",
+      "textures": "30"
+    }
+  ],
+  "preserved": [
+    "17 mission records",
+    "paid appearance",
+    "purchase receipts",
+    "wallet",
+    "M16/M17 proof"
+  ],
+  "errors": []
+}

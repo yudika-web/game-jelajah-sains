@@ -1,5 +1,7 @@
 # Jelajah Sains
 
+**Tahap 09 — Lingkungan delapan wilayah:** Kebun, Rimba, Sungai, Bengkel dan Geopark mendapat variasi vegetasi/batu, bentuk bangunan dan perlengkapan sesuai fungsi; Kota, Pesisir dan Antariksa diselaraskan. Buku di meja, label dekat, aktivitas dekoratif terbatas, serta pilihan Rendah dan pengurangan gerakan. Seluruh misi, koin, kosmetik dan cadangan v20 dipertahankan. [Perbandingan gambar, cuplikan dan hasil pemeriksaan](docs/visual-stage-09-review.md).
+
 **Tahap 08 — Gaya Penjelajah:** butik nyata di Kota dengan 12 kosmetik berbayar, Coba gratis, konfirmasi Beli, lalu Pakai. Kostum 180, rambut 60, aksesori 40 koin; seluruh pilihan dasar dan perlengkapan kegiatan tetap gratis. Peta → Kak Mira · Butik mengantar melalui pintu. Penampilan pada Pengaturan menyediakan semua barang yang sudah dimiliki dari mana pun. [Cara bermain, katalog dan bukti](docs/cosmetic-shop-review.md).
 
 **Tahap 07 — Koin Sains dan hadiah misi**: HUD koin dan Dompet kini tersedia. Misi utama yang sudah diimplementasikan memberi 100 koin sekali, sampingan 30, W03-LOG01 50. M16/M17 memberi koin saat bab lengkap, tanpa koin per episode. XP tetap terpisah. Progres lama yang sah diakui otomatis; reset, reload dan impor ulang tidak menggandakan hadiah. Cadangan aktif **v20**, IndexedDB **skema 2**, tanpa menghapus progres. Butik ditambahkan pada tahap 08. [Aturan, bukti dan pengujian](docs/coin-economy-review.md) · [Panduan cadangan/profil](docs/backup-economy.md).
@@ -12,7 +14,7 @@
 
 **Visual tahap 03 — Lemari Penampilan**: datangi lemari melalui Peta Kota atau buka Pengaturan → Penampilan. Dua pakaian, empat rambut, topi, kacamata dan pilihan tas gratis dapat dicoba, diputar, diterapkan atau dibatalkan. Avatar dunia, preview dan galeri memakai pembangun yang sama. Tinggi tubuh siswa 1,60 unit tidak bergantung kosmetik. Cadangan **v18** menyertakan penampilan; impor **v1–v17** mempertahankannya. [Panduan, katalog, bukti dan pemeriksaan](docs/visual-stage-03-review.md). Pada tahap 03 belum ada koin; tahap 07 kini menambahkan koin, tanpa pembelian.
 
-**Windows: [unduh paket siap main dengan folder pendek](https://github.com/yudika-web/game-jelajah-sains/raw/refs/heads/feat/visual-stage-07/unduhan/JS-Windows.zip)** untuk menghindari `Path too long` saat ekstraksi. Ekstrak ke `C:\Game`, buka folder `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Build sudah tersedia; Node.js masih diperlukan. [Rincian paket](unduhan/README.md).
+**Windows: [unduh paket siap main dengan folder pendek](https://github.com/yudika-web/game-jelajah-sains/raw/refs/heads/feat/visual-stage-09/unduhan/JS-Windows.zip)** untuk menghindari `Path too long` saat ekstraksi. Ekstrak ke `C:\Game`, buka folder `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Build sudah tersedia; Node.js masih diperlukan. [Rincian paket](unduhan/README.md).
 
 **Visual tahap 02 — Kota Sains**: sekolah/perpustakaan, pasar, observatorium, menara air, taman dan benda interaksi kini lebih terbaca; warga membaca, menyapu dan berjalan pada rute pendek. Label tampil dekat, Peta tetap lengkap. Pengaturan Rendah mengurangi detail opsional. [Laporan, perbandingan dan cuplikan](docs/visual-stage-02-review.md). Tidak ada misi, toko atau koin baru.
 
