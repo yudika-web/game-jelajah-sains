@@ -96,6 +96,7 @@ export function buildReferenceCharacter(kind: CharacterKind, placeId?: string, s
     }
     if(style==='undercut'){crown.scale.y=.5;rearCap.scale.y=.60;fringe.visible=false;fringe=hull(hair,'undercut-quiff',[[-.38,.38,.44],[-.38,.56,.40],[.30,.69,.30],[.50,.52,.32],[.48,.36,.43],[-.06,.43,.53],[-.38,.38,.50]],p.hair,false);fringe.name='undercut-quiff';box(hair,[.15,.19,.65],p.hair,-.49,.13,-.1,false).name='cropped-side';}
     if(style==='braid'){
+      const strand=box(hair,[.22,.55,.24],p.hair,.51,-.05,.27,false,.035);strand.rotation.x=-.5;strand.name='braid-root';
       for(let i=0;i<3;i++){const braid=box(hair,[.30,.31,.28],p.hair,.52+(i%2)*.025,-.36-i*.24,.40,false,.04);braid.rotation.z=i%2?.14:-.14;braid.name='braid-link';}
       box(hair,[.30,.08,.28],p.bag,.53,-.95,.40,false).name='braid-tie';
     }
