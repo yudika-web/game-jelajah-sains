@@ -28,7 +28,7 @@ const obstacle = [
   {x:-12,z:13,width:4,depth:3}, // guard hut; door 2.1 m
   {x:5.5,z:11,width:2,depth:1}, // workbench
   ...(['forestSource','receiverA','receiverB','receiverC'] as const).map(id=>{const p=rimbaPlaces.find(p=>p.id===id)!;return{x:p.x,z:p.z-1.2,width:2,depth:1.6};}),
-  ...(['forestMap','capacityBook','supplyNotes','habitatBoard'] as const).map(id=>{const p=rimbaPlaces.find(p=>p.id===id)!;return{x:p.x,z:p.z-.7,width:1.3,depth:.3};}),
+  ...(['forestMap','capacityBook','supplyNotes','habitatBoard'] as const).map(id=>{const p=rimbaPlaces.find(p=>p.id===id)!;return{x:p.x,z:p.z-.7,width:id==='capacityBook'||id==='supplyNotes'?1.45:1.3,depth:id==='capacityBook'||id==='supplyNotes'?.65:.3};}),
 ];
 export const rimbaCartConfig = { walkSpeed:3.4, runSpeed:4.2, radius:1.65, approach:2.8, interaction:3.2, wheelRadius:.27 } as const;
 const areas = new Map<string,NavigationArea>();

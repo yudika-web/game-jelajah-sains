@@ -13,7 +13,7 @@ export const environmentObstacles:Record<RegionId,Obstacle[]>={
 export const ambientBudget={actors:1,movingPlants:6,particles:0,newTransparentLayers:0,staticMaterials:24} as const;
 export const ambientStation={
  garden:{x:6.1,z:-9,kind:'sari',pose:'water',yaw:Math.PI/2},
- rimba:{x:-9.3,z:12,kind:'damar',pose:'measure',yaw:-Math.PI/2},
+ rimba:{x:-9.3,z:12,kind:'wira',pose:'measure',yaw:-Math.PI/2},
  river:{x:1,z:-12,kind:'wira',pose:'fishWait',yaw:Math.PI/2},
  workshop:{x:-12.5,z:2.3,kind:'bima',pose:'measure',yaw:Math.PI},
  geopark:{x:-13,z:8.6,kind:'explorerGirl',pose:'read',yaw:-Math.PI/2},

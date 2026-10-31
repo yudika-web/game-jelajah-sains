@@ -398,7 +398,7 @@ export class World {
         this.npcs.push({id,rig,animator:new CharacterAnimator(rig,2.4),timer:0});
         this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
-      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
+      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.width===2.2&&o.depth===1.2?2.25:o.x===9&&o.z< -6?.95:o.width===.6?1.75:o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
     }
     else if(region==='workshop'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -455,7 +455,7 @@ export class World {
     const regionGeometries=new Set<THREE.BufferGeometry>();this.regionRoot.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line||o instanceof THREE.Points)regionGeometries.add(o.geometry);});this.canvas.dataset.regionGeometryCount=String(regionGeometries.size);
   }
   private updateRimbaCamera() {
-    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z>20?1.2:o.width===4?3.5:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
+    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.5:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
     this.followCamera.setObstacles(this.collisionBoxes);
   }
   setRimba(p:RimbaProgress) {
@@ -612,7 +612,7 @@ export class World {
     this.onPontoonFrame(dt,this.region==='river'&&!document.hidden&&document.hasFocus());this.pontoonView?.frame(this.pontoonProgress,this.pontoonFraction,this.pontoonZ);if(this.pontoonView){this.canvas.dataset.pontoonZ=String(this.pontoonZ);this.canvas.dataset.pontoonLoads='1';this.canvas.dataset.pontoonObjectY=String(this.regionRoot.userData.pontoonObjectY);}
     this.onSolidFrame(dt,this.region==='rimba'&&!document.hidden&&document.hasFocus());this.solidView?.frame(this.solidProgress,this.solidFraction);if(this.solidView){this.canvas.dataset.solidLoads='1';this.canvas.dataset.solidPressure=String(this.regionRoot.userData.solidPressure??'');this.canvas.dataset.solidLoadY=String(this.regionRoot.userData.solidLoadY);this.canvas.dataset.solidSlide=String(this.regionRoot.userData.solidSlide);this.canvas.dataset.solidApplied=String(this.regionRoot.userData.solidApplied);}
     this.onHydraulicFrame(dt,this.region==='workshop'&&!document.hidden&&document.hasFocus());this.hydraulicView?.frame(this.hydraulicProgress,this.hydraulicFraction);if(this.hydraulicView){this.canvas.dataset.hydraulicInput=String(this.regionRoot.userData.hydraulicInputMm);this.canvas.dataset.hydraulicOutput=String(this.regionRoot.userData.hydraulicOutputMm);this.canvas.dataset.hydraulicCrates='1';}
-    this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(document.hidden?0:dt,this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
+    this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(document.hidden||this.paused?0:dt,this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
     this.onElectromagnetFrame(dt,this.region==='workshop'&&!document.hidden);
     this.electromagnetView?.frame(this.electromagnetProgress,this.electromagnetFraction);
     this.riverView?.pool.frame(this.buoyancyTrial);this.canvas.dataset.swimming=String(this.swimming);
@@ -699,7 +699,7 @@ export class World {
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     this.gardenView?.frame(this.paused||document.hidden?0:dt, this.reducedMotion);
-    this.ambientView?.frame(dt,!this.paused&&!document.hidden&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);
+    this.ambientView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus()&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);
     this.canvas.dataset.environmentTime=String(this.ambientView?.root.userData.ambientTime??0);this.canvas.dataset.environmentActors=String(this.ambientView?.actor?.root.visible?1:0);
     this.canvas.dataset.region = this.region;
     this.canvas.dataset.playerHeight = this.playerRig.dimensions.height.toFixed(3);

@@ -22,8 +22,18 @@ export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
   k.box(.08,1.5,.08,'#8e7954',11.6,1.2,8.1,0,0,.12);k.box(.45,.12,.10,'#96aaa4',11.7,.50,8.1);
   k.box(.76,.055,1.7,'#d4c4a2',6.1,.067,-9);
  }
+ if(region==='rimba'){
+  const backdrop=new EnvironmentKit(k.optional);for(let i=0;i<8;i++)backdrop.tree(i%2?-25:25,-13+Math.floor(i/2)*10,i,['#496743','#6c8554']);backdrop.finish();
+  // All supplies stay on the existing hut footprint, clear of the source/cart lane.
+  for(const x of [-13.2,-10.8])for(let row=0;row<2;row++){k.box(.64,.42,.60,'#ac885b',x,.32+row*.43,12.3);for(const dx of [-.26,.26])k.box(.06,.40,.62,'#d0b884',x+dx,.32+row*.43,12.3);}
+  k.box(.72,.08,1.1,'#c0af84',-9.3,.055,12);
+  for(const [x,z]of [[-16,1],[-15,17],[16,3],[-8,-12]]){
+   for(let i=0;i<5;i++)k.box(.32,.025,.14,i%2?'#a18c53':'#8b754d',x-.6+i*.30,-.005,z+.8+(i%2)*.24,0,i*.7,0);
+  }
+  for(let i=0;i<6;i++){const branch=new THREE.Group();branch.position.set(-15.5+i*.12,2.6,17);k.optional.add(branch);k.liveBox(branch,.32,.055,.16,'#718d55',0,0,0);sway.push(branch);}
+ }
  k.finish();
- const station=region==='garden'?ambientStation.garden:undefined;
+ const station=['garden','rimba'].includes(region)?ambientStation[region as keyof typeof ambientStation]:undefined;
  let actor:ReturnType<typeof createCharacter>|null=null,animator:CharacterAnimator|null=null;
  if(station){actor=createCharacter(station.kind);actor.root.name=`ambient-${region}`;actor.root.position.set(station.x,0,station.z);actor.root.rotation.y=station.yaw;actor.root.userData.decorative=true;k.root.add(actor.root);animator=new CharacterAnimator(actor,.9);animator.setPose(station.pose);animator.update(.2,0,true);if(region==='river')actor.tools.rod.visible=true;}
  let time=0;let cycle=-1;

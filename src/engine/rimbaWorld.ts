@@ -1,3 +1,4 @@
+import {EnvironmentKit} from './environmentKit';
 import {addGround,groundSlabs} from './groundLayout';
 import * as THREE from 'three';
 import { cartParking, rimbaCartConfig, rimbaPlaces, forestTrees } from '../data/rimbaRegion';
@@ -16,6 +17,7 @@ export interface RimbaView {
   wheelAngle():number;
 }
 export function buildRimba({root,box:b,label,npc}:Builder):RimbaView {
+  const env=new EnvironmentKit(root);
   const mats=new Map<string,THREE.MeshLambertMaterial>();
   const material=(color:string)=>{if(!mats.has(color))mats.set(color,new THREE.MeshLambertMaterial({color}));return mats.get(color)!;};
   const mesh=(g:THREE.BufferGeometry,c:string,x:number,y:number,z:number,parent:THREE.Object3D=root)=>{const m=new THREE.Mesh(g,material(c));m.position.set(x,y,z);parent.add(m);return m;};
@@ -29,30 +31,41 @@ export function buildRimba({root,box:b,label,npc}:Builder):RimbaView {
   for(const z of [depotZone.minZ,depotZone.maxZ])b(depotZone.maxX-depotZone.minX,.018,.10,'#e9d994',zoneX,.08,z);
   for(const x of [depotZone.minX,depotZone.maxX])b(.10,.018,depotZone.maxZ-depotZone.minZ,'#e9d994',x,.08,zoneZ);
   // Trees stay outside the broad logistics lanes; no particle simulation.
-  for(const [x,z]of forestTrees) {
-    b(.4,2.5,.4,'#71573d',x,1.2,z);b(2.2,1.7,2.2,'#405f43',x,3,z);b(1.6,1.1,1.6,'#65804c',x+.2,4.1,z);
-    b(.9,.45,.8,'#647851',x+1,.2,z+.7);b(.65,.4,.6,'#8f8e73',x-1,.15,z-1);
-  }
+  forestTrees.forEach(([x,z],i)=>{
+    env.tree(x,z,i,['#405f43','#6d8b56']);
+    for(let j=0;j<3;j++){const angle=j*Math.PI*2/3;env.cylinder(.055,.7,'#86684b',x+Math.cos(angle)*.25,.14,z+Math.sin(angle)*.25,Math.cos(angle)*.95,Math.sin(angle)*.95);}
+    env.rock(x+.8,.20,z+.5,.5,.28,.45,'#667d51',i);env.rock(x-.7,.16,z-.6,.45,.24,.35,'#8f8e73',i+1);
+  });
   // Distant affected habitat is behind the permanent boundary, never a playable route.
-  for(let i=0;i<9;i++){b(.4,4,.4,'#635446',-16+i*4,2,-24);b(1.4,1,1.4,'#806b56',-16+i*4,3.5,-24);}
+  for(let i=0;i<9;i++){const x=-16+i*4;env.cylinder(.16,3.4+(i%3)*.4,'#635446',x,1.7,-24);env.cylinder(.08,1.1,'#806b56',x+.20,2.7,-24,0,-.65);}
   const haze=new THREE.Group();root.add(haze);
   for(let i=0;i<3;i++){const m=mesh(new THREE.BoxGeometry(7,3+i,3),'#a58b77',-9+i*9,5+i,-30,haze);m.material=new THREE.MeshLambertMaterial({color:'#9d8d81',transparent:true,opacity:.17,depthWrite:false});}
   label('AREA TERDAMPAK · KHUSUS PETUGAS',0,5,-19,undefined,true);
   // Guard hut at a human scale; 2.1 m door, broad approach and independent blockers.
-  b(4,3.1,3,'#c5bb92',-12,1.55,13);b(4.5,.3,3.5,'#566950',-12,3.2,13);
+  b(4,3.1,3,'#c5bb92',-12,1.55,13);env.roof(-12,3.0,13,4,3,'#566950');
+  for(const x of [-13.85,-10.15])env.box(.14,3.2,.14,'#e2cf9a',x,1.6,14.4);
+  env.box(1.32,2.26,.12,'#e2cf9a',-12,1.13,14.57);
   b(1.1,2.1,.12,'#58644b',-12,1.05,14.57);b(1,.9,.12,'#a0c0b7',-13.1,1.9,14.58);label('POS RIMBA',-12,3.9,13,undefined,true);
   // Open workshop: table and replacement wheel do not block the central cart lane.
   b(2,.12,1,'#9e784e',5.5,.82,11);for(const x of [4.7,6.3])b(.13,.8,.13,'#765c3e',x,.4,11);
   const spare=mesh(new THREE.TorusGeometry(.26,.065,5,12),'#484c42',5.3,1.17,11);spare.rotation.x=.4;
   b(.5,.08,.12,'#9aa7a2',6,1.02,11);b(.13,.10,.44,'#b5a16b',6,1.02,11);
-  for(const id of ['forestMap','capacityBook','supplyNotes','habitatBoard'] as const){const p=rimbaPlaces.find(p=>p.id===id)!;b(.13,1.3,.13,'#816b47',p.x,.65,p.z-.7);b(1.3,.8,.12,p.color,p.x,1.55,p.z-.7);b(.7,.07,.45,'#f1e5ba',p.x,2.02,p.z-.7);}
+  for(const id of ['forestMap','capacityBook','supplyNotes','habitatBoard'] as const){const p=rimbaPlaces.find(p=>p.id===id)!;
+    if(id==='capacityBook'||id==='supplyNotes')env.book(id,p.x,p.z-.7,p.color,id==='supplyNotes');
+    else{b(.13,1.3,.13,'#816b47',p.x,.65,p.z-.7);b(1.3,.8,.12,p.color,p.x,1.55,p.z-.7);}
+  }
+  env.finish();
   b(1.2,.10,.6,'#9e784e',-2,.70,8);b(.13,.7,.13,'#765c3e',-2,.35,8);
   const rackBucket=box(.4,.4,.4,'#bd9852',-2,.95,8);rackBucket.userData.place='bucketRack';
   const water=new Map<string,THREE.Mesh>();
   for(const id of ['forestSource','receiverA','receiverB','receiverC'] as const) {
     const p=rimbaPlaces.find(p=>p.id===id)!, source=id==='forestSource';
     const tank=new THREE.Group();tank.userData.place=id;root.add(tank);
-    box(2,source?2:1.1,1.6,source?'#71958a':'#927b51',p.x,source?1:.55,p.z-1.2,tank).userData.place=id;
+    const h=source?2:1.1,c=source?'#71958a':'#927b51';
+    box(2,.12,1.6,c,p.x,.06,p.z-1.2,tank);
+    for(const dx of [-.94,.94])box(.12,h,1.6,c,p.x+dx,h/2,p.z-1.2,tank);
+    for(const dz of [-.74,.74])box(1.76,h,.12,c,p.x,h/2,p.z-1.2+dz,tank);
+    tank.traverse(n=>n.userData.place=id);
     const w=box(1.83,.08,1.43,'#78b9c1',p.x,source?1.9:.14,p.z-1.2,tank);water.set(id,w);
     const face=box(.7,.8,.04,'#6db9c7',p.x,source?1:.55,p.z-.38,tank);water.set(id+'-gauge',face);
     b(.35,.13,.35,'#d0b379',p.x,source?.65:.35,p.z-.25);
