@@ -1,3 +1,4 @@
+import {environmentObstacles} from './environmentLayout';
 import type {Place} from './content';
 import type {NavigationArea,Point} from '../engine/navigation';
 export const geoMuster={x:0,z:-19};
@@ -17,7 +18,7 @@ export const geoPlaces:Place[]=[
  {id:'geoSignC',name:'Penanda C · potensi jatuhan batu',short:'Periksa jalur C',action:'Periksa kondisi',x:8,z:-10,color:'#b78557'},
  {id:'geoMuster',name:'Titik kumpul · konfirmasi kepada pemandu',short:'Titik kumpul',action:'Konfirmasi tiba',...geoMuster,color:'#4d9279'},
 ];
-const base=[{x:-4,z:12,width:.6,depth:.6},...[[-16,6],[16,6],[-15,-8],[15,-8],[-16,19],[16,19]].map(([x,z])=>({x,z,width:.3,depth:.3})),...[8,14].map(x=>({x,z:12,width:.17,depth:.17})),...Array.from({length:5},(_,i)=>({x:-16,z:-3-i*3,width:2,depth:2})),{x:-12,z:16,width:7,depth:4},{x:13,z:-16,width:5,depth:8},...geoPlaces.filter(p=>['geoEarth','geoDivergent','geoConvergent','geoTransform'].includes(p.id)).map(p=>({x:p.x,z:p.z-.8,width:4,depth:2})),...geoPlaces.filter(p=>['geoBook','geoNotes','geoLandscape','geoMap'].includes(p.id)).map(p=>({x:p.x,z:p.z-.6,width:1.6,depth:.6}))];
+const base=[ ...environmentObstacles.geopark,{x:-4,z:12,width:.6,depth:.6},...[[-16,6],[16,6],[-15,-8],[15,-8],[-16,19],[16,19]].map(([x,z])=>({x,z,width:.3,depth:.3})),...[8,14].map(x=>({x,z:12,width:.17,depth:.17})),...Array.from({length:5},(_,i)=>({x:-16,z:-3-i*3,width:2,depth:2})),{x:-12,z:16,width:7,depth:4},{x:13,z:-16,width:5,depth:8},...geoPlaces.filter(p=>['geoEarth','geoDivergent','geoConvergent','geoTransform'].includes(p.id)).map(p=>({x:p.x,z:p.z-.8,width:4,depth:2})),...geoPlaces.filter(p=>['geoBook','geoNotes','geoLandscape','geoMap'].includes(p.id)).map(p=>({x:p.x,z:p.z-.6,width:1.6,depth:.6}))];
 // Once the exercise starts, the entire hazardous side strips are fenced. Only B remains open.
 export const geoClosures=[{x:-10.5,z:-17,width:16,depth:10},{x:10.5,z:-17,width:16,depth:10}];
 export function geoNavigation(active=false):NavigationArea{return{bounds:{minX:-18,maxX:18,minZ:-22,maxZ:20},obstacles:active?[...base,...geoClosures]:base};}

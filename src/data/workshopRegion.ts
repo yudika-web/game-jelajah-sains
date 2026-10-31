@@ -1,3 +1,4 @@
+import {environmentObstacles} from './environmentLayout';
 import {hydraulicPlaces,hydraulicObstacles} from './hydraulicRegion';
 import {energyPlaces,energyObstacles} from './energyRegion';
 import {electromagnetPlaces,electromagnetObstacles} from './electromagnetRegion';
@@ -21,7 +22,7 @@ export const workshopPlaces:Place[]=[
  {id:'workshopTownGate',name:'Gerbang menuju Kota Sains',short:'Ke Kota Sains',action:'Masuk Kota',x:0,z:16,color:'#758c75'},
 ];
 export const workshopNavigation:NavigationArea={bounds:{minX:-17,maxX:33,minZ:-32,maxZ:36},obstacles:[
- {x:-11,z:-11,width:8,depth:5}, {x:10,z:-12,width:7,depth:5},
+ ...environmentObstacles.workshop, {x:-11,z:-11,width:8,depth:5}, {x:10,z:-12,width:7,depth:5},
  ...hydraulicObstacles,
  ...energyObstacles,
  ...electromagnetObstacles,

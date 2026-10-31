@@ -1,0 +1,39 @@
+import * as THREE from 'three';
+import {EnvironmentKit} from './environmentKit';
+import {createCharacter} from './character';
+import {CharacterAnimator} from './characterAnimator';
+import {ambientStation} from '../data/environmentLayout';
+import type {RegionId} from '../game/gameState';
+/** Decoration has no mission callbacks, inventory, reward or storage reference. */
+export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
+ const k=new EnvironmentKit(parent),sway:THREE.Object3D[]=[];
+ if(region==='garden'){
+  for(const [z,d]of [[-9,3],[-13,2]]){
+   k.box(5,.24,d,'#936844',9,.16,z);k.box(4.75,.06,d-.24,'#684c34',9,.31,z);
+   for(let row=0;row<2;row++)for(let i=0;i<6;i++){
+    const x=7+i*.8,pz=z+(row?1:-1)*(d/2-.45);k.cylinder(.14,.19,'#8a663e',x,.41,pz);
+    k.shape(new THREE.SphereGeometry(1,6,4),row?'#5e8c4e':'#87a957',x,.63,pz,.25,.26,.24);
+   }
+   for(const x of [6.55,11.45])k.box(.13,.30,d+.08,'#c3a577',x,.18,z);
+  }
+  k.sign('KEBUN DEKORATIF · BUKAN PETAK A/B',9,1.20,-7.35,4.3);
+  k.box(.40,.08,8,'#739b9e',12.1,.02,-10.5);for(const x of [11.85,12.35])k.box(.10,.17,8,'#b6a782',x,.02,-10.5);
+  for(let i=0;i<4;i++){k.box(.58,.40,.58,'#b28b58',10.8+i*.34,.30,9.5);k.cylinder(.09,.68,'#718e52',10.8+i*.34,.81,9.5);}
+  k.box(.08,1.5,.08,'#8e7954',11.6,1.2,8.1,0,0,.12);k.box(.45,.12,.10,'#96aaa4',11.7,.50,8.1);
+  k.box(.76,.055,1.7,'#d4c4a2',6.1,.067,-9);
+ }
+ k.finish();
+ const station=region==='garden'?ambientStation.garden:undefined;
+ let actor:ReturnType<typeof createCharacter>|null=null,animator:CharacterAnimator|null=null;
+ if(station){actor=createCharacter(station.kind);actor.root.name=`ambient-${region}`;actor.root.position.set(station.x,0,station.z);actor.root.rotation.y=station.yaw;actor.root.userData.decorative=true;k.root.add(actor.root);animator=new CharacterAnimator(actor,.9);animator.setPose(station.pose);animator.update(.2,0,true);if(region==='river')actor.tools.rod.visible=true;}
+ let time=0;let cycle=-1;
+ return {root:k.root,actor,frame(dt:number,active:boolean,reduced:boolean,low:boolean,player:THREE.Vector3){
+   k.optional.visible=!low;if(actor)actor.root.visible=!low;
+   if(!active||reduced||low)return;
+   time+=Math.min(dt,.25);const next=Math.floor(time/3)%2;
+   if(animator&&station&&next!==cycle){cycle=next;animator.setPose(next===0?station.pose:'none');}
+   if(actor&&animator){const near=Math.hypot(actor.root.position.x-player.x,actor.root.position.z-player.z)<2.5;if(!near){animator.update(dt,0,false);if(region==='river')actor.tools.rod.visible=true;}}
+   for(let i=0;i<sway.length;i++)sway[i].rotation.z=Math.sin(time*.8+i)*.025;
+   k.root.userData.ambientTime=time;
+  }};
+}

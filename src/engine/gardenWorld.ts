@@ -1,3 +1,4 @@
+import {EnvironmentKit} from './environmentKit';
 import * as THREE from 'three';
 import { environmentDimensions } from './characterConfig';
 import { gardenPlaces } from '../data/regions';
@@ -15,6 +16,7 @@ export interface GardenView {
   frame(dt: number, reducedMotion: boolean): void;
 }
 export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
+  const env=new EnvironmentKit(root);
   const mesh = (geometry: THREE.BufferGeometry, color: string, x: number, y: number, z: number, parent: THREE.Object3D = root) => {
     const m = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color })); m.position.set(x, y, z); parent.add(m); return m;
   };
@@ -30,16 +32,22 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   for (const z of [-15.8,18.8]) for (const x of [-9,9]) for(const y of [.45,.95]) b(13.5,.13,.14,'#d0b180',x,y,z);
   // Farmer's lodge and an open-looking nursery, with a clear walking lane between them.
   for (const [x,z,w,d,h,color] of [[-10,9,6,5,3.6,'#e6c899'],[-10,-9,6,5,3.4,'#bbd3b2'],[10,10,5,4,3,'#ddb88c']] as const) {
-    b(w,h,d,color,x,h/2,z); b(w+.6,.48,d+.6,'#67846a',x,h+.1,z);
-    b(environmentDimensions.door.width,environmentDimensions.door.height,.1,'#79694b',x,environmentDimensions.door.height/2,z+d/2+.06);
-    for (const dx of [-w*.3,w*.3]) { b(1.1,1.3,.12,'#eee5bc',x+dx,2,z+d/2+.08); b(.87,1.07,.14,'#8bbaa9',x+dx,2,z+d/2+.10); }
+    if(z===-9){
+      env.box(w,.55,d,'#b0c39c',x,.25,z);
+      for(const dx of [-w/2+.12,w/2-.12])for(const dz of [-d/2+.12,0,d/2-.12])env.box(.12,3.1,.12,'#799980',x+dx,1.55,z+dz);
+      env.roof(x,3,z,w,d,'#bed4c7');
+      for(const dz of [-1.6,0,1.6]){env.box(5.3,.12,.75,'#a78a59',x,.86,z+dz);for(let i=0;i<8;i++){env.cylinder(.11,.16,'#a57b52',x-2.3+i*.65,.99,z+dz);env.rock(x-2.3+i*.65,1.20,z+dz,.19,.22,.17,'#6c9854',i);}}
+      env.sign('RUMAH SEMAI',x,2.63,z+d/2+.12,3.7);
+    }else{
+      b(w,h,d,color,x,h/2,z);env.roof(x,h-.1,z,w,d,'#67846a');
+      env.box(1.35,2.28,.16,'#eee5bc',x,1.14,z+d/2+.09);
+      env.box(environmentDimensions.door.width,environmentDimensions.door.height,.1,'#79694b',x,environmentDimensions.door.height/2,z+d/2+.20);
+      for(const dx of [-w*.3,w*.3]){env.box(1.1,1.3,.12,'#eee5bc',x+dx,2,z+d/2+.08);env.box(.87,1.07,.14,'#8bbaa9',x+dx,2,z+d/2+.15);env.box(.06,1.07,.08,'#eee5bc',x+dx,2,z+d/2+.25);}
+    }
   }
   label('POS BU SARI',-10,4.7,9,undefined,true);
   label('RUMAH SEMAI',-10,4.5,-9,undefined,true);
   label('BENIH & ALAT',10,4,10,undefined,true);
-  // Nursery roof ribs and seedlings suggest a sheltered propagation space.
-  for (let x=-12.5;x<=-7.5;x+=1) b(.07,.08,5.4,'#ecedd2',x,3.8,-9);
-  for (let i=0;i<4;i++) { b(.5,.4,.5,'#ba8658',-12+i*1.2,.25,-5.6); b(.1,.6,.1,'#669657',-12+i*1.2,.7,-5.6); }
   // Entry arch and route signs.
   for (const x of [-1.8,1.8]) b(.3,3.4,.3,'#9b754e',x,1.7,16);
   b(4.3,.5,.45,'#648564',0,3.4,16);
@@ -47,9 +55,7 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   for (const [text,x,z] of [['PETAK A & B ↑',1.9,1.7],['← BUKU · TANDON →',1.9,5.5]] as const) {
     b(.14,1.6,.14,'#92744e',x,.8,z); b(2.6,.6,.15,'#6d8b60',x,1.7,z); label(text,x,2.5,z,undefined,true);
   }
-  for (const [x,z] of [[-14,-13],[-14,0],[-14,14],[14,-12],[14,-5],[14,6],[-4,-13],[6,-13]]) {
-    b(.4,2.2,.4,'#93724e',x,1,z); b(2.1,2.2,2.1,'#527e53',x,2.8,z); b(1.6,1,1.6,'#7b9b5b',x+.2,4.1,z);
-  }
+  [[-14,-13],[-14,0],[-14,14],[14,-12],[14,-5],[14,6],[-4,-13],[6,-13]].forEach(([x,z],i)=>env.tree(x,z,i));
   const plants: { group: Group; index: number; seed: THREE.Mesh; stem: THREE.Mesh; leaves: THREE.Mesh[] }[] = [];
   const leafGeometry = new THREE.SphereGeometry(1,6,4).scale(.16,.04,.08);
   const stemGeometry = new THREE.CylinderGeometry(.025,.035,1,6);
@@ -77,13 +83,11 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   b(2.5,.12,1.2,'#aa8155',0,top-.06,-8);
   for(const x of [-1,1]) b(.15,top-.12,.15,'#886a4b',x,(top-.12)/2,-8);
   b(.6,.08,.7,'#f3e7bf',-.4,top+.06,-8); b(.35,.1,.45,'#6d9270',.6,top+.08,-8);
-  for(const [x,y,z] of [[4.5,.4,6],[5.4,.4,6],[5,.95,6]]) b(.75,.7,.75,'#b78c58',x,y,z);
-  b(.5,.05,.6,'#f5df99',5,1.4,6);
-  for(const id of ['gardenBook','fairNotes'] as const) {
-    const p=gardenPlaces.find(p=>p.id===id)!;
-    b(.12,1.5,.12,'#9b7951',p.x,.75,p.z); b(1.5,1,.14,p.color,p.x,1.65,p.z);
-    b(.6,.07,.5,'#faecc9',p.x,2.2,p.z);
-  }
+  for(const x of [4,6])env.box(.12,1.8,.12,'#8e754d',x,.95,5.8);
+  for(const y of [.4,1.05,1.65]){env.box(2.2,.10,1.2,'#b69763',5,y,5.8);for(const x of [4.4,5,5.6])env.box(.42,.27,.44,'#b68a51',x,y+.19,5.8);}
+  env.sign('BENIH & ALAT PINJAMAN',5,2.03,6.1,2.8);
+  for(const id of ['gardenBook','fairNotes'] as const){const p=gardenPlaces.find(p=>p.id===id)!;env.book(id,p.x,p.z-.6,p.color,id==='fairNotes');}
+  env.finish();
   for(const p of gardenPlaces) {
     if(p.id==='sari') npc(p.id,p.x,p.z);
     else if(!['plotA','plotB','townGate'].includes(p.id)) label(p.short,p.x,p.id==='waterTank'?3.7:2.7,p.z,p.id);

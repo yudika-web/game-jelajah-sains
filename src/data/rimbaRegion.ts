@@ -1,3 +1,4 @@
+import {environmentObstacles} from './environmentLayout';
 import {solidPlaces,solidObstacles} from './solidRegion';
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
@@ -19,7 +20,7 @@ export const rimbaPlaces: Place[] = [
 ];
 export const forestTrees=[[-16,-10],[-15,-5],[-16,1],[-16,9],[-15,17],[16,-11],[15,-5],[16,3],[16,12],[7,18],[-8,-12],[-1,-12],[-3,18]];
 const obstacle = [
- ...solidObstacles,
+ ...environmentObstacles.rimba, ...solidObstacles,
   {x:10.8,z:15,width:.3,depth:.3},{x:15.2,z:15,width:.3,depth:.3},
   {x:-6,z:13,width:.6,depth:.6},
   {x:-2,z:8,width:1.2,depth:.6},

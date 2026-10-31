@@ -1,3 +1,4 @@
+import {environmentObstacles} from './environmentLayout';
 import {divePointPlaces} from './diving';
 import {preparationPlaces,evaPlaceList,safeSpaceSpawn} from './spaceExpedition';
 import {spacePlaces,spaceNavigation} from './spaceRegion';
@@ -23,7 +24,7 @@ export const gardenPlaces: Place[] = [
 export const gardenNavigation: NavigationArea = {
   bounds: { minX: -16, maxX: 16, minZ: -15, maxZ: 18 },
   obstacles: [
-    { x: -10, z: 9, width: 6, depth: 5 }, { x: -10, z: -9, width: 6, depth: 5 },
+ ...environmentObstacles.garden,    { x: -10, z: 9, width: 6, depth: 5 }, { x: -10, z: -9, width: 6, depth: 5 },
     { x: 10, z: 10, width: 5, depth: 4 },
     { x: -5, z: -3, width: 4.5, depth: 2.8 }, { x: 5, z: -3, width: 4.5, depth: 2.8 },
     { x: 9, z: 1, width: 2.6, depth: 2.6 },

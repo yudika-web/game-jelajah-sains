@@ -1,3 +1,4 @@
+import {buildRegionalEnvironment} from './regionalEnvironment';
 import {DivingController,UnderwaterEnvironment,diveNavigation,type DiveAction} from './divingController';
 import {buildDivingWorld} from './divingWorld';
 import {diveConfig,diveShore,divePoints,divePointPlaces,diveObstacles,type DivePointId} from '../data/diving';
@@ -183,6 +184,7 @@ export class World {
   pushing=false;
   onRimbaMotion:(distance:number,seconds:number,position:Point)=>void=()=>{};
   private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
+  private ambientView:ReturnType<typeof buildRegionalEnvironment>|null=null;
   private gardenView: GardenView | null = null;
   private marketView:ReturnType<typeof buildMarket>|null=null;private marketProgress=initialMarket();
   private iceParcel=createMarketParcel(this.playerRig.rightArm.toolSocket);marketFocus:PlaceId|null=null;marketFraction=0;private marketCameraPoint=new THREE.Vector3();
@@ -372,7 +374,7 @@ export class World {
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
-    this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceDetail=false;this.spaceInstrumentCamera.reset();this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.ambientView=null;this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceDetail=false;this.spaceInstrumentCamera.reset();this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);(this.scene.fog as THREE.Fog).color.set(sky);this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='space'){
@@ -444,6 +446,7 @@ export class World {
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
     if(fromGate&&region==='river'&&previous==='coast')this.boat.recover();
+    this.ambientView=buildRegionalEnvironment(region==='space'?this.spaceInterior!:this.regionRoot,region);
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
     if(fromGate && region === 'town') { this.position.set(previous==='workshop'?-15:previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='workshop'?-3:previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
     if(fromGate&&region==='town'&&previous==='space'){this.position.set(2,0,-8.4);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
@@ -595,7 +598,7 @@ export class World {
     }
     if(this.riverView){
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
-      this.riverView.frame(document.hidden?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
+      this.riverView.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
     this.onSpaceFrame(dt,this.region==='space'&&!document.hidden&&document.hasFocus());this.spaceView?.frame(this.spaceProgress,this.spaceAngle,this.spaceFocus,this.spaceDetail,this.spaceGuides);document.body.classList.toggle('space-instrument',this.region==='space'&&!!this.spaceFocus);document.body.classList.toggle('space-region',this.region==='space');this.canvas.dataset.spaceDetail=String(this.spaceDetail);this.canvas.dataset.spaceQuality=this.lowQuality?'low':'normal';this.canvas.dataset.spaceGuides=JSON.stringify(this.spaceGuides);this.canvas.dataset.spaceFocus=this.spaceFocus??'';this.canvas.dataset.spaceEarthView=String(this.spaceEarthView);this.canvas.dataset.spaceAngle=String(this.spaceAngle);this.canvas.dataset.spaceModels=this.spaceView?'3':'0';
     if(this.region==='space'&&this.expeditionView){
@@ -686,7 +689,7 @@ export class World {
     }
     if(this.region==='space')for(const label of this.regionLabels){label.visible=!this.spaceFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<9;const width=Math.min(2.6,label.position.distanceTo(this.camera.position)*2*Math.tan(this.camera.fov*Math.PI/360)*Math.min(150,innerWidth*.34)/innerHeight);label.scale.set(width,width/(512/96),1);}
     if(this.region==='geopark')for(const label of this.regionLabels)label.visible=!this.geoFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
-    if(this.region==='workshop')for(const label of this.regionLabels)label.visible=!this.hydraulicFocus;
+    if(this.region==='workshop')for(const label of this.regionLabels){label.visible=!this.hydraulicFocus&&(Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<9||label.userData.place===this.interacting);const distance=label.position.distanceTo(this.camera.position),width=Math.min(2.7,distance*2*Math.tan(this.camera.fov*Math.PI/360)*Math.min(158,innerWidth*.34)/innerHeight);label.scale.set(width,width/(512/96),1);}
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
@@ -695,7 +698,9 @@ export class World {
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
-    this.gardenView?.frame(dt, this.reducedMotion);
+    this.gardenView?.frame(this.paused||document.hidden?0:dt, this.reducedMotion);
+    this.ambientView?.frame(dt,!this.paused&&!document.hidden&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);
+    this.canvas.dataset.environmentTime=String(this.ambientView?.root.userData.ambientTime??0);this.canvas.dataset.environmentActors=String(this.ambientView?.actor?.root.visible?1:0);
     this.canvas.dataset.region = this.region;
     this.canvas.dataset.playerHeight = this.playerRig.dimensions.height.toFixed(3);
     this.canvas.dataset.playerScale = this.playerRig.visual.scale.y.toFixed(6);
