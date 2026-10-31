@@ -19,3 +19,10 @@ export const ambientStation={
  geopark:{x:-13,z:8.6,kind:'explorerGirl',pose:'read',yaw:-Math.PI/2},
  space:{x:-13.5,z:5.2,kind:'explorer',pose:'measure',yaw:Math.PI/2},
 } as const;
+
+/** Outside the permanent fence; these slabs meet the existing terrain at edges only. */
+export const rimbaSceneryGround=[
+ {x:-25,z:1,width:8,depth:43,height:.8,y:-.45,color:'#738361',optional:true},
+ {x:25,z:1,width:8,depth:43,height:.8,y:-.45,color:'#738361',optional:true},
+ {x:0,z:-25.5,width:58,depth:10,height:.8,y:-.45,color:'#86785b',optional:false},
+] as const;

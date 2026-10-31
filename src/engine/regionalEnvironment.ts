@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {EnvironmentKit} from './environmentKit';
 import {createCharacter} from './character';
 import {CharacterAnimator} from './characterAnimator';
-import {ambientStation} from '../data/environmentLayout';
+import {ambientStation,rimbaSceneryGround} from '../data/environmentLayout';
 import type {RegionId} from '../game/gameState';
 /** Decoration has no mission callbacks, inventory, reward or storage reference. */
 export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
@@ -20,20 +20,20 @@ export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
   k.box(.40,.08,8,'#739b9e',12.1,.02,-10.5);for(const x of [11.85,12.35])k.box(.10,.17,8,'#b6a782',x,.02,-10.5);
   for(let i=0;i<4;i++){k.box(.58,.40,.58,'#b28b58',10.8+i*.34,.30,9.5);k.cylinder(.09,.68,'#718e52',10.8+i*.34,.81,9.5);}
   k.box(.08,1.5,.08,'#8e7954',11.6,1.2,8.1,0,0,.12);k.box(.45,.12,.10,'#96aaa4',11.7,.50,8.1);
-  k.box(.76,.055,1.7,'#d4c4a2',6.1,.067,-9);
+  k.box(.76,.055,1.7,'#d4c4a2',6.1,-.0275,-9);
  }
  if(region==='rimba'){
-  const backdrop=new EnvironmentKit(k.optional);for(let i=0;i<8;i++)backdrop.tree(i%2?-25:25,-13+Math.floor(i/2)*10,i,['#496743','#6c8554']);backdrop.finish();
+  const backdrop=new EnvironmentKit(k.optional);for(const s of rimbaSceneryGround)(s.optional?backdrop:k).box(s.width,s.height,s.depth,s.color,s.x,s.y,s.z);for(let i=0;i<8;i++)backdrop.tree(i%2?-25:25,-13+Math.floor(i/2)*10,i,['#496743','#6c8554']);backdrop.finish();
   // All supplies stay on the existing hut footprint, clear of the source/cart lane.
   for(const x of [-13.2,-10.8])for(let row=0;row<2;row++){k.box(.64,.42,.60,'#ac885b',x,.32+row*.43,12.3);for(const dx of [-.26,.26])k.box(.06,.40,.62,'#d0b884',x+dx,.32+row*.43,12.3);}
-  k.box(.72,.08,1.1,'#c0af84',-9.3,.055,12);
+  k.box(.72,.08,1.1,'#c0af84',-9.3,-.04,12);
   for(const [x,z]of [[-16,1],[-15,17],[16,3],[-8,-12]]){
    for(let i=0;i<5;i++)k.box(.32,.025,.14,i%2?'#a18c53':'#8b754d',x-.6+i*.30,-.005,z+.8+(i%2)*.24,0,i*.7,0);
   }
   for(let i=0;i<6;i++){const branch=new THREE.Group();branch.position.set(-15.5+i*.12,2.6,17);k.optional.add(branch);k.liveBox(branch,.32,.055,.16,'#718d55',0,0,0);sway.push(branch);}
  }
  if(region==='river'){
-  k.box(.8,.06,1.1,'#c7b289',1.8,.065,-12);
+  k.box(.8,.06,1.1,'#c7b289',1.8,-.03,-12);
   for(const x of [-12.5,-9.5]){k.box(.16,2.4,.16,'#829889',x,1.2,12.3);k.box(.45,.12,.30,'#cfb777',x,2.3,12.3);}
   k.sign('POS RISET · ALAT PINJAMAN',-11,2.7,12.75,3.4);
  }
@@ -49,13 +49,13 @@ export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
    for(const dx of [-.3,.2]){k.box(.16,.7,.08,'#d9ba68',x+dx,1.52,-7.90);k.box(.36,.14,.12,'#667d80',x+dx,1.9,-7.88);}
   }
   k.box(6,.12,.18,'#75888b',-11,2.55,-8.24);k.cylinder(.09,1.8,'#99aaa3',-14,1.62,-8.18);
-  k.box(1.7,.18,1.4,'#b5aa89',-12.5,.08,2.3);
+  k.box(1.7,.18,1.4,'#b5aa89',-12.5,-.09,2.3);
  }
 
  if(region==='geopark'){
   // Visitor examines an illustrative outcrop, not a colour-based rock identification task.
   k.rock(-15.7,.50,8.6,1.35,.52,.84,'#a49a81',3);k.rock(-15.3,.93,8.5,.92,.44,.70,'#c0ad86',1);
-  k.box(.72,.04,1,'#d2c5a3',-13,.04,8.6);
+  k.box(.72,.04,1,'#d2c5a3',-13,-.02,8.6);
   for(const z of [-1,5,10]){k.box(.12,.7,.12,'#8b795a',-17,.35,z);k.box(.12,.7,.12,'#8b795a',-17,.35,z+1.8);k.box(.10,.10,2,'#b59b70',-17,.74,z+.9);}
   // Small non-colliding ground accents sit within blocked scenic/tree footprints.
   for(const [x,z]of [[16,6],[-16,19],[16,19]]){k.rock(x-.55,.12,z+.5,.4,.18,.35,'#b8a786',2);k.rock(x+.4,.1,z-.4,.24,.13,.3,'#c9b994',3);}

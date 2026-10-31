@@ -2,7 +2,7 @@ import {it,expect,vi} from 'vitest';
 import * as THREE from 'three';
 import {buildRegionalEnvironment} from '../src/engine/regionalEnvironment';
 import {EnvironmentKit} from '../src/engine/environmentKit';
-import {ambientBudget,ambientStation,environmentObstacles} from '../src/data/environmentLayout';
+import {ambientBudget,ambientStation,environmentObstacles,rimbaSceneryGround} from '../src/data/environmentLayout';
 import {rimbaNavigation} from '../src/data/rimbaRegion';
 import {poolEntry,poolSwimmingNavigation} from '../src/data/poolRegion';
 import {docks} from '../src/data/boatRegion';
@@ -60,4 +60,11 @@ it('Geopark book approach avoids the arrival post that previously forced the cam
  const world:any={region:'geopark',geoProgress:initialGeo(),navigation:geoNavigation(true),position,followCamera,stop(){},resetPosition(){throw Error('book approach is not walkable');}};
  World.prototype.setGeopark.call(world,{...initialGeo(),exercise:true});followCamera.update(position,.016,false,true);expect(followCamera.safeDistance).toBeGreaterThan(5);
  followCamera.update(new THREE.Vector3(-11,0,12.4),.016,false,true);expect(followCamera.safeDistance).toBeLessThan(2);
+});
+
+it('Rimba background trees and affected-area silhouettes have terrain without overlapping the active slabs',async()=>{
+ const {groundSlabs}=await import('../src/engine/groundLayout');const slabs=[groundSlabs.rimba,groundSlabs.solid,...rimbaSceneryGround];
+ for(let i=0;i<slabs.length;i++)for(let j=i+1;j<slabs.length;j++){const a=slabs[i],b=slabs[j],dx=Math.min(a.x+a.width/2,b.x+b.width/2)-Math.max(a.x-a.width/2,b.x-b.width/2),dz=Math.min(a.z+a.depth/2,b.z+b.depth/2)-Math.max(a.z-a.depth/2,b.z-b.depth/2);expect(Math.max(0,dx)*Math.max(0,dz)).toBe(0);}
+ for(const x of [-25,25])for(const z of [-13,-3,7,17])expect(slabs.some(s=>Math.abs(x-s.x)<=s.width/2&&Math.abs(z-s.z)<=s.depth/2)).toBe(true);
+ for(const s of slabs)expect(s.y+s.height/2).toBeCloseTo(-.05);
 });

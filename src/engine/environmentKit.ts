@@ -16,7 +16,7 @@ export class EnvironmentKit {
  liveBox(parent:THREE.Object3D,w:number,h:number,d:number,c:string,x:number,y:number,z:number){const m=new THREE.Mesh(this.cube,this.mat(c));m.scale.set(w,h,d);m.position.set(x,y,z);parent.add(m);return m;}
  roof(x:number,y:number,z:number,w:number,d:number,c:string){const slope=.35;for(const side of [-1,1])this.box(w/2+.25,.15,d+.45,c,x+side*w/4,y+.38,z,0,0,-side*slope);this.box(.13,.16,d+.50,'#e6d7b2',x,y+.82,z);}
  tree(x:number,z:number,i:number,palette=['#527653','#78965e']){
-  const h=2.3+(i%4)*.30;this.cylinder(.19,h,'#86684b',x,h/2+.02,z);
+  const h=2.3+(i%4)*.30;this.cylinder(.19,h,'#86684b',x,h/2-.05,z);
   if(i%3===0){this.rock(x,h+.55,z,1.2,1.0,1.0,palette[0],i);this.rock(x+.25,h+1.3,z,.8,.75,.8,palette[1],i+2);}
   else if(i%3===1){this.shape(new THREE.ConeGeometry(1.2,2.6,8),palette[0],x,h+.55,z);this.shape(new THREE.ConeGeometry(.85,1.7,8),palette[1],x,h+1.5,z);}
   else{this.shape(new THREE.SphereGeometry(1,8,5),palette[0],x,h+.5,z,1.4,.65,1.2);this.rock(x-.15,h+1.0,z,.9,.60,.9,palette[1],i);}
