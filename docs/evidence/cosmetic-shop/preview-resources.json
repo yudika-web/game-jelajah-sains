@@ -1,0 +1,23 @@
+{
+  "physicalDevice": false,
+  "cycles": [
+    {
+      "geometries": "136",
+      "textures": "56",
+      "avatars": "1",
+      "regions": "1"
+    },
+    {
+      "geometries": "136",
+      "textures": "56",
+      "avatars": "1",
+      "regions": "1"
+    },
+    {
+      "geometries": "136",
+      "textures": "56",
+      "avatars": "1",
+      "regions": "1"
+    }
+  ]
+}

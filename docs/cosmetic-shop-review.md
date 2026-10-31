@@ -72,3 +72,17 @@ Tidak ada penjualan kembali, refund, transfer, gacha, ekonomi daring atau bonus 
 - [Cuplikan Coba → Beli → Pakai → berjalan → reload](evidence/cosmetic-shop/purchase-wear-reload.mp4), rekaman kontinu browser game, dikompresi dari WebM Playwright ke H.264 tanpa mengganti adegan dengan mockup.
 
 Saat uji awal ditemukan footer HP terpotong 8 px; tata letak/status dibuat terbatas dan diulang sampai seluruh tombol berada dalam viewport. Pesan kegagalan penyimpanan kini Bahasa Indonesia dan mengarahkan pemuatan ulang, sementara transaksi tidak berubah. Build masih memiliki peringatan ukuran chunk Vite dan browser mencatat deprecation `THREE.Clock` yang sudah ada; keduanya bukan kegagalan transaksi.
+
+
+## Hasil regresi dan build serah terima
+
+- `npm run test:e2e`: run luas awal **150 lulus / 152**, dua kegagalan berasal dari ekspektasi nama berkas v19 yang sudah berubah menjadi v20. Kedua asersi diperbarui; alur lengkap M01 dan pengujian backup M14 lulus pada pengulangan berikutnya.
+- Setelah perapian bentuk/kamera: **35 kasus browser lulus** (Kota dan resource antarwilayah, M01/M14, avatar, lemari, pembelian, migrasi dan empat viewport). Jadi dua kegagalan run luas telah diverifikasi selesai, bukan diabaikan.
+- Setelah penyambungan kepang terakhir: **51 unit terdampak lulus**, dan **dua alur visual toko lulus** kembali, termasuk seluruh katalog, resource preview berulang dan rekaman pembelian/pemakaian/reload.
+- `npm run prepare:local` membangun ulang kode final; `npm run test:launcher`: **16 lulus**. Build/typecheck lulus. `npm run test:e2e -- tests/runtimePackage.spec.ts`: **5 lulus** pada ZIP final, dengan permintaan di luar server lokal diblokir. Cakupan: W08/EVA/lemari/galeri pada laptop dan HP, selam/keluar/reload pada dua viewport, serta Beli → Pakai → reload butik. Angka ini terpisah dari pengujian perangkat fisik.
+
+Build paket berasal dari commit `6949e829fcff5a5e13d1581d9353589887c8bfef`. [JS-Windows.zip](../unduhan/JS-Windows.zip) berukuran 644.751 byte, 20 anggota, awalan `JS/`, jalur terpanjang 43 karakter. CRC dan seluruh 19 hash file manifest cocok; [hasil verifikasi](evidence/cosmetic-shop/package-verification.json). Ini paket siap main dengan seluruh aset produksi lokal, tidak menyertakan node_modules, dokumentasi dan rekaman pengembangan. Node.js masih diperlukan. Pengujian ekstraksi dijalankan di Linux, bukan Explorer Windows fisik.
+
+Tambahan tampilan: [tas ekspedisi dari belakang](evidence/cosmetic-shop/item-pack-expedition-back.png), [sanggul dari samping](evidence/cosmetic-shop/item-hair-bun-side.png), dan [kepang dari samping](evidence/cosmetic-shop/item-hair-braid-side.png). Tidak ada tugas tahap 09 yang ditambahkan.
+
+[Ringkasan pemeriksaan terstruktur](evidence/cosmetic-shop/test-summary.json).

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-31",
+  "browserEnvironment": "Chromium Linux / SwiftShader, viewport simulation",
+  "physicalDevicesTested": false,
+  "unit": {
+    "files": 29,
+    "passed": 859
+  },
+  "lastBraidChangeAffectedUnits": 51,
+  "launcherPassed": 16,
+  "fullBrowserRun": {
+    "total": 152,
+    "passed": 150,
+    "failed": 2,
+    "failures": "obsolete v19 download filename expectations; corrected to v20",
+    "resolvedBy": "M01 and M14 backup cases pass in final 35-case run"
+  },
+  "postFitBrowserRunPassed": 35,
+  "lastBraidVisualRecheckPassed": 2,
+  "additionalPersistenceCasesPassed": 3,
+  "finalOfflineZipBrowserPassed": 5,
+  "prepareAndBuild": "passed",
+  "backupVersion": 20,
+  "economyModel": 2,
+  "indexedDBSchema": 2,
+  "runtimeSourceCommit": "6949e829fcff5a5e13d1581d9353589887c8bfef",
+  "knownLimits": [
+    "No physical Windows/HP/IFP/LAN testing",
+    "Total paid catalog 1120 coins; currently implemented rewards maximum 870",
+    "Local system, no tamper-proof backend"
+  ]
+}
