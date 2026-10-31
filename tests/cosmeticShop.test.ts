@@ -11,7 +11,8 @@ import {characterBodyBounds} from '../src/engine/characterModel';
 import {CharacterAnimator} from '../src/engine/characterAnimator';
 import {disposeRegion} from '../src/engine/disposeRegion';
 import {findPath,walkable,townNavigation} from '../src/engine/navigation';
-import {insideShop,shopObstacles} from '../src/data/shopRegion';
+import {buildCosmeticShop} from '../src/engine/cosmeticShopWorld';
+import {insideShop,shopObstacles,shopCameraObstacles} from '../src/data/shopRegion';
 const raw=JSON.parse(readFileSync('tests/fixtures/coin-wallet-stage7.json','utf8'));
 const wallet=()=>parseEconomy(raw.economy),at='2026-10-30T11:30:00.000Z';
 it('migrates authentic v19 wallet to model2 without changing rewards or inventing purchases',()=>{expect(raw.version).toBe(19);expect(raw.economy.version).toBe(1);const w=wallet();expect(w.version).toBe(2);expect(w.balance).toBe(770);expect(w.owned).toEqual([]);expect(w.ledger).toEqual(raw.economy.ledger);});
@@ -33,3 +34,9 @@ it('every previous supported format preserves existing purchases, and mission re
 });
 it('retired paid IDs preserve historical purchase but use safe appearance fallback',()=>{const item=paidCosmetics[0],w=purchaseCosmetic(wallet(),item.id,1,at).economy;try{(item as any).available=false;expect(parseEconomy(w)).toEqual(w);expect(validateOwnedAppearance({...defaultAppearance(),outfit:item.id},w.owned).outfit).toBe('outfit-teal');expect(()=>purchaseCosmetic(wallet(),item.id,1,at)).toThrow('tidak tersedia');}finally{delete (item as any).available;}});
 it('price version must be an integer, no string coercion',()=>{const bad:any=purchaseCosmetic(wallet(),'hair-curls',1,at).economy;bad.ledger.at(-1).priceVersion='1';expect(()=>parseEconomy(bad)).toThrow();});
+
+it('floor meets the same foot plane and braid remains visible in front of the torso instead of inside it',()=>{
+ const root=new THREE.Group();buildCosmeticShop(root);const floor=root.getObjectByName('boutique-floor')!,r=createCharacter('explorer',undefined,{...defaultAppearance(),hair:'hair-braid'});root.updateMatrixWorld(true);r.root.updateMatrixWorld(true);expect(new THREE.Box3().setFromObject(floor).max.y).toBeCloseTo(characterBodyBounds(r).min.y,8);
+ const torso=r.torso.getObjectByName('torso-block')!,links:THREE.Object3D[]=[];r.root.traverse(n=>{if(n.name==='braid-link')links.push(n);});expect(links).toHaveLength(3);for(const link of links)expect(link.getWorldPosition(new THREE.Vector3()).z).toBeGreaterThan(new THREE.Box3().setFromObject(torso).max.z);
+ const wall=root.getObjectByName('gaya-penjelajah')!.children.find(n=>n.position.x===-14.5&&n.position.z===6)!;expect(shopCameraObstacles.find(o=>o.x===-14.5&&o.z===6)!.height).toBeCloseTo(new THREE.Box3().setFromObject(wall).max.y,8);disposeRegion(root);disposeRegion(r.root);
+});

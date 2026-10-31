@@ -26,5 +26,5 @@ export const appearanceCatalog:readonly CosmeticItem[]=[
  ...paidCosmetics,
 ];
 export const cosmeticSlots:readonly CosmeticSlot[]=['outfit','hair','headwear','facewear','backpack'];
-export const slotNames:Record<CosmeticSlot,string>={outfit:'Pakaian',hair:'Rambut',headwear:'Topi',facewear:'Kacamata',backpack:'Tas'};
+export const slotNames:Record<CosmeticSlot,string>={outfit:'Pakaian',hair:'Rambut',headwear:'Aksesori kepala',facewear:'Kacamata',backpack:'Tas'};
 export function cosmetic(id:string){return appearanceCatalog.find(i=>i.id===id);}

@@ -8,7 +8,7 @@ import {evaWalkable} from './evaNavigation';
 import {spaceCameraBoxes} from './spaceStation';
 import {SpaceInstrumentCamera} from './spaceInstrumentCamera';
 import {setTemporaryEquipment} from './character';
-import {shopObstacles} from '../data/shopRegion';
+import {shopCameraObstacles} from '../data/shopRegion';
 import {WardrobePreview} from './wardrobePreview';
 import {appearanceKey,parseAppearance,type Appearance} from '../game/appearance';
 import {disposeRegion as releaseAvatar} from './disposeRegion';
@@ -338,7 +338,7 @@ export class World {
     for (let i = 0; i < 5; i++) b(2.2, 0.05, 0.12, '#987557', 8.4, 0.08, -14 + i * 1.4);
     this.townView=buildTownEnvironment(s);
     this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-11.125,0,-.30),new THREE.Vector3(-9.875,2.1,.30)));
-    for(const o of shopObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o===shopObstacles[5]?.99:2.9,o.z+o.depth/2)));
+    for(const o of shopCameraObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.height,o.z+o.depth/2)));
     for(const house of townBuildings.filter(h=>h.id!=='home'))this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
     for (const place of places) {
       if (place.id === 'nara' || place.id === 'warga' || place.id==='cosmeticShop') {

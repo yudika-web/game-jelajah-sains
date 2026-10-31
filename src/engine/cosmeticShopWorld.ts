@@ -8,7 +8,7 @@ export function buildCosmeticShop(parent:THREE.Group){
  function box(w:number,h:number,d:number,c:string,x:number,y:number,z:number,id='cosmeticShop'){
   const m=new THREE.Mesh(cube,material(c));m.scale.set(w,h,d);m.position.set(x,y,z);m.userData.place=id;root.add(m);return m;
  }
- box(4.8,.05,4.8,'#e9d5bc',-12,.105,6);
+ box(4.8,.05,4.8,'#e9d5bc',-12,.075,6).name='boutique-floor';
  // Back wall, side walls and a genuine 1.8 m door opening; open roof keeps exploration camera clear.
  box(5,2.9,.20,'#e4b6a3',-12,1.55,3.5);
  for(const x of [-14.5,-9.5]){box(.20,1.1,5,'#e4b6a3',x,.65,6);for(const z of [3.5,8.5])box(.22,2.9,.22,'#6b8a86',x,1.55,z);box(.24,.18,5.2,'#a86676',x,3,6);}

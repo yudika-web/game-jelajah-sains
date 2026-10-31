@@ -125,7 +125,7 @@ test('M14 backups: new format, old M01 scope, invalid import atomicity and rewar
   await page.locator('#import-file').setInputFiles({name:'bad-garden.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))});
   await expect(page.locator('#settings-feedback')).toContainText('tidak valid');expect(await readGarden(page)).toEqual(before);
   const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;
-  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v19.json');
+  expect(download.suggestedFilename()).toBe('jelajah-sains-cadangan-v20.json');
   const exported=JSON.parse(readFileSync((await download.path())!,'utf8'));expect(exported.version).toBe(20);expect(exported.missions.M14).toEqual(before);expect(exported.missions.M01.samples.A.value).toBe(70);
   await page.locator('#reset-garden').click();await expect(page.locator('#panel-title')).toHaveText('Ulangi Percobaan M14?');
   expect((await readGarden(page)).day).toBe(6);await page.locator('#confirm-garden-reset').click();

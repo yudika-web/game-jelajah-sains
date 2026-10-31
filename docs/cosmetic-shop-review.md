@@ -1,6 +1,6 @@
 # Tahap 08 — Gaya Penjelajah
 
-Tanggal pemeriksaan: 30 Oktober 2026. Branch `feat/visual-stage-08` memakai hasil tahap 07 dari `feat/visual-stage-07`, bukan kembali ke main lama. Tahap 07 diselesaikan lebih dahulu: registry hadiah, profil, ledger, revisi atomik dan bukti XP menjadi dasar toko. Tidak ditemukan AGENTS.md. README, rancangan, implementasi karakter/lemari, pergantian wilayah dan penyimpanan diperiksa. Tahap ini tidak menambah misi atau wilayah.
+Tanggal pemeriksaan: 30–31 Oktober 2026. Branch `feat/visual-stage-08` memakai hasil tahap 07 dari `feat/visual-stage-07`, bukan kembali ke main lama. Tahap 07 diselesaikan lebih dahulu: registry hadiah, profil, ledger, revisi atomik dan bukti XP menjadi dasar toko. Tidak ditemukan AGENTS.md. README, rancangan, implementasi karakter/lemari, pergantian wilayah dan penyimpanan diperiksa. Tahap ini tidak menambah misi atau wilayah.
 
 ## Cara bermain
 
@@ -31,6 +31,8 @@ Semua kompatibel dengan siswa/siswi. Dua belas ID starter tetap gratis. Perlengk
 | Aksesori | pack-expedition | Tas ekspedisi berkompartemen | 40 | Kantong samping, gulungan dan tali |
 | Aksesori | headset-field | Headset kosmetik | 40 | Bando, bantalan telinga dan mikrofon |
 
+Total katalog berbayar 1.120 koin. Registry misi yang saat ini tersedia menyediakan maksimal 870 koin per profil (fixture migrasi tanpa M02: 770), sehingga pemain memilih barang terlebih dahulu; belum seluruh katalog dapat dikoleksi dari misi yang ada. Tidak ada hadiah palsu untuk nomor misi yang belum diimplementasikan.
+
 Kepala, badan, lengan dan kaki tetap enam blok utama. Tinggi netral siswa/siswi 1,60, socket alat dan skala tidak berubah. Outfit/rambut/aksesori hanya penampilan, tanpa bonus kemampuan. Topi dan headset berbagi slot kepala. Kacamata slot terpisah. Helm kegiatan menyembunyikan rambut, topi, kacamata, tas dan detail kostum sementara; pilihan dan kepemilikan pribadi tidak ditimpa.
 
 ## Implementasi dan transaksi
@@ -52,11 +54,11 @@ Kepemilikan berbayar harus didukung receipt. Harga historis tetap dapat dibaca j
 
 ## Pemeriksaan dan bukti
 
-Pemeriksaan inti: `npm test` **858 lulus** (29 berkas; 40 pengujian baru khusus toko), `npm run test:launcher` **16 lulus**, build/typecheck lulus, dan **10 kasus browser toko lulus**. Cakupan: harga/receipt, saldo antara dan overspend, seluruh format impor v1–v19, fallback ID pensiun, klik ganda, penolakan tab usang, abort transaksi UI dan backend, pemulihan kostum selam/astronot, seluruh 12 preview, serta resource preview berulang. Regresi luas dan paket siap main diperiksa terpisah di bawah. Bukti berasal dari Chromium yang menjalankan game, bukan mockup. Viewport laptop 1440×960, HP 390×844 dan 844×390, IFP 1920×1080 merupakan simulasi browser di Linux; belum pengujian Windows/HP/IFP/LAN fisik.
+Pemeriksaan inti: `npm test` **859 lulus** (29 berkas; 41 pengujian baru khusus toko), `npm run test:launcher` **16 lulus**, build/typecheck lulus, dan **10 kasus browser toko lulus**. Cakupan: harga/receipt, saldo antara dan overspend, seluruh format impor v1–v19, fallback ID pensiun, klik ganda, penolakan tab usang, abort transaksi UI dan backend, pemulihan kostum selam/astronot, seluruh 12 preview, serta resource preview berulang. Tiga kasus persistensi tambahan juga lulus: dua debit 40 dari saldo 50 menghasilkan satu pembelian dan saldo 10; migrasi IndexedDB skema 2/model 1 hanya sekali; serta checkpoint pengeluaran tetap bertahan setelah pindah profil dan mengimpor backup v19 lama. Regresi luas dan paket siap main diperiksa terpisah di bawah. Bukti berasal dari Chromium yang menjalankan game, bukan mockup. Viewport laptop 1440×960, HP 390×844 dan 844×390, IFP 1920×1080 merupakan simulasi browser di Linux; belum pengujian Windows/HP/IFP/LAN fisik.
 
 ## Batas tahap
 
-Tidak ada penjualan kembali, refund, transfer, gacha, ekonomi daring atau bonus kemampuan. Cermin memakai material ilustratif, bukan refleksi real-time. Butik menggunakan atap cutaway agar kamera dapat melihat interior. Satu pohon dipindah ke tepi Kota setelah terbukti menutupi fasad/karakter. Tinjauan gambar juga memperbaiki poni cepak yang menembus kepala dan menyelaraskan bingkai kacamata dengan mata. Katalog masih dua belas barang berbayar, belum keseluruhan mode/selera busana. Tahap 09 tidak dikerjakan.
+Tidak ada penjualan kembali, refund, transfer, gacha, ekonomi daring atau bonus kemampuan. Cermin memakai material ilustratif, bukan refleksi real-time. Butik menggunakan atap cutaway agar kamera dapat melihat interior. Satu pohon dipindah ke tepi Kota setelah terbukti menutupi fasad/karakter. Tinjauan gambar juga memperbaiki poni cepak dan kepang yang menembus kepala/badan, serta menyelaraskan bingkai kacamata dengan mata. Bidang lantai disamakan dengan telapak kaki; penghalang kamera mengikuti tinggi dinding dan perabot sebenarnya, tanpa mengubah collider tubuh atau preferensi jarak kamera. Katalog masih dua belas barang berbayar, belum keseluruhan mode/selera busana. Tahap 09 tidak dikerjakan.
 
 
 ## Bukti dari game berjalan
