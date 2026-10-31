@@ -1,3 +1,4 @@
+import {EnvironmentKit} from './environmentKit';
 import * as THREE from 'three';
 import {geoPlaces} from '../data/geoparkRegion';
 import {earthLayers,layerInfo,plateIds,plateModels,type PlateId} from '../data/geoparkContent';
@@ -6,19 +7,22 @@ import type {GeoProgress} from '../game/geoparkMission';
 import type {PlaceId} from '../data/content';
 interface Builder{root:THREE.Group;box(w:number,h:number,d:number,c:string,x:number,y:number,z:number):void;label(text:string,x:number,y:number,z:number,id?:PlaceId,building?:boolean):void;npc(x:number,z:number):void;}
 export function buildGeopark({root,box:b,label,npc}:Builder){
+ const k=new EnvironmentKit(root);
  const mats=new Map<string,THREE.MeshLambertMaterial>();const mat=(c:string)=>{if(!mats.has(c))mats.set(c,new THREE.MeshLambertMaterial({color:c}));return mats.get(c)!;};const unit=new THREE.BoxGeometry(1,1,1);
  function cube(parent:THREE.Object3D,w:number,h:number,d:number,c:string,x:number,y:number,z:number){const m=new THREE.Mesh(unit,mat(c));m.scale.set(w,h,d);m.position.set(x,y,z);parent.add(m);return m;}
  b(40,.6,46,'#b4b494',0,-.35,-1);b(4,.06,38,'#ded1b1',0,.01,-1);for(const z of [11,2,-4])b(29,.06,2.5,'#d6c4a3',0,.02,z);
  // The shelter and arrival post keep a 2.1-unit doorway, matching the existing avatar scale.
- b(7,2.7,4,'#e5d9b7',-12,1.35,16);b(7.6,.35,4.6,'#5e7c78',-12,2.9,16);b(1.1,2.1,.12,'#77694f',-12,1.05,18.06);label('POS GEOPARK',-12,3.8,16,undefined,true);
+ b(7,2.7,4,'#e5d9b7',-12,1.35,16);k.roof(-12,2.7,16,7,4,'#5e7c78');b(1.1,2.1,.12,'#77694f',-12,1.05,18.06);label('POS GEOPARK',-12,3.8,16,undefined,true);
  for(const x of [8,14])b(.17,2.6,.17,'#8c7c5f',x,1.3,12);b(7,.3,5,'#708f83',11,2.75,12);label('SHELTER INFORMASI',11,3.5,12,undefined,true);
  // Local layered cliffs are scenic; their footprint is also blocked in navigation.
- for(let i=0;i<5;i++){b(5,.9,8,i%2?'#9f947d':'#bdab8b',13,.45+i*.9,-16);b(2,.6+i*.3,2,'#a99b7f',-16,(.6+i*.3)/2,-3-i*3);}
- for(const[x,z]of [[-16,6],[16,6],[-15,-8],[15,-8],[-16,19],[16,19]]){b(.3,1.4,.3,'#887554',x,.7,z);b(1.8,1.3,1.8,'#789278',x,1.8,z);}
+ for(let i=0;i<5;i++){const w=4.8-i*.22,d=7.8-i*.25;k.box(w,.74,d,i%2?'#9f947d':'#bdab8b',13+Math.sin(i)*.15,.37+i*.74,-16+.08*i,0,.025*i,0);k.rock(-16,(.6+i*.3)/2,-3-i*3,.95,(.6+i*.3)/2,.95,'#a99b7f',i);}
+ k.rock(13.5,3.6,-17,1.1,.8,1.8,'#a89b7f',2);
+ for(const[i,[x,z]]of [[-16,6],[16,6],[-15,-8],[15,-8],[-16,19],[16,19]].entries())k.tree(x,z,i,['#71846b','#9aab7e']);
  for(const p of geoPlaces){
   if(p.id==='raka'){npc(p.x,p.z);continue;}
   const table=['geoEarth','geoDivergent','geoConvergent','geoTransform'].includes(p.id);
-  if(table){b(4,.12,2,'#aa8d65',p.x,.78,p.z-.8);for(const dx of [-1.6,1.6])b(.16,.75,.16,'#786b56',p.x+dx,.375,p.z-.8);}
+  if(table){k.box(4.06,.10,.06,'#e7d4a5',p.x,.91,p.z+.23);k.sign('MAKET · MODEL DIPERCEPAT',p.x,1.04,p.z+.27,2.6);b(4,.12,2,'#aa8d65',p.x,.78,p.z-.8);for(const dx of [-1.6,1.6])b(.16,.75,.16,'#786b56',p.x+dx,.375,p.z-.8);}
+  else if(p.id==='geoBook'||p.id==='geoNotes')k.book(p.id,p.x,p.z-.6,p.color,p.id==='geoNotes');
   else if(!['geoMuster','geoReturn'].includes(p.id)){b(.1,1.2,.1,'#8b7859',p.x,.6,p.z-.6);b(1.6,.85,.12,p.color,p.x,1.35,p.z-.6);}
   label(p.short,p.x,table?3:2.5,p.z,p.id);
   const ring=new THREE.Mesh(new THREE.RingGeometry(.62,.73,20),mat(p.color));ring.rotation.x=-Math.PI/2;ring.position.set(p.x,.09,p.z);ring.userData.place=p.id;root.add(ring);
@@ -42,6 +46,7 @@ export function buildGeopark({root,box:b,label,npc}:Builder){
  const damaged=new THREE.Group();damaged.position.set(-9,0,-16);root.add(damaged);cube(damaged,4,2.2,3,'#b8a58b',0,1.1,0);const crack=cube(damaged,.12,1.8,.04,'#6e5b50',.4,1.2,1.52);crack.rotation.z=.3;
  for(const x of [-8,0,8]){b(1.8,.02,7,'#c9bc9a',x,.05,-8.5);label(x===0?'B · TERBUKA':x<0?'A · BANGUNAN':'C · TEBING',x,2,-11);}
  b(4,.025,3,'#6d9a82',0,.06,-19);label('TITIK KUMPUL · KONFIRMASI',0,2.7,-19,'geoMuster');
+ k.finish();
  return{tables,barriers,frame(p:GeoProgress,fraction:number){barriers.visible=p.exercise;crack.visible=p.exercise;for(const t of tables){const f=p.trial?.id===t.id?(p.trial.phase==='running'?fraction:1):p.records.some(r=>r.id===t.id)?1:0;const pose=platePose(t.id,f);t.left.position.set(pose.leftX,-pose.subduction,pose.leftZ);t.left.rotation.z=t.id==='convergent'?-pose.subduction:0;t.right.position.set(pose.rightX,0,pose.rightZ);t.newCrust.scale.x=Math.max(.01,pose.newCrust);}
  root.userData.geoModels=3;root.userData.geoExercise=p.exercise;
  }};

@@ -204,7 +204,7 @@ export class World {
   private geoView:ReturnType<typeof buildGeopark>|null=null;
   private geoProgress=initialGeo();geoFraction=0;geoFocus:PlateId|'earth'|null=null;
   private geoCameraPoint=new THREE.Vector3();onGeoFrame:(dt:number,active:boolean)=>void=()=>{};
-  setGeopark(p:GeoProgress){const changed=this.geoProgress.exercise!==p.exercise;this.geoProgress=p;if(this.region==='geopark'&&changed){this.stop();this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.4:1.2,o.z+o.depth/2)));this.followCamera.setObstacles(this.collisionBoxes);if(!walkable(this.position,this.navigation))this.resetPosition();}}
+  setGeopark(p:GeoProgress){const changed=this.geoProgress.exercise!==p.exercise;this.geoProgress=p;if(this.region==='geopark'&&changed){this.stop();this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.7:1.2,o.z+o.depth/2)));this.followCamera.setObstacles(this.collisionBoxes);if(!walkable(this.position,this.navigation))this.resetPosition();}}
   get places() {return this.region==='coast'&&this.dive.active?divePointPlaces:this.region==='space'&&this.expedition.phase==='preparation'?preparationPlaces:this.region==='space'&&this.expedition.outside?evaPlaceList:regions[this.region].places;}
   get navigation() {if(this.region==='space'&&this.expedition.phase==='preparation')return preparationNavigation; if(this.region==='geopark')return geoNavigation(this.geoProgress.exercise);if(this.boat.aboard)return this.region==='coast'?coastalBoatNavigation:boatNavigation;if(this.swimming)return poolSwimmingNavigation;return this.region==='rimba'?rimbaNavigation(this.rimbaProgress.cOpen,this.pushing):regions[this.region].navigation; }
   get interactionRadius() {return this.pushing?rimbaCartConfig.interaction:characterConfig.interactionRadius;}
@@ -338,7 +338,7 @@ export class World {
     }
     b(5, 0.07, 9, '#bb9570', 8.7, 0.02, -11);
     for (let i = 0; i < 5; i++) b(2.2, 0.05, 0.12, '#987557', 8.4, 0.08, -14 + i * 1.4);
-    this.townView=buildTownEnvironment(s);
+    this.townView=buildTownEnvironment(s);this.ambientView=buildRegionalEnvironment(s,'town');
     this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-11.125,0,-.30),new THREE.Vector3(-9.875,2.1,.30)));
     for(const o of shopCameraObstacles)this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.height,o.z+o.depth/2)));
     for(const house of townBuildings.filter(h=>h.id!=='home'))this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(house.x-house.w/2,0,house.z-house.d/2),new THREE.Vector3(house.x+house.w/2,house.h+.95,house.z+house.d/2)));
@@ -389,7 +389,7 @@ export class World {
     else if(region==='geopark'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
       this.geoView=buildGeopark({root:this.regionRoot,box:b,label:(...args)=>this.label(...args),npc:(x,z)=>{const rig=createCharacter('raka','raka');rig.root.position.set(x,0,z);this.regionRoot.add(rig.root);this.npcs.push({id:'raka',rig,animator:new CharacterAnimator(rig,2.1),timer:0});this.npcLabels.set('raka',this.label('Kak Raka',x,rig.labelSocket.position.y,z,'raka'));}});
-      this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.4:1.2,o.z+o.depth/2)));
+      this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.x===13&&o.z===-16?5:o.x===-12&&o.z===16?3.7:1.2,o.z+o.depth/2)));
     }
     else if(region==='garden') {
       const b = (w:number,h:number,d:number,c:string,x:number,y:number,z:number) => { this.box(this.regionRoot,w,h,d,c,x,y,z,true); };
@@ -398,7 +398,7 @@ export class World {
         this.npcs.push({id,rig,animator:new CharacterAnimator(rig,2.4),timer:0});
         this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
-      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.width===2.2&&o.depth===1.2?2.25:o.x===9&&o.z< -6?.95:o.width===.6?1.75:o.z < -1 && o.z > -5 ? .7 : 4,o.z+o.depth/2)));
+      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.width===2.2&&o.depth===1.2?2.25:o.x===9&&o.z< -6?.95:o.width===.6?1.75:o.z < -1 && o.z > -5 ? .7 : 4.6,o.z+o.depth/2)));
     }
     else if(region==='workshop'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -411,7 +411,7 @@ export class World {
         this.npcLabels.set('bima',this.label('Kak Bima',x,rig.labelSocket.position.y,z,'bima'));
       }});
       // The protected navigation bay is open air; only the crane posts block the camera.
-      this.collisionBoxes=this.navigation.obstacles.filter(o=>!(o.x===26&&o.z===-8)&&!(o.x===-4&&o.z===-26.7)).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width>=7?4:1.2,o.z+o.depth/2)));
+      this.collisionBoxes=this.navigation.obstacles.filter(o=>!(o.x===26&&o.z===-8)&&!(o.x===-4&&o.z===-26.7)).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.width>=7?4.5:1.2,o.z+o.depth/2)));
       this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-4.11,0,-26.81),new THREE.Vector3(-3.89,4.4,-26.59)));
       for(const x of [21.9,30.1])this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(x-.15,0,-8.4),new THREE.Vector3(x+.15,3.8,-8)));
     }
@@ -446,7 +446,7 @@ export class World {
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
     if(fromGate&&region==='river'&&previous==='coast')this.boat.recover();
-    this.ambientView=buildRegionalEnvironment(region==='space'?this.spaceInterior!:this.regionRoot,region);
+    if(region!=='town')this.ambientView=buildRegionalEnvironment(region==='space'?this.spaceInterior!:this.regionRoot,region);
     this.flushStatic(); this.followCamera.setObstacles(this.collisionBoxes);if(region==='rimba')this.updateRimbaCamera();this.resetPosition();
     if(fromGate && region === 'town') { this.position.set(previous==='workshop'?-15:previous==='rimba'?7:previous==='river'?-1:-14,0,previous==='workshop'?-3:previous==='rimba'?13:previous==='river'?-3:0); this.followCamera.update(this.position,.016,this.reducedMotion,true); }
     if(fromGate&&region==='town'&&previous==='space'){this.position.set(2,0,-8.4);this.followCamera.update(this.position,.016,this.reducedMotion,true);}
@@ -455,7 +455,7 @@ export class World {
     const regionGeometries=new Set<THREE.BufferGeometry>();this.regionRoot.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line||o instanceof THREE.Points)regionGeometries.add(o.geometry);});this.canvas.dataset.regionGeometryCount=String(regionGeometries.size);
   }
   private updateRimbaCamera() {
-    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.5:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
+    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.9:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
     this.followCamera.setObstacles(this.collisionBoxes);
   }
   setRimba(p:RimbaProgress) {

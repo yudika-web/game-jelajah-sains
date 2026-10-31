@@ -5,7 +5,7 @@ export const geoMuster={x:0,z:-19};
 export const geoPlaces:Place[]=[
  {id:'raka',name:'Kak Raka · pemandu Geopark',short:'Kak Raka',action:'Bicara',x:-4,z:12,color:'#4f7f9d'},
  {id:'geoReturn',name:'Terminal kembali ke Bengkel',short:'Kembali ke Bengkel',action:'Berangkat',x:5,z:16,color:'#7a8e91'},
- {id:'geoBook',name:'Buku lapisan Bumi',short:'Buku lapisan',action:'Baca',x:-11,z:11,color:'#ad8760'},
+ {id:'geoBook',name:'Buku lapisan Bumi',short:'Buku lapisan',action:'Baca',x:-11,z:7,color:'#ad8760'},
  {id:'geoNotes',name:'Catatan gerak lempeng',short:'Catatan lempeng',action:'Baca',x:10,z:9,color:'#69968c'},
  {id:'geoLandscape',name:'Papan bentang alam dan model',short:'Papan bentang alam',action:'Baca',x:11,z:2,color:'#8e9b73'},
  {id:'geoEarth',name:'Stasiun penampang Bumi',short:'Penampang Bumi',action:'Amati / susun',x:-10,z:3,color:'#ca9c59'},

@@ -7,8 +7,8 @@ export const environmentObstacles:Record<RegionId,Obstacle[]>={
  rimba:[{x:-9.3,z:12,width:.6,depth:.6}],
  river:[{x:1.8,z:-12,width:.6,depth:.6}],
  workshop:[{x:-12.5,z:1.2,width:2,depth:1},{x:-12.5,z:2.3,width:.6,depth:.6}],
- geopark:[{x:-15.5,z:8.6,width:3,depth:2},{x:-13,z:8.6,width:.6,depth:.6}],
- space:[{x:-13.5,z:5.2,width:.6,depth:.6}],
+ geopark:[...[0,6,11].map(z=>({x:-17,z,width:.12,depth:2.1})),{x:-15.5,z:8.6,width:3,depth:2},{x:-13,z:8.6,width:.6,depth:.6}],
+ space:[{x:-13.5,z:4.55,width:.8,depth:.6},{x:-13.5,z:5.2,width:.6,depth:.6}],
 };
 export const ambientBudget={actors:1,movingPlants:6,particles:0,newTransparentLayers:0,staticMaterials:24} as const;
 export const ambientStation={
