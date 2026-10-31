@@ -1,3 +1,4 @@
+import {EnvironmentKit} from './environmentKit';
 import {buildPool} from './poolWorld';
 import type {BuoyancyTrial} from '../game/buoyancyTrial';
 import { buildIrrigation,type IrrigationView } from './boatWorld';
@@ -33,6 +34,7 @@ export interface RiverView {
   clearFishing():void;
 }
 export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
+  const env=new EnvironmentKit(root);
   b(11,.8,40,'#87a879',-2.5,-.45,1);b(1,.8,40,'#87a879',-16.5,-.45,1);b(8,.8,4,'#87a879',-12,-.45,-17);b(8,.8,30,'#87a879',-12,-.45,6);b(22,.5,40,'#5099a5',14,-.50,1);
   b(3.3,.07,31,'#dfd5b1',-2,.025,1);b(15,.06,3,'#d8ccaa',-5,.025,5);b(10,.06,3,'#d8ccaa',-2,.025,-7);
   // Wide wooden pier with its deck at the same walking height as the bank.
@@ -42,11 +44,17 @@ export function buildRiver({root,box:b,label,npc}:Builder):RiverView {
   // Physical water boundary and railings leave both marked observation stations clear.
   for(let z=-15;z<18;z+=1.5)if((z< -9||z> -5)&&(z<11.5||z>14.5)){b(.12,.85,.12,'#8e7e58',2.9,.425,z);b(.10,.10,1.6,'#baab7a',2.9,.70,z);}
   for(const x of [-17.8])for(let z=-16;z<19;z+=2){b(.13,.9,.13,'#8b7956',x,.45,z);b(.12,.12,2.1,'#b1a076',x,.7,z);}
-  b(4,3.1,3,'#d7ddc1',-11,1.55,11);b(4.5,.3,3.5,'#508a85',-11,3.2,11);
+  b(4,3.1,3,'#d7ddc1',-11,1.55,11);env.roof(-11,3.0,11,4,3,'#508a85');env.box(1.3,2.27,.14,'#f2e5c7',-11,1.135,12.6);
   b(1.1,2.1,.12,'#64837b',-11,1.05,12.57);b(1,.9,.12,'#9ac6cb',-12.1,1.9,12.58);label('POS RISET PERAIRAN',-11,3.9,11,undefined,true);
-  for(const [x,z]of [[-15,6],[-14,-7],[-2,-12],[-15,16]]){b(.45,2.2,.45,'#92764f',x,1.1,z);b(2.4,1.9,2.4,'#5a8b63',x,2.9,z);b(1.6,1.2,1.6,'#7e9e64',x+.2,4,z);}
-  for(let z=-14;z<18;z+=2.8){b(.6,.4,.8,'#b4b59b',2.5,.12,z);if(z>0)for(let i=0;i<3;i++)b(.10,.75+i*.13,.10,'#6d995f',3.5+i*.25,.26,z);}
-  for(const id of ['fishBook','samplingNotes','fishResults'] as const){const p=riverPlaces.find(p=>p.id===id)!;b(.13,1.3,.13,'#8e7755',p.x,.65,p.z-.7);b(1.6,.85,.13,p.color,p.x,1.55,p.z-.7);b(.7,.08,.45,'#f3e7c4',p.x,2.04,p.z-.7);}
+  [[-15,6],[-14,-7],[-2,-12],[-15,16]].forEach(([x,z],i)=>env.tree(x,z,i,['#5a8b63','#91af70']));
+  for(let z=-14;z<18;z+=4.2){env.rock(2.55,.12,z,.38,.28,.50,'#9da99a',Math.floor(z));for(let i=0;i<3;i++){env.cylinder(.035,.85+i*.10,'#6d995f',2.55+i*.10,.24,z+.7,0,.1-i*.05);}}
+  for(const id of ['fishBook','samplingNotes','fishResults'] as const){const p=riverPlaces.find(p=>p.id===id)!;
+   if(id==='fishResults'){b(.13,1.3,.13,'#8e7755',p.x,.65,p.z-.7);b(1.6,.85,.13,p.color,p.x,1.55,p.z-.7);}
+   else env.book(id,p.x,p.z-.7,p.color,id==='samplingNotes');
+  }
+  for(let i=0;i<4;i++){env.cylinder(.018,1.7,'#785d42',-2.5+i*.32,1.3,7.4,0,.08);env.box(.06,.28,.06,'#c7a35a',-2.5+i*.32,.63,7.4);}
+  for(const x of [3,6,9])for(const z of [-8.6,-5.4])env.box(.11,1.1,.11,'#7c6449',x,-.30,z,.50,0,.20);
+  env.finish();
   b(2,.14,1,'#a08058',-6,.84,-6.7);for(const x of [-6.8,-5.2])b(.12,.8,.12,'#756346',x,.4,-6.7);
   b(.65,.06,.5,'#f1e5bd',-6,.96,-6.7);b(.8,.025,.10,'#dfbd62',-6,1,-6.3);
   b(1.8,.12,.5,'#9b7b54',-2,.8,7.4);for(const x of [-2.6,-1.4]){b(.09,1.6,.09,'#5a6d55',x,1.2,7.4);b(.08,.3,.08,'#ba975f',x,.50,7.4);}

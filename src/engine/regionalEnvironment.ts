@@ -32,8 +32,27 @@ export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
   }
   for(let i=0;i<6;i++){const branch=new THREE.Group();branch.position.set(-15.5+i*.12,2.6,17);k.optional.add(branch);k.liveBox(branch,.32,.055,.16,'#718d55',0,0,0);sway.push(branch);}
  }
+ if(region==='river'){
+  k.box(.8,.06,1.1,'#c7b289',1.8,.065,-12);
+  for(const x of [-12.5,-9.5]){k.box(.16,2.4,.16,'#829889',x,1.2,12.3);k.box(.45,.12,.30,'#cfb777',x,2.3,12.3);}
+  k.sign('POS RISET · ALAT PINJAMAN',-11,2.7,12.75,3.4);
+ }
+
+ if(region==='workshop'){
+  // The only new footprint is a maintenance bench beside the old workshop lane.
+  k.table(-12.5,1.2,2,1);k.box(.8,.16,.5,'#83988e',-12.5,.99,1.2);
+  for(let i=0;i<3;i++){k.cylinder(.12,.08,'#c6a563',-13+i*.4,1.08,1.2,Math.PI/2);k.box(.12,.06,.4,'#5c7375',-13+i*.4,1.04,.94);}
+  k.sign('MEJA PERAWATAN',-12.5,1.7,.84,1.8);
+  // Wall-mounted cabinets, trays and pipes occupy the existing building, not paths.
+  for(const x of [-14,-8]){
+   k.box(1.2,1.8,.30,'#738f89',x,1.15,-8.3);for(const y of [.55,1.35,2.05])k.box(1.1,.10,.5,'#d1ba88',x,y,-8.18);
+   for(const dx of [-.3,.2]){k.box(.16,.7,.08,'#d9ba68',x+dx,1.52,-7.90);k.box(.36,.14,.12,'#667d80',x+dx,1.9,-7.88);}
+  }
+  k.box(6,.12,.18,'#75888b',-11,2.55,-8.24);k.cylinder(.09,1.8,'#99aaa3',-14,1.62,-8.18);
+  k.box(1.7,.18,1.4,'#b5aa89',-12.5,.08,2.3);
+ }
  k.finish();
- const station=['garden','rimba'].includes(region)?ambientStation[region as keyof typeof ambientStation]:undefined;
+ const station=['garden','rimba','river','workshop'].includes(region)?ambientStation[region as keyof typeof ambientStation]:undefined;
  let actor:ReturnType<typeof createCharacter>|null=null,animator:CharacterAnimator|null=null;
  if(station){actor=createCharacter(station.kind);actor.root.name=`ambient-${region}`;actor.root.position.set(station.x,0,station.z);actor.root.rotation.y=station.yaw;actor.root.userData.decorative=true;k.root.add(actor.root);animator=new CharacterAnimator(actor,.9);animator.setPose(station.pose);animator.update(.2,0,true);if(region==='river')actor.tools.rod.visible=true;}
  let time=0;let cycle=-1;

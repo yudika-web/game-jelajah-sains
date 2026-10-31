@@ -1,3 +1,4 @@
+import {EnvironmentKit} from './environmentKit';
 import {buildResearchBoat} from './boatModel';
 import * as THREE from 'three';
 import { docks,boatConfig } from '../data/boatRegion';
@@ -7,6 +8,7 @@ import type { FlowSampling } from '../game/flowSampling';
 import { irrigationPlaces } from '../data/boatRegion';
 export interface IrrigationView{boat:THREE.Group;update(p:IrrigationProgress):void;frame(boat:BoatController,sampling:FlowSampling|null):void;}
 export function buildIrrigation(root:THREE.Group,b:(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>void):IrrigationView{
+ const env=new EnvironmentKit(root);
  const mats=new Map<string,THREE.MeshLambertMaterial>();const box=(parent:THREE.Object3D,w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{if(!mats.has(c))mats.set(c,new THREE.MeshLambertMaterial({color:c}));const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mats.get(c));m.position.set(x,y,z);parent.add(m);return m;};
  b(9,.8,23,'#96aa7d',20.5,-.45,-4.5);
  b(4,.2,3,'#a38458',4,0,13);b(3,.2,3,'#a38458',16.5,0,0);
@@ -26,10 +28,12 @@ export function buildIrrigation(root:THREE.Group,b:(w:number,h:number,d:number,c
  const flow=box(root,.35,.12,3,'#d7ece2',20.8,.15,-4.5);flow.name='branch-flow-indicator';
  for(const [x,z]of [[23,-14],[23,-12]]){b(2,.18,1.1,'#9a8357',x,.04,z);for(let i=0;i<3;i++)b(.13,.45,.13,'#5e945f',x-.6+i*.6,.28,z);}
  for(const p of irrigationPlaces)if(!['boatStart','boatObservation'].includes(p.id)){
-  b(.1,1.2,.1,'#86704e',p.x,.6,p.z-.7);b(1.2,.75,.10,p.color,p.x,1.35,p.z-.7);
-  if(['flowBook','irrigationNotes'].includes(p.id))b(.65,.08,.4,'#f7e9c4',p.x,1.8,p.z-.7);
-  if(p.id==='cleaningRack'){b(.9,.1,.5,'#a48050',p.x,.9,p.z-.6);b(.09,1,.09,'#b99861',p.x,.95,p.z-.6);b(.45,.1,.15,'#687e70',p.x,1.45,p.z-.6);}
+  if(['flowBook','irrigationNotes'].includes(p.id)){env.book(p.id,p.x,p.z-.7,p.color,p.id==='irrigationNotes');continue;}
+  if(['P1','P2','P3'].includes(p.id)){env.box(.9,.12,.45,'#9b967d',p.x,.16,p.z-.7);env.cylinder(.075,.85,'#71979a',p.x,.60,p.z-.7);env.box(.45,.24,.12,'#506e73',p.x,1.12,p.z-.60);env.box(.33,.14,.035,'#a0c8c5',p.x,1.12,p.z-.52);}
+  if(p.id==='irrigationScreen'){for(const dx of [-.53,.53])env.box(.10,1.5,.13,'#63868a',p.x+dx,.75,p.z-.7);env.box(1.16,.12,.16,'#63868a',p.x,1.50,p.z-.7);env.cylinder(.04,.50,'#d1b96c',p.x,1.73,p.z-.7);env.shape(new THREE.TorusGeometry(.18,.025,5,12),'#b79854',p.x,1.93,p.z-.7);}
+  if(p.id==='cleaningRack'){env.box(1,.12,.5,'#a48050',p.x,.9,p.z-.6);env.box(.09,1,.09,'#b99861',p.x,.95,p.z-.6);env.box(.45,.1,.15,'#687e70',p.x,1.45,p.z-.6);}
  }
+ env.finish();
  const boat=buildResearchBoat(root);
  const sampler=new THREE.Group();root.add(sampler);sampler.visible=false;
  box(sampler,.90,1.2,.80,'#74999d',0,.60,0);const water=box(sampler,.70,.02,.025,'#7ecddd',0,.1,.42);

@@ -318,7 +318,7 @@ export class World {
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: true, toneMapped: false }));
     sprite.position.set(x, y, z); const npcLabel=id==='cosmeticShop'||id==='nara'||id==='warga'||id==='sari'||id==='damar'||id==='lestari'||id==='bima';
     sprite.scale.set(id&&marketPlaces.some(p=>p.id===id)?1.9:terminalLabel?.55:plantLabel?.65:npcLabel?2:3.5,id&&marketPlaces.some(p=>p.id===id)?.356:terminalLabel?.275:plantLabel?.325:npcLabel?.375:.66,1);
-    sprite.userData.plantLabel = plantLabel; this.regionLabels.push(sprite);
+    sprite.userData.plantLabel = plantLabel; sprite.userData.terminalLabel=terminalLabel; this.regionLabels.push(sprite);
     sprite.userData.place = id; this.regionRoot.add(sprite); return sprite;
   }
   private buildTown() {
@@ -432,7 +432,7 @@ export class World {
         this.npcs.push({id:'lestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
         this.npcLabels.set('lestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'lestari'));
       }});
-      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13,0,9.5),new THREE.Vector3(-9,3.5,12.5))];
+      this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13,0,9.5),new THREE.Vector3(-9,4.1,12.5))];
     }
     else {
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -688,12 +688,12 @@ export class World {
       this.canvas.dataset.townLabels=String(this.regionLabels.filter(l=>l.visible).length);
     }
     if(this.region==='space')for(const label of this.regionLabels){label.visible=!this.spaceFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<9;const width=Math.min(2.6,label.position.distanceTo(this.camera.position)*2*Math.tan(this.camera.fov*Math.PI/360)*Math.min(150,innerWidth*.34)/innerHeight);label.scale.set(width,width/(512/96),1);}
-    if(this.region==='geopark')for(const label of this.regionLabels)label.visible=!this.geoFocus&&Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<12;
-    if(this.region==='workshop')for(const label of this.regionLabels){label.visible=!this.hydraulicFocus&&(Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<9||label.userData.place===this.interacting);const distance=label.position.distanceTo(this.camera.position),width=Math.min(2.7,distance*2*Math.tan(this.camera.fov*Math.PI/360)*Math.min(158,innerWidth*.34)/innerHeight);label.scale.set(width,width/(512/96),1);}
+    if(this.region==='geopark')for(const label of this.regionLabels){label.visible=!this.geoFocus&&(Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<9||label.userData.place===this.interacting);const width=Math.min(2.8,label.position.distanceTo(this.camera.position)*2*Math.tan(this.camera.fov*Math.PI/360)*Math.min(174,innerWidth*.36)/innerHeight);label.scale.set(width,width/(512/96),1);}
+    if(this.region==='workshop')for(const label of this.regionLabels){const terminal=label.userData.terminalLabel;label.visible=!this.hydraulicFocus&&(Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z)<(terminal?5:9)||label.userData.place===this.interacting);const distance=label.position.distanceTo(this.camera.position),width=Math.min(terminal?.55:2.7,distance*2*Math.tan(this.camera.fov*Math.PI/360)*(terminal?36:Math.min(158,innerWidth*.34))/innerHeight);label.scale.set(width,width/(terminal?2:512/96),1);}
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
-      label.visible=!this.dive.controlled&&!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && nearPlayer<(plant?7:14) && (!this.interacting || label.userData.place===this.interacting);
+      label.visible=!this.dive.controlled&&!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && (nearPlayer<(plant?7:9)||label.userData.place===this.interacting) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
