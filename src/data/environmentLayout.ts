@@ -17,7 +17,7 @@ export const ambientStation={
  river:{x:1.8,z:-12,kind:'wira',pose:'fishWait',yaw:Math.PI/2},
  workshop:{x:-12.5,z:2.3,kind:'bima',pose:'measure',yaw:Math.PI},
  geopark:{x:-13,z:8.6,kind:'explorerGirl',pose:'read',yaw:-Math.PI/2},
- space:{x:-13.5,z:5.2,kind:'explorer',pose:'measure',yaw:Math.PI/2},
+ space:{x:-13.5,z:5.2,kind:'explorer',pose:'measure',yaw:Math.PI},
 } as const;
 
 /** Outside the permanent fence; these slabs meet the existing terrain at edges only. */

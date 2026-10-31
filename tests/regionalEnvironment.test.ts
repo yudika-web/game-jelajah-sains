@@ -1,3 +1,4 @@
+import {activityDelta} from '../src/engine/activityTime';
 import {it,expect,vi} from 'vitest';
 import * as THREE from 'three';
 import {buildRegionalEnvironment} from '../src/engine/regionalEnvironment';
@@ -67,4 +68,14 @@ it('Rimba background trees and affected-area silhouettes have terrain without ov
  for(let i=0;i<slabs.length;i++)for(let j=i+1;j<slabs.length;j++){const a=slabs[i],b=slabs[j],dx=Math.min(a.x+a.width/2,b.x+b.width/2)-Math.max(a.x-a.width/2,b.x-b.width/2),dz=Math.min(a.z+a.depth/2,b.z+b.depth/2)-Math.max(a.z-a.depth/2,b.z-b.depth/2);expect(Math.max(0,dx)*Math.max(0,dz)).toBe(0);}
  for(const x of [-25,25])for(const z of [-13,-3,7,17])expect(slabs.some(s=>Math.abs(x-s.x)<=s.width/2&&Math.abs(z-s.z)<=s.depth/2)).toBe(true);
  for(const s of slabs)expect(s.y+s.height/2).toBeCloseTo(-.05);
+});
+
+it('ambient clocks pause with locomotion; an explicitly owned instrument can still demonstrate a running trial',()=>{
+ expect(activityDelta(.1,false,false,true)).toBe(.1);expect(activityDelta(.1,true,false,true)).toBe(0);expect(activityDelta(.1,true,false,true,true)).toBe(.1);
+ // Hidden/focus loss always wins, including an owned measurement panel.
+ for(const owned of [true,false]){expect(activityDelta(.1,false,true,true,owned)).toBe(0);expect(activityDelta(.1,true,false,false,owned)).toBe(0);}
+});
+it('visual clocks reject invalid time and never derive elapsed time from real-world dates',()=>{
+ for(const dt of [-1,0,NaN,Infinity])expect(activityDelta(dt,false,false,true,true)).toBe(0);
+ expect(activityDelta(.08,false,false,true,true)).toBe(.08);
 });

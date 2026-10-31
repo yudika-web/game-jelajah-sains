@@ -1,3 +1,4 @@
+import {activityDelta} from './activityTime';
 import {buildRegionalEnvironment} from './regionalEnvironment';
 import {DivingController,UnderwaterEnvironment,diveNavigation,type DiveAction} from './divingController';
 import {buildDivingWorld} from './divingWorld';
@@ -598,7 +599,7 @@ export class World {
     }
     if(this.riverView){
       this.playerRig.tools.rod.getObjectByName('rod-tip')!.getWorldPosition(this.rodTip);
-      this.riverView.frame(document.hidden||this.paused?0:dt,this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
+      this.riverView.frame(activityDelta(dt,this.paused,document.hidden,document.hasFocus()),this.reducedMotion,this.fishingSession?.phase??'idle',this.fishingSession?.elapsed??0,this.fishingGroup,this.rodTip,this.position,this.fishingSession?.site??'A');
     }
     this.onSpaceFrame(dt,this.region==='space'&&!document.hidden&&document.hasFocus());this.spaceView?.frame(this.spaceProgress,this.spaceAngle,this.spaceFocus,this.spaceDetail,this.spaceGuides);document.body.classList.toggle('space-instrument',this.region==='space'&&!!this.spaceFocus);document.body.classList.toggle('space-region',this.region==='space');this.canvas.dataset.spaceDetail=String(this.spaceDetail);this.canvas.dataset.spaceQuality=this.lowQuality?'low':'normal';this.canvas.dataset.spaceGuides=JSON.stringify(this.spaceGuides);this.canvas.dataset.spaceFocus=this.spaceFocus??'';this.canvas.dataset.spaceEarthView=String(this.spaceEarthView);this.canvas.dataset.spaceAngle=String(this.spaceAngle);this.canvas.dataset.spaceModels=this.spaceView?'3':'0';
     if(this.region==='space'&&this.expeditionView){
@@ -612,7 +613,7 @@ export class World {
     this.onPontoonFrame(dt,this.region==='river'&&!document.hidden&&document.hasFocus());this.pontoonView?.frame(this.pontoonProgress,this.pontoonFraction,this.pontoonZ);if(this.pontoonView){this.canvas.dataset.pontoonZ=String(this.pontoonZ);this.canvas.dataset.pontoonLoads='1';this.canvas.dataset.pontoonObjectY=String(this.regionRoot.userData.pontoonObjectY);}
     this.onSolidFrame(dt,this.region==='rimba'&&!document.hidden&&document.hasFocus());this.solidView?.frame(this.solidProgress,this.solidFraction);if(this.solidView){this.canvas.dataset.solidLoads='1';this.canvas.dataset.solidPressure=String(this.regionRoot.userData.solidPressure??'');this.canvas.dataset.solidLoadY=String(this.regionRoot.userData.solidLoadY);this.canvas.dataset.solidSlide=String(this.regionRoot.userData.solidSlide);this.canvas.dataset.solidApplied=String(this.regionRoot.userData.solidApplied);}
     this.onHydraulicFrame(dt,this.region==='workshop'&&!document.hidden&&document.hasFocus());this.hydraulicView?.frame(this.hydraulicProgress,this.hydraulicFraction);if(this.hydraulicView){this.canvas.dataset.hydraulicInput=String(this.regionRoot.userData.hydraulicInputMm);this.canvas.dataset.hydraulicOutput=String(this.regionRoot.userData.hydraulicOutputMm);this.canvas.dataset.hydraulicCrates='1';}
-    this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(document.hidden||this.paused?0:dt,this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
+    this.onEnergyFrame(dt,this.region==='workshop'&&!document.hidden);this.energyView?.frame(activityDelta(dt,this.paused,document.hidden,document.hasFocus(),!!this.energyFocus),this.energyFraction,this.reducedMotion);if(this.energyView)this.canvas.dataset.energyRotor=String(this.regionRoot.userData.energyRotorAngle??0);
     this.onElectromagnetFrame(dt,this.region==='workshop'&&!document.hidden);
     this.electromagnetView?.frame(this.electromagnetProgress,this.electromagnetFraction);
     this.riverView?.pool.frame(this.buoyancyTrial);this.canvas.dataset.swimming=String(this.swimming);
@@ -698,7 +699,7 @@ export class World {
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
-    this.gardenView?.frame(this.paused||document.hidden?0:dt, this.reducedMotion);
+    this.gardenView?.frame(activityDelta(dt,this.paused,document.hidden,document.hasFocus(),!!this.interacting&&this.playerAnimator.pose==='water'), this.reducedMotion);
     this.ambientView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus()&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);
     this.canvas.dataset.environmentTime=String(this.ambientView?.root.userData.ambientTime??0);this.canvas.dataset.environmentActors=String(this.ambientView?.actor?.root.visible?1:0);
     this.canvas.dataset.region = this.region;
