@@ -270,6 +270,10 @@ for(const [mode,width,height] of [['hp',390,844],['hp',844,390],['ifp',1920,1080
     if(mode==='hp'){
       const cdp=await context.newCDPSession(page);
       const stick=(await button(page,'joystick').boundingBox())!;
+      const controls=(await button(page,'cargo-hud').boundingBox())!;
+      const shortcuts=(await page.locator('nav.dock').boundingBox())!;
+      expect(stick.x+stick.width).toBeLessThanOrEqual(controls.x);
+      expect(controls.y+controls.height).toBeLessThanOrEqual(shortcuts.y+1);
       const x=stick.x+stick.width/2,y=stick.y+stick.height/2;
       const yaw=await truck(page).getAttribute('data-camera-yaw');
       await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x,y:y-stick.height*.25},{id:2,x:width*.82,y:height*.43}]});
