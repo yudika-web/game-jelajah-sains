@@ -63,6 +63,15 @@ describe('M04 cargo motion and route gates', () => {
     expect(brake.speed).toBeLessThan(coast.speed);
     expect(brake.forces.brake).toBeGreaterThan(0);
     expect(cargoLongitudinal(0, 0, true, 2, cargoStep).forces.net).toBe(0);
+    const truck = new CargoController();
+    truck.prepare('practice', 'A');
+    truck.board();
+    truck.frame(.6, { x: 0, z: -1 }, true, available);
+    const heading = truck.yaw;
+    const position = truck.position;
+    truck.frame(.2, { x: .75, z: -1 }, true, available);
+    expect(truck.yaw).toBeLessThan(heading);
+    expect(truck.position.z).toBeGreaterThan(position.z);
   });
   it.each(cargoRouteIds)('guides through %s entirely on real land, independent of frame batches', route => {
     const slow = approach('test', route, 1 / 17);

@@ -44,8 +44,8 @@ function diagram() {
     ${cargoMapPaths()}
     <circle cx="${cargoDepot.x}" cy="${cargoDepot.z}" r=".28" fill="#5d4c2a"/>
     <circle cx="${cargoBay.x}" cy="${cargoBay.z}" r=".28" fill="#35634a"/>
-    <text x="-16.4" y="17.1" font-size=".56">Pangkalan</text><text x="-7" y="10.5" font-size=".56">Dermaga</text>
-    <text x="-10.9" y="16.3" font-size=".65">A</text><text x="-9.6" y="21.5" font-size=".65">B</text>
+    <text x="-16.4" y="17.1" font-size=".76">Pangkalan</text><text x="-7" y="10.5" font-size=".76">Dermaga</text>
+    <text x="-10.9" y="16.3" font-size=".84">A</text><text x="-9.6" y="21.5" font-size=".84">B</text>
     <path d="M${cargoStart.x} 17.55v.9M${cargoFinish.x-.4} ${cargoFinish.z}h.8" stroke="#4d534b" stroke-width=".10"/>
   </svg>`;
 }
