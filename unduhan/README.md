@@ -4,7 +4,7 @@ Unduh **JS-Windows.zip** melalui tombol **Download raw**, lalu ekstrak seluruhny
 
 Build produksi sudah disertakan. **Node.js >=22.12 masih diperlukan**; disarankan Node.js 24 LTS dari https://nodejs.org/. Pemain tidak memerlukan npm, Python, pemasangan dependensi atau build. Ini bukan EXE mandiri. Diagnostik tersedia melalui `DIAGNOSTIK_JELAJAH_SAINS.bat`.
 
-Paket tahap 09 ini memperkaya detail dan aktivitas delapan wilayah, mempertahankan butik Gaya Penjelajah dengan 12 kosmetik, pembelian receipt-backed dan sistem Koin Sains, Dompet, hadiah misi sekali dan seluruh game, teluk latihan selam W05 dengan perlengkapan gratis dan kontrol 3D, perjalanan kendaraan pergi/pulang W08, perlengkapan astronot gratis, airlock dan eksplorasi luar stasiun terbatas, instrumen M07, Lemari Penampilan, dan galeri dengan model yang sama. Pilihan awal gratis: dua pakaian, empat rambut, topi, kacamata dan tas. Buka Peta Kota → Lemari Penampilan atau Pengaturan → Penampilan. Cadangan v20 menyertakan profil, dompet, receipt dan penampilan; impor cadangan lama mempertahankan ekonomi. Tutup tab permainan versi lama setelah pembaruan. Skema database naik ke 2 tanpa menghapus progres; gunakan satu tab untuk menyimpan. Buka Peta → Kak Mira · Butik untuk belanja dengan koin misi. Membeli tidak langsung memakai barang. Kode sumber, pengujian, screenshot dan video pengembangan tetap tersedia di repositori, tetapi tidak dimasukkan ke paket siap main agar ukurannya kecil dan jalurnya pendek.
+Paket terbaru pada branch `feat/m03-greenhouse-heat` menambahkan [M03 Rumah Semai Terlalu Panas](../docs/greenhouse-heat-review.md). Setelah membuka game, pilih M03 pada Misi aktif, masuk Kebun Kehidupan, dan temui Bu Sari. Fitur tahap 09 tersedia, termasuk perjalanan W08, EVA, eksplorasi selam, butik, galeri, dan dompet. Cadangan aktif **v21** dan IndexedDB tetap **skema 2**. Tutup tab versi lama sebelum membuka paket baru.
 
 Kesalahan `0x80010135: Path too long` berasal dari panjang jalur gabungan folder tujuan dan isi arsip. ZIP sumber GitHub memiliki awalan nama repository/commit serta dokumen bertingkat. Paket ini memakai awalan `JS/`; semua jalur internal dibatasi 64 karakter. Tetap gunakan folder tujuan pendek; tidak ada paket yang dapat menjamin berhasil jika folder tujuan sendiri sudah terlalu panjang.
 
@@ -15,7 +15,8 @@ Untuk membuat ulang paket (pengembang):
 1. Jalankan `npm run prepare:local`.
 2. Jalankan `python3 scripts/package_windows.py`.
 3. Jalankan `npm run test:launcher` dan `npm run test:e2e -- tests/runtimePackage.spec.ts`.
+4. Untuk mengulang alur M03 dari ZIP, ekstrak dan jalankan paket pada port 5173. Dari checkout jalankan `GREENHOUSE_ORIGIN=http://localhost:5173 npm run test:e2e -- tests/greenhouse.spec.ts`. Uji alur penuh membatasi akses browser ke origin paket.
 
 Paket dibuat dengan ZIP DEFLATE standar, tanpa symlink. Verifikasi CRC, hash isi dan panjang jalur dijalankan. Pengujian ekstraksi, server dan browser dilakukan di Linux; pengekstrak Explorer Windows serta perangkat Windows fisik belum diuji langsung.
 
-Pemeriksaan tahap 09: paket 649.601 byte, 20 entri, jalur terpanjang 40 karakter, CRC/hash cocok dengan build persiapan. Lima pengujian browser dari ZIP memblokir akses eksternal dan memeriksa galeri, W08, EVA, selam, serta butik. [Metadata verifikasi](verification.json) · [Lingkungan dan batas pengujian tahap 09](../docs/visual-stage-09-review.md).
+[Metadata build, checksum, dan hasil verifikasi paket M03](verification.json).

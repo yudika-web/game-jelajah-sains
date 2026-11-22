@@ -46,3 +46,46 @@ Suhu adalah besaran yang diukur termometer. Kalor adalah energi yang berpindah k
 Tiga checkpoint menghasilkan satu hadiah 100 XP dan 100 Koin Sains. Bukti, XP, dan transaksi dompet disahkan dalam transaksi IndexedDB yang sama. Reset meminta konfirmasi dan mempertahankan receipt hadiah, pembelian, penampilan, dan progres lain. S02, S04, dan S20 tidak memiliki catatan penyelesaian dari M03. Cadangan v21 menambahkan M03 pada skema database 2. Cadangan v1–v20 untuk profil yang sama mempertahankan catatan M03.
 
 Paket siap main tersedia di [unduhan/JS-Windows.zip](../unduhan/JS-Windows.zip) pada branch ini. Lihat [panduan ekstraksi dan verifikasi](../unduhan/README.md).
+
+## Gambar dan cuplikan
+
+[Cuplikan alur M03 dari paket produksi (WebM)](evidence/greenhouse/m03-bermain.webm)
+
+| Langkah | Bukti |
+| --- | --- |
+| Temui Bu Sari dan terima tugas | [Menerima tugas](evidence/greenhouse/01-tugas.jpg) |
+| Ambil termometer dari meja acuan | [Alat di meja](evidence/greenhouse/02a-termometer-di-meja.jpg) · [Meminjam alat](evidence/greenhouse/02-termometer.jpg) |
+| Pasang modul di atas rumah semai | [Peneduh terbentang](evidence/greenhouse/03-peneduh.jpg) |
+| Lepas pengunci dan buka panel | [Ventilasi terbuka](evidence/greenhouse/04-ventilasi.jpg) |
+| Amati suhu akhir uji gabungan | [Pembacaan 35,0 °C](evidence/greenhouse/05-pengukuran.jpg) |
+| Bandingkan empat hasil | [Grafik dan tabel jurnal](evidence/greenhouse/06-grafik.jpg) |
+| Serahkan kesimpulan | [Penyelesaian di Bu Sari](evidence/greenhouse/07-kesimpulan.jpg) |
+
+[HP potret](evidence/greenhouse/hp-390.jpg) · [HP lanskap](evidence/greenhouse/hp-844.jpg) · [IFP](evidence/greenhouse/ifp-1920.jpg)
+
+![Uji gabungan dengan peneduh terpasang, ventilasi terbuka, dan angka 35,0 °C](evidence/greenhouse/05-pengukuran.jpg)
+
+## Hasil pemeriksaan
+
+Pemeriksaan dilakukan dengan Node.js 24.22.3 dan Chromium 156 memakai SwiftShader di Linux. Viewport laptop 1440×960 dipakai untuk alur penuh. HP 390×844 dan 844×390 memakai konteks sentuh. Viewport IFP 1920×1080 memakai tombol navigasi. Viewport ini tidak mengukur performa perangkat fisik atau koneksi LAN. Arsip dan peluncur diuji setelah diekstrak di Linux. Explorer dan BAT pada Windows fisik belum dijalankan.
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| TypeScript, Vite, dan persiapan produksi | Lulus |
+| Vitest | 899 lulus dengan satu worker dan timeout 30 detik |
+| Peluncur dan paket Windows | 16 lulus, termasuk ekstraksi dari jalur Unicode, CRC/hash, dan peluncuran tanpa npm |
+| M03 dari ZIP produksi | 4 lulus. Rute penuh memblokir akses eksternal. Tes mencakup pengukuran 3D dan panel, reload ketika uji berjalan, hadiah atomik, cadangan lama dan v21, reset, dan refleksi. |
+| Regresi M14 | 3 lulus. Enam tanaman, alur penyiraman, batas hari, jurnal, reset, dan viewport HP diperiksa. |
+| Regresi gerak | 5 lulus termasuk ulangan tes yang mengukur laju Shift |
+| Regresi ZIP tahap 09 | 5 lulus termasuk ulangan tes W08 desktop. Instrumen, EVA, lemari, galeri, menyelam dan butik diuji dengan akses eksternal diblokir. |
+
+Putaran browser pertama menghasilkan 15 lulus dan 2 gagal. Tes laju Shift gagal pada sampel 500 ms yang memuat celah rekaman bingkai sekitar 315 ms. Tes W08 desktop mencapai pemeriksaan galeri lalu melewati batas 60 detik. Kedua tes lulus saat dijalankan ulang secara terpisah dengan batas 120 detik untuk penyelesaian seluruh tes. Tes laju lulus dalam 18,1 detik. Tes W08 desktop lulus dalam sekitar 1,1 menit.
+
+```sh
+npm run build
+npm test -- --maxWorkers=1 --testTimeout=30000
+npm run test:launcher
+npm run test:e2e -- tests/greenhouse.spec.ts tests/runtimePackage.spec.ts tests/running.spec.ts tests/garden.spec.ts --timeout=120000
+```
+
+Untuk memeriksa M03 dari ZIP, ekstrak dan jalankan paket terlebih dahulu pada port 5173, lalu tambahkan `GREENHOUSE_ORIGIN=http://localhost:5173` pada perintah Playwright. Tambahkan `CAPTURE_GREENHOUSE=1` bila ingin memperbarui tangkapan layar dan cuplikan dipercepat. Pembuatan cuplikan memerlukan FFmpeg dengan enkoder VP9.
