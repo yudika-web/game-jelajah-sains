@@ -1,3 +1,4 @@
+import { cargoFrameDelta } from '../game/cargoMotion';
 import { CargoController } from './cargoController';
 import { buildCargoWorld } from './cargoWorld';
 import { cargoDistance, cargoFoot } from '../data/cargoRegion';
@@ -136,6 +137,7 @@ export class World {
   set running(value: boolean) { this.runMode = value; this.onRunModeChange(value); }
   private movement = new MovementController();
   private resetFrameTime = false;
+  private cargoFrameActive = false;
   suspendMotion() { this.stop(); this.resetFrameTime = true; }
   readonly followCamera: FollowCamera;
   get yaw() { return this.followCamera.yaw; }
@@ -592,6 +594,9 @@ export class World {
   private frame() {
     const elapsed = this.clock.getDelta();
     const dt = this.resetFrameTime ? 0 : movementDelta(elapsed);
+    const cargoActive = this.cargo.aboard && !this.paused && !document.hidden && document.hasFocus();
+    const cargoDt = cargoActive && this.cargoFrameActive && !this.resetFrameTime ? cargoFrameDelta(elapsed) : 0;
+    this.cargoFrameActive = cargoActive;
     this.resetFrameTime = false; this.elapsed += dt;
     this.onBuoyancyFrame(dt,!document.hidden&&document.hasFocus());
     this.onIrrigationFrame(dt,!document.hidden&&document.hasFocus());
@@ -630,7 +635,7 @@ export class World {
     }
     if (this.cargo.aboard) {
       const previous = this.cargo.position;
-      this.cargo.frame(dt, this.move, !this.paused && !document.hidden && document.hasFocus(), p => walkable(p, cargoNavigation));
+      this.cargo.frame(cargoDt, this.move, cargoActive, p => walkable(p, cargoNavigation));
       travelled = cargoDistance(previous, this.cargo.position);
       this.position.set(this.cargo.position.x, 0, this.cargo.position.z);
       this.facing = this.cargo.yaw;
@@ -646,7 +651,7 @@ export class World {
     }
     if(this.swimming)this.playerAnimator.setPose('none');
     if(this.boat.aboard)this.boat.yaw=this.player.rotation.y;
-    this.playerAnimator.update(dt, travelled, this.reducedMotion);
+    this.playerAnimator.update(this.cargo.aboard ? cargoDt : dt, travelled, this.reducedMotion);
     this.iceParcel.visible=this.region==='town'&&this.marketProgress.parcel.state==='carried'&&!['measure','sample','water','ruler','plant','fishCast','fishWait','fishPull'].includes(this.playerAnimator.pose);if(this.iceParcel.visible){this.playerRig.rightArm.shoulder.rotation.x=-.45;for(const key of ['meter','sample','wateringCan','ruler','rod'] as const)this.playerRig.tools[key].visible=false;}this.canvas.dataset.marketParcelVisible=String(this.iceParcel.visible);
     this.onMarketFrame(dt,this.region==='town'&&!document.hidden&&document.hasFocus());this.canvas.dataset.marketFraction=this.marketFraction.toFixed(3);this.marketView?.frame(this.marketProgress,this.marketFraction,document.hidden||!document.hasFocus()||this.paused&&!this.marketFocus?0:dt,this.reducedMotion);
     this.townView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus(),this.reducedMotion,this.lowQuality,this.position);
@@ -701,7 +706,7 @@ export class World {
     if(this.marketFocus){const p=this.places.find(p=>p.id===this.marketFocus);if(p)this.marketCameraPoint.set(p.x,.20,p.z-1);}
     const greenhouseFocus = this.region === 'garden' && (this.interacting === 'heatInside' || this.interacting === 'heatVent' || this.interacting === 'heatShade');
     this.followCamera.inspectionWidth=greenhouseFocus?7.4:this.marketFocus?2.8:this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(greenhouseFocus?this.greenhouseCameraPoint:this.diveFocus?this.diveCameraPoint:this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(greenhouseFocus?this.greenhouseCameraPoint:this.diveFocus?this.diveCameraPoint:this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, this.cargo.aboard?cargoDt:dt, this.reducedMotion);
     if(this.region==='space'&&this.expedition.controlledPose&&!this.expedition.outside){
       if(this.expedition.inVehicle){const ship=this.expedition.shipPosition();this.expeditionTarget.set(ship.x,ship.y+1.15,ship.z);this.expeditionCamera.set(ship.x+5,ship.y+2.8,ship.z+5.5);}else{this.expeditionTarget.set(14,1.2,21);this.expeditionCamera.set(18.6,3.5,25.6);}
       this.camera.setViewOffset(innerWidth,innerHeight,innerWidth>=701?innerWidth*.18:0,innerWidth<701?innerHeight*.16:0,innerWidth,innerHeight);this.spaceInstrumentCamera.update(this.camera,this.expeditionCamera,this.expeditionTarget,dt,this.reducedMotion);this.camera.layers.set(0);

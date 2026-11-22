@@ -4,7 +4,7 @@ import { riverNavigation } from '../src/data/riverRegion';
 import { CargoController, type CargoRunKind } from '../src/engine/cargoController';
 import { findPath, walkable } from '../src/engine/navigation';
 import { cargoTransition, initialCargo, parseCargo, type CargoEvent } from '../src/game/cargoMission';
-import { averageCargoSpeed, cargoLongitudinal, cargoMassKg, cargoStep, fasterCargo } from '../src/game/cargoMotion';
+import { averageCargoSpeed, cargoFrameDelta, cargoLongitudinal, cargoMassKg, cargoStep, fasterCargo } from '../src/game/cargoMotion';
 import { reconcileCoins, newEconomy } from '../src/game/coinEconomy';
 import { importBackup, initialGame, makeBackup } from '../src/game/gameState';
 
@@ -77,6 +77,7 @@ describe('M04 cargo motion and route gates', () => {
     const slow = approach('test', route, 1 / 17);
     const fast = approach('test', route, 1 / 60);
     expect(slow.reading).toEqual(fast.reading);
+    expect(approach('test', route, cargoFrameDelta(1 / 3)).reading).toEqual(fast.reading);
     expect(slow.reading?.gates).toBe(cargoRoutes[route].points.length - 2);
     expect(averageCargoSpeed(slow.reading!)).toBeCloseTo(slow.reading!.distanceMm / slow.reading!.elapsedMs, 10);
   });

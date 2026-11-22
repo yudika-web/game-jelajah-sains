@@ -15,7 +15,7 @@ Misi utama gerak dan gaya untuk kelas VII SMP. Branch `feat/m04-cargo-motion` di
 Kedua rute berada di sisi darat W04, mulai dari pangkalan dan berakhir pada petak di dekat Kak Lestari. Jalan A memintas bagian tengah dan memiliki koridor sempit serta batas 2,0 m/s. Jalan B memutar lewat bagian yang lebih lapang, dengan batas hingga 5,4 m/s yang turun saat mendekati dermaga. Rute melingkari meja dan gerbang yang sudah ada. Panjang nominal dihitung dari titik-titik jalan yang juga dipakai untuk menggambar lintasan. Jarak yang tercatat berasal dari gerak yang benar-benar dilakukan.
 
 - Satu unit dunia dihitung sebagai satu meter model. Perjalanan mulai ketika pusat kendaraan melewati gerbang mulai dan berakhir ketika melewati gerbang selesai. Penanda berbentuk wajik menandai gerbang perantara yang harus dilewati berurutan dalam koridor rute yang dipilih. Durasi pendekatan sebelum mulai dan parkir sesudah selesai berada di luar pengukuran.
-- Langkah model tetap sebesar 1/120 detik. Waktu berjalan di antara gerbang, termasuk selama kendaraan diam. Bagian langkah pada kedua gerbang dihitung melalui interpolasi. Jarak adalah jumlah panjang perpindahan yang sah setelah pemeriksaan lintasan dan halangan. Jika gerak tertahan, jarak dan putaran roda tetap.
+- Langkah model tetap sebesar 1/120 detik. Saat renderer lambat, satu bingkai aktif dapat memproses hingga 0,5 detik dalam langkah kecil yang sama. Waktu berjalan di antara gerbang, termasuk selama kendaraan diam. Bagian langkah pada kedua gerbang dihitung melalui interpolasi. Jarak adalah jumlah panjang perpindahan yang sah setelah pemeriksaan lintasan dan halangan. Jika gerak tertahan, jarak dan putaran roda tetap.
 - Kelajuan rata-rata dihitung dari `jarak dalam meter ÷ waktu dalam detik`. Data tersimpan dalam milimeter dan milidetik. Antarmuka menampilkan hingga dua desimal, dan selisih waktu paling banyak 0,01 detik diperlakukan sebagai hampir sama. Pengukuran kedua rute membandingkan pilihan perjalanan. Jalur dan batas kelajuannya berbeda, sehingga hasil tidak mengisolasi pengaruh satu variabel.
 - Rute bantu mengarahkan kendaraan dari penanda ke penanda melalui mesin yang sama. Kendali manual atau rem mengambil alih. Saat memulihkan kendaraan, perjalanan sementara dibatalkan. Pembacaan yang sudah dicatat tidak ikut dibatalkan.
 
@@ -37,3 +37,20 @@ Hanya ada satu paket kiriman. Sebelum pemuatan paket terlihat di pangkalan, saat
 Memuat ulang mengembalikan kendaraan ke pangkalan. Paket yang belum diterima kembali ke tempat pemuatan. Pencatatan M04, receipt XP, dan hadiah **100 Koin Sains** memakai transaksi IndexedDB yang sama. Reset M04 meminta konfirmasi dan mempertahankan hadiah pertama, pembelian, dan misi lain. S10 dan S12 tidak diselesaikan oleh M04. Cadangan v22 menambahkan M04, dan v1–v21 mempertahankan progres M04 yang sudah ada pada profil yang sama. IndexedDB tetap skema 2.
 
 Paket Windows siap main disimpan di [unduhan/JS-Windows.zip](../unduhan/JS-Windows.zip). Ekstrak ke folder pendek, buka `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Node.js 24 LTS disarankan.
+
+## Cuplikan dan contoh pengukuran
+
+[Video perjalanan M04 yang direkam dari permainan (WebM)](evidence/cargo/m04-bermain.webm)
+
+| Langkah | Tangkapan layar |
+| --- | --- |
+| Naik kendaraan | [Pengemudi duduk](evidence/cargo/01-naik.jpg) |
+| Latihan rem | [Kendaraan berhenti dan jam mencatat](evidence/cargo/02-rem.jpg) |
+| Menempuh dua rute | [Jalur sempit A](evidence/cargo/03-rute-a.jpg) · [Jalur lapang B](evidence/cargo/04-rute-b.jpg) |
+| Membandingkan data | [Tabel pengukuran](evidence/cargo/05-bandingkan.jpg) |
+| Memuat dan mengirim | [Paket di bak](evidence/cargo/06-muat.jpg) · [Parkir di dermaga](evidence/cargo/07-parkir.jpg) |
+| Menyerahkan dan menerima hadiah | [Penyelesaian bersama Kak Lestari](evidence/cargo/08-hadiah.jpg) |
+
+Pada contoh uji dengan pandu, A mencatat **10,81 m, 5,43 s, dan 1,99 m/s**. B mencatat **16,93 m, 5,39 s, dan 3,14 m/s**. B sedikit lebih cepat pada contoh ini. Berhenti di tengah perjalanan dapat mengubah urutannya. Sistem menilai waktu yang dicatat setiap pemain. [Tabel contoh](evidence/cargo/05-bandingkan.jpg)
+
+[HP potret](evidence/cargo/hp-390.jpg) · [HP lanskap](evidence/cargo/hp-844.jpg) · [IFP](evidence/cargo/ifp-1920.jpg)

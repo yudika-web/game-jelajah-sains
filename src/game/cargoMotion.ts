@@ -3,6 +3,10 @@ export const cargoMassKg = 220;
 export const cargoMaxSpeed = 5.4;
 export const cargoBrakeN = 850;
 
+// Long frames still advance the road model in fixed substeps. A stall is
+// bounded so resuming a slow renderer cannot jump far down the lane.
+export const cargoFrameDelta = (seconds: number) => Number.isFinite(seconds) && seconds > 0 ? Math.min(seconds, .5) : 0;
+
 export interface CargoForces {
   drive: number;
   drag: number;
