@@ -1,5 +1,7 @@
 # Cadangan, profil lokal dan Koin Sains
 
+Cadangan aktif **v21** menambahkan rekaman M03. Impor v1–v20 dengan profil yang sama mempertahankan progres dan receipt M03 yang sudah ada. Reset M03 mempertahankan receipt 100 XP dan transaksi 100 koin. IndexedDB tetap skema 2. Rincian di bawah mendokumentasikan perubahan format v19/v20 yang masih didukung.
+
 Versi aktif: **cadangan 20**, model wallet **2**, IndexedDB **2**. Cadangan tidak sama dengan versi database. Pembaruan mempertahankan store dan seluruh progres lama.
 
 Untuk menyimpan hasil, buka **Pengaturan → Ekspor cadangan**. Tunggu hingga penyimpanan selesai. Berkas v20 memuat pembelian, kepemilikan, misi, penampilan, identitas profil lokal, wallet dan receipt hadiah. Gunakan berkas terbaru dari profil tersebut. ID profil bukan akun daring dan tidak memuat nama siswa.

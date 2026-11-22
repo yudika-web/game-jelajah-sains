@@ -1,3 +1,6 @@
+import { buildGreenhouse, type GreenhouseVisual } from './greenhouseWorld';
+import { greenhouseObstacles, isGreenhousePlace } from '../data/greenhouseRegion';
+import { initialC } from '../game/greenhouseModel';
 import {activityDelta} from './activityTime';
 import {buildRegionalEnvironment} from './regionalEnvironment';
 import {DivingController,UnderwaterEnvironment,diveNavigation,type DiveAction} from './divingController';
@@ -186,6 +189,18 @@ export class World {
   onRimbaMotion:(distance:number,seconds:number,position:Point)=>void=()=>{};
   private trackRimbaStep=(distance:number,seconds:number,position:Point)=>this.onRimbaMotion(distance,seconds,position);
   private ambientView:ReturnType<typeof buildRegionalEnvironment>|null=null;
+  private greenhouseView: ReturnType<typeof buildGreenhouse> | null = null;
+  private greenhouseVisual: GreenhouseVisual = { shade: false, vent: false, unlocked: false, borrowed: false, checked: false, temperature: initialC };
+  private greenhouseCameraPoint = new THREE.Vector3(-10.2, 1.02, -5.82);
+  setGreenhouse(view: GreenhouseVisual) {
+    this.greenhouseVisual = view;
+    if (this.region === 'garden') {
+      this.canvas.dataset.heatShade = String(view.shade);
+      this.canvas.dataset.heatVent = String(view.vent);
+      this.canvas.dataset.heatUnlocked = String(view.unlocked);
+      this.canvas.dataset.heatMeter = view.checked ? 'checked' : view.borrowed ? 'borrowed' : 'on-stand';
+    }
+  }
   private gardenView: GardenView | null = null;
   private marketView:ReturnType<typeof buildMarket>|null=null;private marketProgress=initialMarket();
   private iceParcel=createMarketParcel(this.playerRig.rightArm.toolSocket);marketFocus:PlaceId|null=null;marketFraction=0;private marketCameraPoint=new THREE.Vector3();
@@ -375,7 +390,7 @@ export class World {
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
-    this.ambientView=null;this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceDetail=false;this.spaceInstrumentCamera.reset();this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
+    this.ambientView=null;this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceDetail=false;this.spaceInstrumentCamera.reset();this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.greenhouseView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
     this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);(this.scene.fog as THREE.Fog).color.set(sky);this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='space'){
@@ -399,7 +414,8 @@ export class World {
         this.npcs.push({id,rig,animator:new CharacterAnimator(rig,2.4),timer:0});
         this.npcLabels.set(id,this.label('Bu Sari',x,rig.labelSocket.position.y,z,id));
       } });
-      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.width===2.2&&o.depth===1.2?2.25:o.x===9&&o.z< -6?.95:o.width===.6?1.75:o.z < -1 && o.z > -5 ? .7 : 4.6,o.z+o.depth/2)));
+      this.greenhouseView = buildGreenhouse(this.regionRoot, (...args) => this.label(...args));
+      this.collisionBoxes = this.navigation.obstacles.map(o => new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,greenhouseObstacles.includes(o)?1.5:o.depth===.65&&o.width===1.45?1.05:o.width===2.2&&o.depth===1.2?2.25:o.x===9&&o.z< -6?.95:o.width===.6?1.75:o.z < -1 && o.z > -5 ? .7 : 4.6,o.z+o.depth/2)));
     }
     else if(region==='workshop'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -456,7 +472,7 @@ export class World {
     const regionGeometries=new Set<THREE.BufferGeometry>();this.regionRoot.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line||o instanceof THREE.Points)regionGeometries.add(o.geometry);});this.canvas.dataset.regionGeometryCount=String(regionGeometries.size);
   }
   private updateRimbaCamera() {
-    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.9:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
+    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,greenhouseObstacles.includes(o)?1.5:o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.9:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
     this.followCamera.setObstacles(this.collisionBoxes);
   }
   setRimba(p:RimbaProgress) {
@@ -498,7 +514,7 @@ export class World {
   beginInteraction(id: PlaceId, pose: InteractionPose) {
     this.stop(); this.interacting = id; this.playerAnimator.setPose(pose);
     this.followCamera.interactionFraming = true;
-    this.followCamera.interactionYaw = this.region==='garden' && (id==='plotA'||id==='plotB') ? -.85 : 0;
+    this.followCamera.interactionYaw = id==='heatMeter' ? .92 : this.region==='garden' && (id==='plotA'||id==='plotB') ? -.85 : 0;
     const place = this.places.find(p => p.id === id)!; this.facePoint(place);
     const npc = this.npcs.find(n => n.id === id); npc?.animator.greet();
   }
@@ -631,8 +647,9 @@ export class World {
     this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.dive.controlled?(this.diveFocus==='diveGrass'?0:.8):this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.dive.controlled?(this.diveFocus==='diveGrass'?.75:this.diveFocus?.55:.58):this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
     if(this.diveFocus){const p=divePoints[this.diveFocus].position;this.diveCameraPoint.set(p.x,p.y,p.z);if(this.diveFocus==='diveGrass')this.diveCameraPoint.set(-10.7,-6.9,35.5); /* Frame the meadow centre independently of the interaction point. */}
     if(this.marketFocus){const p=this.places.find(p=>p.id===this.marketFocus);if(p)this.marketCameraPoint.set(p.x,.20,p.z-1);}
-    this.followCamera.inspectionWidth=this.marketFocus?2.8:this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
-    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(this.diveFocus?this.diveCameraPoint:this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
+    const greenhouseFocus = this.region === 'garden' && (this.interacting === 'heatInside' || this.interacting === 'heatVent' || this.interacting === 'heatShade');
+    this.followCamera.inspectionWidth=greenhouseFocus?7.4:this.marketFocus?2.8:this.spaceFocus?(this.spaceFocus==='revolution'?9.8:6.3):this.geoFocus?4.5:this.pontoonFocus?(this.pontoonFocus==='spring'?2.4:4.5):this.solidFocus?4.8:this.hydraulicFocus?3.3:this.coastalFocus?3:this.energyFocus?(this.energyFocus==='service'?5:4):this.electromagnetCamera&&this.region==='workshop'?10:0;
+    if(!(this.region==='space'&&(this.expedition.controlledPose&&!this.expedition.outside||this.spaceFocus&&(this.spaceEarthView||this.spaceDetail))))this.followCamera.update(greenhouseFocus?this.greenhouseCameraPoint:this.diveFocus?this.diveCameraPoint:this.marketFocus&&this.region==='town'?this.marketCameraPoint:this.spaceFocus&&this.region==='space'&&this.spaceView?this.spaceView.cameraPoint:this.geoFocus&&this.region==='geopark'?this.geoCameraPoint:this.pontoonFocus&&this.region==='river'?this.pontoonCameraPoint:this.solidFocus&&this.region==='rimba'?this.solidCameraPoint:this.hydraulicFocus&&this.region==='workshop'?this.hydraulicCameraPoint:this.rov.active?this.rovCameraPoint:this.coastalFocus&&this.region==='coast'?this.coastalCameraPoint:this.energyFocus&&this.region==='workshop'?this.energyCameraPoint:this.electromagnetCamera&&this.region==='workshop'?this.electromagnetCameraPoint:this.position, dt, this.reducedMotion);
     if(this.region==='space'&&this.expedition.controlledPose&&!this.expedition.outside){
       if(this.expedition.inVehicle){const ship=this.expedition.shipPosition();this.expeditionTarget.set(ship.x,ship.y+1.15,ship.z);this.expeditionCamera.set(ship.x+5,ship.y+2.8,ship.z+5.5);}else{this.expeditionTarget.set(14,1.2,21);this.expeditionCamera.set(18.6,3.5,25.6);}
       this.camera.setViewOffset(innerWidth,innerHeight,innerWidth>=701?innerWidth*.18:0,innerWidth<701?innerHeight*.16:0,innerWidth,innerHeight);this.spaceInstrumentCamera.update(this.camera,this.expeditionCamera,this.expeditionTarget,dt,this.reducedMotion);this.camera.layers.set(0);
@@ -698,6 +715,11 @@ export class World {
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
       const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
+    }
+    if (this.greenhouseView) {
+      this.greenhouseView.update(this.greenhouseVisual, this.reducedMotion, dt);
+      this.canvas.dataset.heatFlapAngle = this.greenhouseView.flapAngle.toFixed(2);
+      this.canvas.dataset.heatInsideReading = this.greenhouseView.insideReading;
     }
     this.gardenView?.frame(activityDelta(dt,this.paused,document.hidden,document.hasFocus(),!!this.interacting&&this.playerAnimator.pose==='water'), this.reducedMotion);
     this.ambientView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus()&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);

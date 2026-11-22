@@ -1,3 +1,4 @@
+import {isGreenhousePlace} from '../data/greenhouseRegion';
 import {EnvironmentKit} from './environmentKit';
 import * as THREE from 'three';
 import { environmentDimensions } from './characterConfig';
@@ -89,6 +90,7 @@ export function buildGarden({root, box: b, label, npc}: Builder): GardenView {
   for(const id of ['gardenBook','fairNotes'] as const){const p=gardenPlaces.find(p=>p.id===id)!;env.book(id,p.x,p.z-.6,p.color,id==='fairNotes');}
   env.finish();
   for(const p of gardenPlaces) {
+    if (isGreenhousePlace(p.id)) continue;
     if(p.id==='sari') npc(p.id,p.x,p.z);
     else if(!['plotA','plotB','townGate'].includes(p.id)) label(p.short,p.x,p.id==='waterTank'?3.7:2.7,p.z,p.id);
     const ring=mesh(new THREE.RingGeometry(.65,.76,24),p.color,p.x,.12,p.z); ring.rotation.x=-Math.PI/2;

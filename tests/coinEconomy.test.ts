@@ -19,7 +19,7 @@ const awarded=()=>reconcileCoins(newEconomy(profile),complete(),'legacy-reconcil
 function finishedM01(){let p=initialProgress();for(const e of [{type:'accept'},{type:'hypothesis'},{type:'read',source:'book'},{type:'read',source:'rain'},{type:'plan',tool:'turbidity',variable:'location',control:'rain'},{type:'measure',sample:'A'},{type:'measure',sample:'B'},{type:'trial'},{type:'conclude',answer:'sediment'}] as MissionEvent[])p=transition(p,e).progress;return p;}
 describe('implemented reward registry and entitlement',()=>{
  it('has only implemented full missions, distinct main/side/logistics amounts, version-independent IDs',()=>{
-  expect(coinRules).toHaveLength(12);expect(new Set(coinRules.map(r=>r.id)).size).toBe(12);
+  expect(coinRules).toHaveLength(13);expect(new Set(coinRules.map(r=>r.id)).size).toBe(13);
   expect(coinRule('M16-E1')).toBeUndefined();expect(coinRule('M17-E3')).toBeUndefined();expect(coinRule('M20')).toBeUndefined();expect(coinRule('S17')).toBeUndefined();
   expect(coinRules.every(r=>r.coins===(r.kind==='main'?100:r.kind==='side'?30:50))).toBe(true);
   expect(rewardId(profile,'M01')).toBe(`${profile}:mission:M01`);
@@ -77,7 +77,7 @@ describe('receipt and integer validation',()=>{
 });
 describe('backup monotonic ledger contract',()=>{
  it('exports v19 with identity, receipts, evidence and appearance',()=>{
-  const g=complete();g.economy=awarded();const b=makeBackup(g);expect(BACKUP_VERSION).toBe(20);expect(b.version).toBe(20);expect(b.economy?.profileId).toBe(profile);expect(importBackup(b,initialGame()).game).toEqual(g);
+  const g=complete();g.economy=awarded();const b=makeBackup(g);expect(BACKUP_VERSION).toBe(21);expect(b.version).toBe(21);expect(b.economy?.profileId).toBe(profile);expect(importBackup(b,initialGame()).game).toEqual(g);
  });
  it('same-profile old backup cannot remove a later receipt; repeated import never sums balances',()=>{
   const full=awarded(),old=structuredClone(full);old.ledger.pop();old.balance-=50;

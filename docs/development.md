@@ -2,6 +2,8 @@
 
 # Catatan pengembangan prototipe 0.1
 
+W02 kini mencakup [M03 Rumah Semai Terlalu Panas](greenhouse-heat-review.md). M03 dan M14 memiliki catatan terpisah. Cadangan aktif v21, IndexedDB skema 2.
+
 ## Visual tahap 04 — stasiun dan instrumen W08
 
 `spaceStation.ts` membatch interior, sedangkan `spaceSurfaces.ts` memakai peta lokal dan arah cahaya astronomi. `SpaceInstrumentCamera` mengatur pose sementara pada kamera World; tidak menulis preferensi kamera eksplorasi. Preset Normal/Rendah menukar LOD yang dimiliki wilayah. `disposeRegion` kini juga melepas tekstur uniform shader dan LOD yang belum terpasang, sekali saja, tanpa menyentuh cache avatar. Model astronomi, sesi waktu, bukti M07, IDB dan cadangan v18 tidak berubah. [Laporan, aset, perbandingan dan hasil](visual-stage-04-review.md).

@@ -1,3 +1,4 @@
+import { greenhousePlaces, greenhouseObstacles } from './greenhouseRegion';
 import {environmentObstacles} from './environmentLayout';
 import {divePointPlaces} from './diving';
 import {preparationPlaces,evaPlaceList,safeSpaceSpawn} from './spaceExpedition';
@@ -11,6 +12,7 @@ import { places, type Place, type PlaceId } from './content';
 import { obstacles, bounds, type NavigationArea } from '../engine/navigation';
 import type { RegionId } from '../game/gameState';
 export const gardenPlaces: Place[] = [
+  ...greenhousePlaces,
   { id: 'sari', name: 'Bu Sari · pendamping kebun', short: 'Bu Sari', action: 'Bicara', x: -5, z: 7, color: '#a08448' },
   { id: 'gardenBook', name: 'Buku kebutuhan tumbuhan', short: 'Buku tumbuhan', action: 'Baca', x: -8, z: 1, color: '#568c65' },
   { id: 'fairNotes', name: 'Catatan percobaan adil', short: 'Catatan Bu Sari', action: 'Baca', x: -4, z: 4, color: '#bc8d4e' },
@@ -24,7 +26,7 @@ export const gardenPlaces: Place[] = [
 export const gardenNavigation: NavigationArea = {
   bounds: { minX: -16, maxX: 16, minZ: -15, maxZ: 18 },
   obstacles: [
- ...environmentObstacles.garden,    { x: -10, z: 9, width: 6, depth: 5 }, { x: -10, z: -9, width: 6, depth: 5 },
+ ...environmentObstacles.garden, ...greenhouseObstacles,    { x: -10, z: 9, width: 6, depth: 5 }, { x: -10, z: -9, width: 6, depth: 5 },
     { x: 10, z: 10, width: 5, depth: 4 },
     { x: -5, z: -3, width: 4.5, depth: 2.8 }, { x: 5, z: -3, width: 4.5, depth: 2.8 },
     { x: 9, z: 1, width: 2.6, depth: 2.6 },
