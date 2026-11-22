@@ -331,7 +331,7 @@ function interactAt(id: PlaceId) {
   if(world.region==='town'&&id==='warga'&&travel.activeMission==='M04'){
     world.beginInteraction(id,'greet');cargoUI.mentor();return;
   }
-  if(world.region==='river'&&(isCargoPlace(id)||id==='lestari'&&travel.activeMission==='M04')){
+  if(world.region==='river'&&(isCargoPlace(id)||id==='lestari'&&(travel.activeMission==='M04'||world.cargo.run?.kind==='delivery'&&world.cargo.parked==='bay'))){
     travel.activeMission='M04';updateMission();
     world.beginInteraction(id,id==='lestari'?'greet':id==='cargoDepot'?'none':'read');
     if(id==='lestari')cargoUI.receiver();

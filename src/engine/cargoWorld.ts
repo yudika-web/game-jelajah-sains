@@ -19,6 +19,11 @@ export function buildCargoWorld(parent: THREE.Group) {
       flat(points[i - 1], points[i], width, laneColor[route], route === 'A' ? .107 : .079);
     }
   }
+  const checkpointMarks = new Map<string, Point>();
+  for (const { points } of Object.values(cargoRoutes)) {
+    for (const p of points.slice(2, -2)) checkpointMarks.set(`${p.x},${p.z}`, p);
+  }
+  for (const p of checkpointMarks.values()) env.box(.42, .022, .42, '#f1e1a7', p.x, .135, p.z, 0, Math.PI / 4);
   env.box(2.4, .022, 3.1, '#d9bc74', cargoDepot.x, .13, cargoDepot.z);
   env.box(2.7, .022, 2.5, '#b7c58a', cargoBay.x, .13, cargoBay.z);
   for (const p of Object.values(cargoFoot)) {
