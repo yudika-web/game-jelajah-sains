@@ -1,35 +1,42 @@
 {
-  "checkedAt": "2026-11-22T07:55:12+07:00",
-  "gameSourceCommit": "ded28377f30b221bc6daffb7c548e54d98630987",
-  "baseStage09Commit": "6e4ac9488812b7be9a5c3b662cae3224ee53cadf",
-  "feature": "M03",
-  "backupFormat": 21,
+  "checkedAt": "2026-11-22T12:47:38+07:00",
+  "gameSourceCommit": "89c421786402b56068da52cd9eeaeb60bdee96d0",
+  "baseM03Commit": "c822ce7c461ba84fdf12deacdd6f93df000948ae",
+  "feature": "M04",
+  "backupFormat": 22,
   "indexedDBSchema": 2,
-  "bytes": 658017,
-  "sha256": "908f10e28f39483e29e578a6a9bd5156826d809095a132428ee3ad303379c1d8",
+  "bytes": 669628,
+  "sha256": "c3ac6735e0852f8d126889ab97f5b66271477386031ab0700d8b897e62a863d1",
   "members": 20,
   "maxMemberLength": 40,
   "crc": "passed",
   "manifestHashes": "passed",
   "matchesPreparedDist": true,
-  "unitTestsPassed": 899,
+  "unitTestsPassed": 907,
   "launcherTestsPassed": 16,
   "browserCasesPassedAcrossRuns": {
-    "greenhouse": 4,
-    "garden": 3,
-    "movement": 5,
-    "stage09Package": 5
+    "cargoOnFinalZip": 4,
+    "existingFeaturesOnFinalZip": 6
   },
-  "browserInitialRun": {
-    "passed": 15,
-    "failed": 2
-  },
-  "browserFocusedRerun": {
-    "passed": 2,
-    "failed": 0,
-    "timeoutMs": 120000
-  },
-  "externalNetworkBlockedForFullM03AndStage09PackageTests": true,
+  "browserViewports": [
+    [
+      1280,
+      900
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      844,
+      390
+    ],
+    [
+      1920,
+      1080
+    ]
+  ],
+  "externalNetworkBlockedForFullM04": true,
   "physicalWindowsExplorerTested": false,
   "physicalLANTested": false,
   "physicalHPIFPTested": false

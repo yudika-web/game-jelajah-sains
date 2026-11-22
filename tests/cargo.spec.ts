@@ -43,7 +43,12 @@ async function go(page: Page, id: string, title: string) {
   if (await button(page,'panel').isVisible()) await click(page,'close-panel');
   await click(page,'map');
   await page.locator(`[data-destination="${id}"]`).click();
-  await expect(button(page,'panel-title')).toHaveText(title,{timeout:35_000});
+  await expect.poll(async()=>{
+    if(await button(page,'panel').isVisible())return (await button(page,'panel-title').textContent())===title;
+    return (await truck(page).getAttribute('data-near'))===id && (await truck(page).getAttribute('data-moving'))==='false';
+  },{timeout:85_000}).toBe(true);
+  if(!await button(page,'panel').isVisible())await click(page,'interact');
+  await expect(button(page,'panel-title')).toHaveText(title);
 }
 
 async function saved(page: Page) {
@@ -120,7 +125,8 @@ async function nextRun(page: Page) {
 }
 
 test('M04 full drive, brake practice, A and B, delivery and one durable reward', async ({page,context})=>{
-  test.setTimeout(300_000);
+  test.setTimeout(360_000);
+  await page.setViewportSize({width:1280,height:900});
   const errors:string[]=[],external:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   if(origin)await context.route('**/*',route=>{
@@ -257,8 +263,10 @@ test('M04 full drive, brake practice, A and B, delivery and one durable reward',
 
 for(const [mode,width,height] of [['hp',390,844],['hp',844,390],['ifp',1920,1080]] as const){
   test(`M04 accessible road controls · ${mode} ${width}×${height}`,async({browser})=>{
-    test.setTimeout(100_000);
-    const context=await browser.newContext({viewport:{width,height},hasTouch:mode==='hp',isMobile:mode==='hp'});
+    test.setTimeout(mode==='ifp'?180_000:100_000);
+    // Keep the IFP CSS viewport at 1920×1080 while limiting CPU raster work under SwiftShader.
+    const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:mode==='ifp'?.8:1,
+      hasTouch:mode==='hp',isMobile:mode==='hp'});
     const page=await context.newPage();
     await boot(page,mode);
     await load(page,oldSave('river',true));

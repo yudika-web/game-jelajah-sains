@@ -54,3 +54,23 @@ Paket Windows siap main disimpan di [unduhan/JS-Windows.zip](../unduhan/JS-Windo
 Pada contoh uji dengan pandu, A mencatat **10,81 m, 5,43 s, dan 1,99 m/s**. B mencatat **16,93 m, 5,39 s, dan 3,14 m/s**. B sedikit lebih cepat pada contoh ini. Berhenti di tengah perjalanan dapat mengubah urutannya. Sistem menilai waktu yang dicatat setiap pemain. [Tabel contoh](evidence/cargo/05-bandingkan.jpg)
 
 [HP potret](evidence/cargo/hp-390.jpg) · [HP lanskap](evidence/cargo/hp-844.jpg) · [IFP](evidence/cargo/ifp-1920.jpg)
+
+## Hasil verifikasi
+
+| Pemeriksaan | Hasil |
+| --- | --- |
+| TypeScript dan build produksi | Lulus |
+| Vitest | 907 tes lulus, termasuk batas kelajuan, gaya, tabrakan, jeda, langkah tetap, urutan gerbang, bukti, reset, dan impor |
+| Peluncur Windows dan integritas ZIP | 16 tes lulus, termasuk ekstraksi ke jalur Unicode dengan spasi dan peluncuran dengan Node tanpa npm |
+| M04 dari ZIP final | 4 skenario lulus di Chromium. Alur penuh laptop mencakup pengiriman, reload saat perjalanan, penyerahan, ekspor/impor v22 dan v21, serta hadiah sekali. |
+| Regresi dari ZIP final | 6 skenario lulus. Alur lengkap M03, perahu di W04, ROV, instrumen dan EVA W08, menyelam, serta butik diperiksa. |
+
+Pemeriksaan browser memakai Chromium 156 dengan SwiftShader di Linux. Laptop diuji pada 1280×900. HP 390×844 dan 844×390 memakai dua sentuhan untuk analog dan kamera, dengan area kontrol yang terpisah. IFP memakai viewport CSS 1920×1080 dengan skala raster 0,8 dan pilihan pengurangan gerakan. Renderer perangkat lunak kadang melambat pada perjalanan pejalan kaki menuju pangkalan, sehingga pemeriksaan navigasi memberi waktu lebih longgar. Uji awal IFP juga menemukan kehilangan langkah kendaraan saat bingkai lambat. Jam khusus kargo kemudian diuji ulang dengan bingkai panjang dan pandu menyelesaikan latihan di IFP. Pengujian fisik Windows, LAN, HP dan IFP masih terbuka.
+
+```sh
+npm run build
+npm test -- --maxWorkers=1 --testTimeout=30000
+npm run test:launcher
+```
+
+Untuk memeriksa misi langsung dari ZIP, ekstrak dan jalankan paket terlebih dahulu pada port 5173, lalu jalankan `CARGO_ORIGIN=http://localhost:5173 npm run test:e2e -- tests/cargo.spec.ts` dari checkout. Uji alur penuh membatasi akses browser ke origin paket. Tambahkan `CAPTURE_CARGO=1` untuk merekam ulang tangkapan layar dan cuplikan dipercepat. Cuplikan memerlukan FFmpeg dengan enkoder VP9.
