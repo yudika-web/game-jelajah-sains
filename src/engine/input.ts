@@ -29,6 +29,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
       return;
     }
     const key = e.key.toLowerCase();
+    if(world.cargo.aboard&&e.code==='Space'&&!world.paused){e.preventDefault();world.cargo.brake();return;}
     if(world.dive.active&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.dive.changeHeight(e.code==='Space'?1:-1);return;}
     if(world.region==='space'&&world.expedition.outside&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.expedition.eva.changeHeight(e.code==='Space'?1:-1);return;}
     if(world.rov.active&&(e.code==='Space'||key==='q')){e.preventDefault();if(!e.repeat&&!world.paused)world.rovDepth(e.code==='Space'?-1:1);return;}
@@ -58,7 +59,7 @@ export function bindInput(world: World, joystick: HTMLElement, interact: () => v
   const releaseStick = (e: PointerEvent) => {
     if (e.pointerId === stickPointer) {
       stickPointer = null; analog = { x: 0, z: 0 }; knob.style.transform = ''; refresh();
-      if (e.type !== 'pointerup') world.stop(false); // cancellation must halt immediately; retain the selected mode
+      if (e.type !== 'pointerup') { if(world.cargo.aboard)world.cargo.brake(); world.stop(false); } // cancellation must halt immediately; retain the selected mode
     }
   };
   joystick.addEventListener('pointerup', releaseStick);

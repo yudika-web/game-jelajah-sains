@@ -1,8 +1,10 @@
 # Jelajah Sains
 
-**W02 / M03 — Rumah Semai Terlalu Panas.** Pilih M03 pada **Misi aktif**, masuk Kebun Kehidupan, lalu temui Bu Sari. Ambil termometer, ukur suhu, bandingkan peneduh dan ventilasi pada tiga uji terkontrol, lalu pasang keduanya dan uji target latihan. Satu hadiah 100 XP dan 100 Koin Sains. [Cara bermain, grafik, sumber, dan cuplikan](docs/greenhouse-heat-review.md).
+**W04 / M04 — Kiriman ke Dermaga.** Temui Pak Wira di Kota Sains, lalu baca dua sumber di Sungai dan Danau. Latih kendali kargo, catat perjalanan A dan B, pilih rute dari data, dan serahkan paket kepada Kak Lestari. Satu hadiah **100 XP dan 100 Koin Sains**. [Cara bermain, model, dan bukti](docs/cargo-motion-review.md).
 
-**Paket M03** tersedia pada branch `feat/m03-greenhouse-heat` di [unduhan/JS-Windows.zip](unduhan/JS-Windows.zip). Ekstrak ke folder pendek, buka `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. Gunakan paket branch ini untuk bermain M03. [Rincian paket](unduhan/README.md).
+**Paket terbaru** pada branch `feat/m04-cargo-motion` tersedia di [unduhan/JS-Windows.zip](unduhan/JS-Windows.zip). Ekstrak ke folder pendek, buka `JS`, lalu klik `JALANKAN_JELAJAH_SAINS.bat`. [Panduan paket](unduhan/README.md).
+
+**W02 / M03 — Rumah Semai Terlalu Panas.** Pilih M03 pada **Misi aktif**, masuk Kebun Kehidupan, lalu temui Bu Sari. Ambil termometer, ukur suhu, bandingkan peneduh dan ventilasi pada tiga uji terkontrol, lalu pasang keduanya dan uji target latihan. Satu hadiah 100 XP dan 100 Koin Sains. [Cara bermain, grafik, sumber, dan cuplikan](docs/greenhouse-heat-review.md).
 
 **Tahap 09 — Lingkungan delapan wilayah:** Kebun, Rimba, Sungai, Bengkel dan Geopark mendapat variasi vegetasi/batu, bentuk bangunan dan perlengkapan sesuai fungsi; Kota, Pesisir dan Antariksa diselaraskan. Buku di meja, label dekat, aktivitas dekoratif terbatas, serta pilihan Rendah dan pengurangan gerakan. Seluruh misi, koin, kosmetik dan cadangan v20 dipertahankan. [Perbandingan gambar, cuplikan dan hasil pemeriksaan](docs/visual-stage-09-review.md).
 
@@ -58,7 +60,7 @@ Gerak mendukung **Jalan 5,2 / Lari 8,0 unit/detik**: tahan Shift pada laptop, at
 
 Fondasi avatar memakai karakter balok enam bagian sesuai acuan **Karakter Balok Sederhana**. Tinggi siswa/siswi 1,60 unit, Bu Nara 1,70, Pak Wira 1,75, Bu Sari 1,68; ukuran dinormalisasi satu kali dari geometri netral. Lihat [laporan proporsi, sebelum/sesudah, dan pengujian](docs/block-avatar-review.md).
 
-Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Delapan wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota dan M02 Persediaan Es Pasar**, **W02 Kebun Kehidupan / M03 Rumah Semai Terlalu Panas dan M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba dan M16-E3 Pijakan Aman Pos Rimba**, serta **W04 Sungai dan Danau / S13, S14, S15, M16-E4**, **W05 Pesisir dan Laut / S16, M16-E1**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, M17-E3, dan M16-E2**, serta **W07 Geopark / M13 Pesan dari Geopark**, serta **W08 Antariksa (simulasi) / M07 Catatan dari Observatorium**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
+Prototipe petualangan IPA SMP berbasis **Vite, TypeScript, dan Three.js**. Delapan wilayah yang terhubung: **W01 Kota Sains / M01 Detektif Air Kota dan M02 Persediaan Es Pasar**, **W02 Kebun Kehidupan / M03 Rumah Semai Terlalu Panas dan M14 Kebun Percobaan**, **W03 Rimba dan Gambut / W03-LOG01 Bantu Pos Rimba dan M16-E3 Pijakan Aman Pos Rimba**, serta **W04 Sungai dan Danau / M04, S13, S14, S15, M16-E4**, **W05 Pesisir dan Laut / S16, M16-E1**, serta **W06 Bengkel dan Energi / M17-E1, M17-E2, M17-E3, dan M16-E2**, serta **W07 Geopark / M13 Pesan dari Geopark**, serta **W08 Antariksa (simulasi) / M07 Catatan dari Observatorium**. M14 dapat dimainkan dari menerima benih hingga membandingkan hasil pertumbuhan enam tanaman.
 
 Fondasi kamera dan gerak tetap mencakup langkah berdasarkan perpindahan nyata, putaran halus, serta gestur NPC. [Laporan tahap sebelumnya](docs/character-camera-review.md) disimpan sebagai riwayat; model terbaru menggunakan enam balok dan socket alat sesuai laporan patch di atas.
 
@@ -100,7 +102,7 @@ E2E menggunakan Chromium sistem di `/usr/bin/chromium`. Di komputer lain, atur `
 
 ## Cara bermain
 
-Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3/M16-E4/M13/M07/M02/M03. Kedelapan belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
+Pilih mode perangkat pada layar pembuka, lalu **Mulai menjelajah**. Pilihan **Misi aktif** pada kartu misi mengganti petunjuk dan jurnal M01/M14/W03-LOG01/S13/S14/S15/M17-E1/M17-E2/M17-E3/S16/M16-E1/M16-E2/M16-E3/M16-E4/M13/M07/M02/M03/M04. Kesembilan belasnya dapat dijalankan bergantian. Buka Peta Kota → Ke Kebun Kehidupan, berjalan menuju gerbang, lalu pilih Masuk. Peta Kota → Ke Rimba dan Gambut membuka episode Pos Rimba. Peta Kota → Ke Sungai dan Danau membuka W04. Bengkel dapat dicapai lewat gerbang jalan bengkel pada Peta Kota. Kebun, Rimba, Sungai, dan Bengkel menyediakan gerbang kembali ke Kota; Pesisir dicapai dari Dermaga keberangkatan W04 dan menyediakan perjalanan kembali ke Sungai; M01 tidak harus selesai atau diterima dahulu. Setiap langkah pada kartu misi atau lokasi di **Peta** dapat dipilih untuk berjalan otomatis; avatar benar-benar menempuh jalur yang menghindari bangunan dan sungai. Tidak ada teleportasi atau kebutuhan melompat pada rute M01.
 
 | Tindakan | Laptop | HP | IFP |
 | --- | --- | --- | --- |
@@ -271,9 +273,9 @@ Kirim dengan penarik virtual: Ke Dermaga Penerima, Berhenti/Lanjutkan atau Kemba
 
 ## Penyimpanan
 
-Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 2**, object store `saves`. Kedelapan belas rekaman misi/episode, dompet, penampilan dan wilayah disimpan dalam transaksi yang sama. Memuat ulang menempatkan pemain di pos aman wilayah terakhir, mempertahankan hari, petak, air, data dan hadiah M14, serta memulihkan perangkat M03 sambil mempertahankan catatan yang sudah disahkan.
+Progres disimpan otomatis ke **IndexedDB `jelajah-sains`, skema 2**, object store `saves`. Kesembilan belas rekaman misi/episode, dompet, penampilan dan wilayah disimpan dalam transaksi yang sama. Memuat ulang menempatkan pemain di pos aman wilayah terakhir, mempertahankan hari, petak, air, data dan hadiah M14, serta memulihkan peralatan M03 dan kendaraan M04 sambil mempertahankan catatan yang sudah disahkan.
 
-**Pengaturan → Ekspor cadangan / Impor cadangan** memakai format **v21**, yang mencakup M03, penampilan, profil, dompet dan receipt. Cadangan **v1–v20** tetap didukung dan mempertahankan progres M03 ketika profilnya sama. Saat mengganti profil melalui konfirmasi, progres mengikuti profil yang dipulihkan. [Panduan versi, impor, dan ekonomi](docs/backup-economy.md).
+**Pengaturan → Ekspor cadangan / Impor cadangan** memakai format **v22**, yang mencakup M04, M03, penampilan, profil, dompet dan receipt. Cadangan **v1–v21** tetap didukung dan mempertahankan progres M04 yang belum tercakup ketika profilnya sama. Versi v1–v20 juga mempertahankan M03. Saat mengganti profil melalui konfirmasi, progres mengikuti profil yang dipulihkan. [Panduan versi, impor, dan ekonomi](docs/backup-economy.md).
 
 Status sukses tampil setelah transaksi selesai. Bila pembacaan penyimpanan gagal, data lama tidak ditimpa otomatis. Cadangkan sebelum membersihkan browser atau berganti alamat/origin. **Ulangi penyelidikan M01**, **Ulangi Percobaan M14**, dan **Ulangi Latihan Pos Rimba**, dan **Ulangi pengamatan S13** adalah tindakan terpisah dengan konfirmasi masing-masing.
 
@@ -347,7 +349,7 @@ src/
   game/electromagnetMission.ts  aturan, bukti, parser M17-E2
   game/craneState.ts    transaksi enam klip dan state derek
   engine/electromagnetWorld.ts  model dan animasi lokal
-  game/storage.ts       transaksi IndexedDB atomik delapan belas misi/episode
+  game/storage.ts       transaksi IndexedDB atomik sembilan belas misi/episode
   game/preferences.ts   preferensi tampilan terpisah dari progres misi
   main.ts              panel UI dan integrasi sistem
   style.css            UI responsif laptop, HP, IFP
@@ -387,7 +389,7 @@ Perjalanan selam W05: **Peta → Persiapan menyelam → Perlengkapan selam → M
 
 Buka ikon koin pada header atau Pengaturan → Dompet. Hadiah baru terlihat setelah transaksi berhasil; total XP bukan saldo koin. Hanya misi lengkap yang terdaftar memberi hadiah. Perlengkapan esensial dan starter lemari tetap gratis. Tahap 08 menambahkan pembelian kosmetik di butik Kota.
 
-Cadangan **v21** menyertakan M03, identitas profil, ledger hadiah/pembelian, kepemilikan dan bukti. Seluruh format **v1–v20** tetap didukung. Cadangan lama tanpa ekonomi mempertahankan dompet aktif dan merekonsiliasi hak yang belum diberikan. Impor profil sama mempertahankan riwayat yang lebih baru; profil berbeda meminta konfirmasi pemulihan utuh, bukan penjumlahan saldo. [Petunjuk lengkap](docs/backup-economy.md).
+Cadangan **v22** menyertakan M04, M03, identitas profil, ledger hadiah/pembelian, kepemilikan dan bukti. Seluruh format **v1–v21** tetap didukung. Cadangan lama tanpa ekonomi mempertahankan dompet aktif dan merekonsiliasi hak yang belum diberikan. Impor profil sama mempertahankan riwayat yang lebih baru; profil berbeda meminta konfirmasi pemulihan utuh, bukan penjumlahan saldo. [Petunjuk lengkap](docs/backup-economy.md).
 
 Skema IndexedDB naik dari **1 ke 2** untuk menolak penulis versi lama yang belum memeriksa revisi. Store/misi lama dipertahankan. Setelah pembaruan, tutup tab versi lama lalu buka ulang alamat yang sama. Gunakan satu tab permainan untuk menyimpan; tab usang diminta muat ulang. Jangan menghapus data browser untuk mengatasi konflik. Nomor skema database berbeda dari versi format cadangan.
 

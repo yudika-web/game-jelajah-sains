@@ -1,3 +1,7 @@
+import { CargoController } from './cargoController';
+import { buildCargoWorld } from './cargoWorld';
+import { cargoDistance, cargoFoot } from '../data/cargoRegion';
+import { riverNavigation } from '../data/riverRegion';
 import { buildGreenhouse, type GreenhouseVisual } from './greenhouseWorld';
 import { greenhouseObstacles, isGreenhousePlace } from '../data/greenhouseRegion';
 import { initialC } from '../game/greenhouseModel';
@@ -78,8 +82,42 @@ import { visibleForPicking } from './picking';
 import { MovementController, movementDelta } from './movement';
 import { characterConfig, environmentDimensions, playerVariant } from './characterConfig';
 
+const cargoNavigation = { ...riverNavigation, radius: 1.15 };
+
 export type InputMode = 'laptop' | 'hp' | 'ifp';
 export class World {
+  readonly cargo = new CargoController();
+  private cargoView: ReturnType<typeof buildCargoWorld> | null = null;
+  cargoDelivered = false;
+  onCargoFrame = () => {};
+  boardCargo() {
+    if (this.region !== 'river' || this.swimming || this.boat.aboard || this.rov.active || this.dive.controlled ||
+      cargoDistance(this.position, this.cargo.position) > this.interactionRadius || !this.cargo.board()) return false;
+    this.stop();
+    this.endFishing();
+    this.endInteraction();
+    this.playerAnimator.driving = true;
+    this.position.set(this.cargo.position.x, 0, this.cargo.position.z);
+    this.player.rotation.y = this.facing = this.cargo.yaw;
+    return true;
+  }
+  exitCargo() {
+    const foot = this.cargo.parked === 'depot' ? cargoFoot.depot : cargoFoot.bay;
+    if (!this.cargo.exit(walkable(foot, riverNavigation))) return false;
+    this.playerAnimator.driving = false;
+    this.position.set(foot.x, 0, foot.z);
+    this.stop();
+    return true;
+  }
+  recoverCargo(returnToDepot = false) {
+    const wasAboard = this.cargo.aboard;
+    this.cargo.recover();
+    this.playerAnimator.driving = false;
+    if (this.region === 'river' && (returnToDepot || wasAboard)) {
+      this.position.set(cargoFoot.depot.x, 0, cargoFoot.depot.z);
+      this.stop();
+    }
+  }
   readonly scene = new THREE.Scene();
   readonly camera = new THREE.PerspectiveCamera(environmentStyle.camera.fov, 1, environmentStyle.camera.near, environmentStyle.camera.far);
   readonly renderer: THREE.WebGLRenderer;
@@ -116,11 +154,11 @@ export class World {
   setBuoyancyTrial(t:BuoyancyTrial|null){this.buoyancyTrial=t;}
   private swimAppearance(active:boolean){this.playerAnimator.swimming=active;this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const m=this.player.getObjectByName(name);if(m)m.visible=!active;}}
   returnShore(){this.stop();this.swimming=false;this.swimAppearance(false);this.position.set(poolExit.x,0,poolExit.z);this.endInteraction();}
-  private updateSwimming(distance:number){if(this.region!=='river'||this.boat.aboard||this.rov.active)return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
+  private updateSwimming(distance:number){if(this.region!=='river'||this.cargo.aboard||this.boat.aboard||this.rov.active)return;if(!this.swimming&&entersPool(this.position)){this.swimming=true;this.swimDistance=0;Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.swimAppearance(true);this.running=false;}if(this.swimming){this.swimDistance+=distance;if(exitsPool(this.position)){this.swimming=false;this.swimAppearance(false);this.running=false;}else if(this.swimDistance>2&&Math.hypot(this.position.x-poolMarker.x,this.position.z-poolMarker.z)<.8)this.onSwimPractice();}}
   diveSuspended=false;readonly dive=new DivingController();private diveView:ReturnType<typeof buildDivingWorld>|null=null;readonly waterEnvironment=new UnderwaterEnvironment();diveFocus:DivePointId|null=null;
   private diveCameraPoint=new THREE.Vector3();private divePreviousPosition=new THREE.Vector3();private diveCameraBefore:{yaw:number;pitch:number}|null=null;
   onDiveChange:()=>void=()=>{};onDiveFrame:()=>void=()=>{};onDiveArrive:(id:DivePointId|'entry')=>void=()=>{};
-  get locomotionMode(){return this.dive.controlled?'diving':this.rov.active?'rov':this.boat.aboard?'boat':this.swimming?'pool-swim':this.region==='space'&&this.expedition.controlledPose?'astronaut':'land';}
+  get locomotionMode(){return this.cargo.aboard?'cargo':this.dive.controlled?'diving':this.rov.active?'rov':this.boat.aboard?'boat':this.swimming?'pool-swim':this.region==='space'&&this.expedition.controlledPose?'astronaut':'land';}
   diveAction(action:DiveAction,revision=this.dive.revision){if(this.region!=='coast'||this.boat.aboard||this.rov.active||this.swimming)return false;const controlled=this.dive.controlled,ok=this.dive.act(action,this.position,revision);if(ok){this.endInteraction();if(controlled||this.dive.controlled||action==='recover')this.position.set(this.dive.pose.x,this.dive.pose.y,this.dive.pose.z);setTemporaryEquipment(this.playerRig,this.dive.equipped?'dive':'none');if(action==='recover'){this.followCamera.targetHeight=characterConfig.cameraTargetHeight;this.followCamera.distanceScale=1;this.followCamera.update(this.position,.016,true,true);}}return ok;}
   recoverDive(){const used=this.dive.equipped;this.dive.reset();this.playerAnimator.diving=false;if(used){setTemporaryEquipment(this.playerRig,'none');if(this.region==='coast')this.position.set(diveShore.x,0,diveShore.z);}this.waterEnvironment.reset();this.diveFocus=null;if(this.region==='coast'){(this.scene.background as THREE.Color).set('#d9e9e3');const fog=this.scene.fog as THREE.Fog;fog.color.set('#d9e9e3');fog.near=48;fog.far=100;this.followCamera?.setObstacles(this.collisionBoxes);}}
   readonly rov=new RovController();private pressureView:ReturnType<typeof buildPressureWorld>|null=null;
@@ -138,7 +176,7 @@ export class World {
   setFlowSampling(s:FlowSampling|null){this.flowSampling=s;}
   setIrrigation(p:IrrigationProgress){this.riverView?.irrigation.update(p);this.canvas.dataset.screenCleaned=String(p.cleaned);}
   private boatAppearance(active:boolean){this.playerRig.tools.vest.visible=active;for(const name of ['backpack','backpack-pocket','contact-shadow']){const obj=this.player.getObjectByName(name);if(obj)obj.visible=!active;}}
-  boardBoat(){if(this.dive.equipped||this.rov.active||!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
+  boardBoat(){if(this.cargo.aboard||this.dive.equipped||this.rov.active||!['river','coast'].includes(this.region)||this.swimming||!this.boat.board(this.position))return false;this.stop();this.endFishing();Object.values(this.playerRig.tools).forEach(t=>t.visible=false);this.boatAppearance(true);this.playerAnimator.boating=true;this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river')this.onBoatTutorial('board',0);return true;}
   startBoat(){if(!this.boat.start())return false;this.stop();this.boat.start();return true;}
   moorBoat(){const d=this.boat.moor(this.position);if(!d)return null;this.stop();this.position.set(this.boat.position.x,0,this.boat.position.z);this.facing=this.boat.yaw;this.player.rotation.y=this.facing;if(this.region==='river'&&d==='irrigation'&&this.boat.tripFrom==='research')this.onBoatTutorial('arrive',this.boat.distanceMm);return d;}
   exitBoat(){const dock=this.boat.dock,p=this.boat.exit(regions[this.region].navigation);if(!p)return false;this.stop();this.playerAnimator.boating=false;this.boatAppearance(false);this.position.set(p.x,0,p.z);this.endInteraction();if(this.region==='river'&&dock==='irrigation')this.onBoatTutorial('land',this.boat.distanceMm);return true;}
@@ -263,6 +301,7 @@ export class World {
       setTemporaryEquipment(this.playerRig,old.cosmetics?.mode??'none');
       this.playerAnimator=new CharacterAnimator(this.playerRig);this.playerAnimator.pushing=this.pushing;
       this.setRimba(this.rimbaProgress);
+      this.playerAnimator.driving=this.cargo.aboard;
       if(this.boat.aboard){this.playerAnimator.boating=true;this.boatAppearance(true);}else if(this.swimming)this.swimAppearance(true);
     }
     this.canvas.dataset.appearance=JSON.stringify(a);
@@ -386,7 +425,7 @@ export class World {
   }
   setRegion(region: RegionId, fromGate = false) {
     if (this.region === region) return;
-    this.recoverDive();this.diveView=null;this.recoverExpedition();this.expeditionView=null;this.spaceInterior=null;this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
+    this.recoverCargo();this.cargoView=null;this.recoverDive();this.diveView=null;this.recoverExpedition();this.expeditionView=null;this.spaceInterior=null;this.recoverRov();const previous=this.region;this.swimming=false;this.swimAppearance(false);this.boat.recover();this.playerAnimator.boating=false;this.boatAppearance(false);this.endFishing();this.stop(); this.endInteraction();
     this.scene.remove(this.regionRoot);
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
@@ -449,6 +488,7 @@ export class World {
         this.npcs.push({id:'lestari',rig,animator:new CharacterAnimator(rig,2.8),timer:0});
         this.npcLabels.set('lestari',this.label('Kak Lestari',x,rig.labelSocket.position.y,z,'lestari'));
       }});
+      this.cargoView=buildCargoWorld(this.regionRoot);
       this.collisionBoxes=[new THREE.Box3(new THREE.Vector3(-13,0,9.5),new THREE.Vector3(-9,4.1,12.5))];
     }
     else {
@@ -495,7 +535,7 @@ export class World {
   }
   waterGarden(group: Group) { this.gardenView?.water(group); }
   goTo(p: Point, onArrive?: () => void) {
-    if(this.dive.controlled||this.rov.active||this.region==='space'&&!this.expedition.landControls)return false;
+    if(this.cargo.aboard||this.dive.controlled||this.rov.active||this.region==='space'&&!this.expedition.landControls)return false;
     const path = findPath(this.position, p, this.navigation);
     if (!path.length) return false;
     if(this.boat.aboard)this.boat.start();
@@ -508,7 +548,7 @@ export class World {
     if (Math.hypot(input.x, input.z) > 0) { this.path.length = 0; this.onArrive = null; this.marker.visible = false; }
   }
   stop(resetRun = true) { this.dive.stop();this.expedition.stop();this.rov.stop();this.boat.stop();this.move = { x: 0, z: 0 }; this.path = []; this.marker.visible = false; this.onArrive = null; if (resetRun) this.running = false; this.movement.stop(); }
-  resetPosition() {this.recoverDive();this.recoverExpedition();this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
+  resetPosition() {this.recoverCargo();this.recoverDive();this.recoverExpedition();this.recoverRov();this.swimming=false;this.swimAppearance(false); this.recoverBoat();this.stop();this.pushing=false;this.playerAnimator.pushing=false; this.endInteraction(); const spawn = regions[this.region].spawn; this.position.set(spawn.x, 0, spawn.z); this.facing = 0; this.followCamera.reset(); this.followCamera.update(this.position, .016, this.reducedMotion, true); }
   resetCamera() { this.followCamera.reset(); }
   facePoint(p: Point) { this.facing = Math.atan2(p.x - this.position.x, p.z - this.position.z); }
   beginInteraction(id: PlaceId, pose: InteractionPose) {
@@ -536,7 +576,7 @@ export class World {
   nearest(): PlaceId | null {
     if(this.dive.controlled)return this.dive.active?this.dive.nearby():null;
     if(this.region==='space'&&!this.expedition.landControls)return this.expedition.outside?this.expedition.eva.nearby():null;
-    if(this.rov.active)return null;
+    if(this.rov.active||this.cargo.aboard)return null;
     if(this.boat.aboard){const d=this.boat.nearby(this.position);return d?this.boat.docks[d].place:null;}
     let nearest: PlaceId | null = null, distance: number = this.interactionRadius;
     for (const p of this.places) {
@@ -577,7 +617,7 @@ export class World {
       const shadow=this.player.getObjectByName('contact-shadow');if(shadow)shadow.visible=!this.playerAnimator.floating;
     }
     if(!this.paused&&this.rov.active)this.rov.step(this.move,this.yaw+pressureConfig.cameraYawOffset,dt);
-    if (!this.paused&&!this.dive.controlled&&!this.rov.active&&!(this.region==='space'&&!this.expedition.landControls)) {
+    if (!this.paused&&!this.cargo.aboard&&!this.dive.controlled&&!this.rov.active&&!(this.region==='space'&&!this.expedition.landControls)) {
       if (Math.hypot(this.move.x, this.move.z) > 0) {
         this.path.length = 0; this.onArrive = null; this.marker.visible = false;
       }
@@ -588,10 +628,22 @@ export class World {
         if (result.arrived) arrive?.();
       }
     }
-    if (travelled > .00001 && !this.interacting) this.facing = Math.atan2(dx, dz);
+    if (this.cargo.aboard) {
+      const previous = this.cargo.position;
+      this.cargo.frame(dt, this.move, !this.paused && !document.hidden && document.hasFocus(), p => walkable(p, cargoNavigation));
+      travelled = cargoDistance(previous, this.cargo.position);
+      this.position.set(this.cargo.position.x, 0, this.cargo.position.z);
+      this.facing = this.cargo.yaw;
+    }
+    if (!this.cargo.aboard && travelled > .00001 && !this.interacting) this.facing = Math.atan2(dx, dz);
     if(this.region==='space'&&this.expedition.seated)this.facing=0;
-    this.player.rotation.y = turnToward(this.player.rotation.y, this.facing, dt);
+    this.player.rotation.y = this.cargo.aboard ? this.cargo.yaw : turnToward(this.player.rotation.y, this.facing, dt);
     this.player.position.copy(this.position);
+    if (this.cargo.aboard) {
+      this.player.position.y = .14;
+      this.player.position.x += Math.sin(this.cargo.yaw) * .018;
+      this.player.position.z += Math.cos(this.cargo.yaw) * .018;
+    }
     if(this.swimming)this.playerAnimator.setPose('none');
     if(this.boat.aboard)this.boat.yaw=this.player.rotation.y;
     this.playerAnimator.update(dt, travelled, this.reducedMotion);
@@ -644,7 +696,7 @@ export class World {
     if(this.coastalFocus)this.coastalView?.focus(this.coastalFocus,this.coastalCameraPoint);
     if(this.geoFocus){const focus=this.geoFocus;const p=this.places.find(p=>p.id===(focus==='earth'?'geoEarth':plateModels[focus].place));if(p)this.geoCameraPoint.set(p.x,1,p.z-.8);}
     this.pontoonCameraPoint.set(this.pontoonFocus==='spring'?-6:7,this.pontoonFocus==='spring'?1:0,this.pontoonFocus==='spring'?23.2:this.pontoonZ);
-    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.dive.controlled?(this.diveFocus==='diveGrass'?0:.8):this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.dive.controlled?(this.diveFocus==='diveGrass'?.75:this.diveFocus?.55:.58):this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
+    this.rovCameraPoint.set(this.rov.position.x,this.rov.position.y,this.rov.position.z);if(this.rov.active)this.followCamera.interactionYaw=pressureConfig.cameraYawOffset;this.followCamera.targetHeight=this.dive.controlled?(this.diveFocus==='diveGrass'?0:.8):this.rov.active||this.pontoonFocus?.20:characterConfig.cameraTargetHeight;this.followCamera.distanceScale=this.cargo.aboard?.83:this.dive.controlled?(this.diveFocus==='diveGrass'?.75:this.diveFocus?.55:.58):this.region==='space'&&this.expedition.outside?.65:this.rov.active?.55:(this.marketFocus||this.spaceFocus||this.geoFocus||this.hydraulicFocus||this.solidFocus||this.pontoonFocus)?.38:1;
     if(this.diveFocus){const p=divePoints[this.diveFocus].position;this.diveCameraPoint.set(p.x,p.y,p.z);if(this.diveFocus==='diveGrass')this.diveCameraPoint.set(-10.7,-6.9,35.5); /* Frame the meadow centre independently of the interaction point. */}
     if(this.marketFocus){const p=this.places.find(p=>p.id===this.marketFocus);if(p)this.marketCameraPoint.set(p.x,.20,p.z-1);}
     const greenhouseFocus = this.region === 'garden' && (this.interacting === 'heatInside' || this.interacting === 'heatVent' || this.interacting === 'heatShade');
@@ -721,6 +773,8 @@ export class World {
       this.canvas.dataset.heatFlapAngle = this.greenhouseView.flapAngle.toFixed(2);
       this.canvas.dataset.heatInsideReading = this.greenhouseView.insideReading;
     }
+    this.cargoView?.update(this.cargo, this.cargoDelivered);
+    this.onCargoFrame();
     this.gardenView?.frame(activityDelta(dt,this.paused,document.hidden,document.hasFocus(),!!this.interacting&&this.playerAnimator.pose==='water'), this.reducedMotion);
     this.ambientView?.frame(dt,!this.paused&&!document.hidden&&document.hasFocus()&&(this.region!=='space'||this.expedition.showInterior&&!this.spaceFocus),this.reducedMotion,this.lowQuality,this.position);
     this.canvas.dataset.environmentTime=String(this.ambientView?.root.userData.ambientTime??0);this.canvas.dataset.environmentActors=String(this.ambientView?.actor?.root.visible?1:0);

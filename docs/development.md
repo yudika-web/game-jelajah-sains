@@ -2,6 +2,8 @@
 
 # Catatan pengembangan prototipe 0.1
 
+W04 kini memuat [M04 Kiriman ke Dermaga](cargo-motion-review.md). Jarak dan waktu diukur dari gerak kendaraan darat di wilayah yang sama. Cadangan aktif v22 dan IndexedDB skema 2.
+
 W02 kini mencakup [M03 Rumah Semai Terlalu Panas](greenhouse-heat-review.md). M03 dan M14 memiliki catatan terpisah. Cadangan aktif v21, IndexedDB skema 2.
 
 ## Visual tahap 04 — stasiun dan instrumen W08

@@ -10,6 +10,7 @@ export interface CoinRule {
 /** Register only implemented missions. Episodes deliberately have no coin rule. */
 export const coinRules:readonly CoinRule[]=[
  {id:'M01',name:'Detektif Air Kota',kind:'main',coins:100,ruleVersion:1,records:['M01']},
+ {id:'M04',name:'Kiriman ke Dermaga',kind:'main',coins:100,ruleVersion:1,records:['M04']},
  {id:'M03',name:'Rumah Semai Terlalu Panas',kind:'main',coins:100,ruleVersion:1,records:['M03']},
  {id:'M02',name:'Persediaan Es Pasar',kind:'main',coins:100,ruleVersion:1,records:['M02']},
  {id:'M07',name:'Catatan dari Observatorium',kind:'main',coins:100,ruleVersion:1,records:['M07']},
@@ -33,7 +34,7 @@ export type EconomyTransaction=CoinReceipt|PurchaseReceipt;
 export interface Economy {version:2;profileId:string;balance:number;ledger:EconomyTransaction[];owned:string[];}
 const profilePattern=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const fail=():never=>{throw Error('Dompet tidak valid: profil, bukti, riwayat atau saldo tidak konsisten.');};
-const replayedReceipts=new Set<RecordId>(['M01','M02','M03','M07','M13','S16']);
+const replayedReceipts=new Set<RecordId>(['M01','M02','M03','M04','M07','M13','S16']);
 // These older formats intentionally retain an XP receipt/date after clearing
 // observations on reset. Respect that per-mission receipt, not the total XP.
 const nativeReceipts=new Set<RecordId>(['M14','W03-LOG01','S13','S14','S15']);

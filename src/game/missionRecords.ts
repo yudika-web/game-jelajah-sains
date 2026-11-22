@@ -1,3 +1,4 @@
+import {parseCargo} from './cargoMission';
 import {parseGreenhouse} from './greenhouseMission';
 import {parseProgress} from './mission';
 import {parseGarden} from './gardenMission';
@@ -27,7 +28,7 @@ export const missionRecords = {
  'M17-E3':{property:'M17E3',parse:parseEnergy}, S16:{property:'S16',parse:parseCoastal},
  'M16-E1':{property:'M16E1',parse:parsePressure}, 'M16-E2':{property:'M16E2',parse:parseHydraulic},
  'M16-E3':{property:'M16E3',parse:parseSolid}, 'M16-E4':{property:'M16E4',parse:parsePontoon},
- M03:{property:'M03',parse:parseGreenhouse}, M13:{property:'M13',parse:parseGeo}, M07:{property:'M07',parse:parseSpace}, M02:{property:'M02',parse:parseMarket},
+ M04:{property:'M04',parse:parseCargo}, M03:{property:'M03',parse:parseGreenhouse}, M13:{property:'M13',parse:parseGeo}, M07:{property:'M07',parse:parseSpace}, M02:{property:'M02',parse:parseMarket},
 } as const;
 export type RecordId=keyof typeof missionRecords;
 export function missionEntries(game:GameState):[RecordId,unknown][] {

@@ -14,6 +14,7 @@ export class CharacterAnimator {
   pushing = false;
   swimming=false;
   boating = false;
+  driving = false;
   floating=false;
   diving=false;
   fishingCast = 0;
@@ -50,8 +51,8 @@ export class CharacterAnimator {
     }
     this.time += dt;
     this.speed = dt > 0 ? distance / dt : 0;
-    const walking = !this.swimming && !this.boating && !this.floating && !this.diving && this.pose === 'none' && this.speed > .025;
-    this.state = this.diving?'swim':this.floating?'float':this.swimming || this.boating || this.pose !== 'none' ? 'interact' : !walking ? 'idle' : this.speed > movementConfig.walkSpeed + .35 ? 'run' : 'walk';
+    const walking = !this.swimming && !this.boating && !this.driving && !this.floating && !this.diving && this.pose === 'none' && this.speed > .025;
+    this.state = this.diving?'swim':this.floating?'float':this.swimming || this.boating || this.driving || this.pose !== 'none' ? 'interact' : !walking ? 'idle' : this.speed > movementConfig.walkSpeed + .35 ? 'run' : 'walk';
     this.blend = damp(this.blend, walking ? Math.min(1, this.speed / movementConfig.walkSpeed) : 0, walking ? 18 : 24, dt);
     this.runBlend = damp(this.runBlend, walking ? Math.max(0, Math.min(1, (this.speed - movementConfig.walkSpeed) / (movementConfig.runSpeed - movementConfig.walkSpeed))) : 0, 14, dt);
     // Stop advancing the cycle at a wall: only a short settling transition remains.
@@ -123,6 +124,12 @@ export class CharacterAnimator {
     if(this.diving){r.torso.rotation.set(.78,0,0);r.head.rotation.x=-.35;for(let i=0;i<2;i++){this.arms[i].shoulder.rotation.x=-1.05+(reducedMotion?0:Math.sin(this.time*4+i*Math.PI)*.22*Math.min(1,this.speed));this.arms[i].shoulder.rotation.z=i===0?-.12:.12;this.legs[i].hip.rotation.x=.55+(reducedMotion?0:Math.sin(this.time*4+i*Math.PI)*.25*Math.min(1,this.speed));}}
     if(this.floating){r.torso.rotation.set(.035,0,0);for(const arm of this.arms){arm.shoulder.rotation.x=-.35;arm.shoulder.rotation.z=arm===this.arms[0]?-.18:.18;}for(const leg of this.legs){leg.hip.rotation.x=.12;leg.hip.position.y=1.35;}}
     if(this.boating){for(const leg of this.legs){leg.hip.rotation.x=-1.25;leg.hip.position.y=1.35;}r.leftArm.shoulder.rotation.x=-.75;r.rightArm.shoulder.rotation.x=-.75;r.torso.rotation.set(0,0,0);}
+    if (this.driving) {
+      for (const leg of this.legs) { leg.hip.rotation.x = -1.26; leg.hip.position.y = 1.35; }
+      r.leftArm.shoulder.rotation.set(-1.18, 0, .16);
+      r.rightArm.shoulder.rotation.set(-1.18, 0, -.16);
+      r.torso.rotation.set(.035, 0, 0);
+    }
     for (let i = 0; i < this.armJoints.length; i++) {
       const rotation = this.armJoints[i].rotation;
       rotation.x = damp(this.previousArmRotations[i * 3], rotation.x, 18, dt);

@@ -179,7 +179,7 @@ Urutan bab mengikuti tujuh berkas kelas VII dalam lampiran. Nama misi merupakan 
 | VII 1 Hakikat Ilmu Sains dan Metode Ilmiah — M01 Detektif Air Kota | Bandingkan sampel air dari dua lokasi; pilih alat, buat dugaan, tentukan variabel pengamatan | Tabel minimal dua sampel, hasil pengukuran, dan kesimpulan yang membedakan dugaan dengan bukti |
 | VII 2 Zat dan Perubahannya — M02 Persediaan Es Pasar | Amati mencair dan menguap; pilih penyimpanan; gunakan model partikel untuk menjelaskan | Urutan perubahan wujud dan alasan pilihan wadah; bedakan massa jenis dari massa saja |
 | VII 3 Suhu Kalor dan Pemuaian — [M03 Rumah Semai Terlalu Panas](greenhouse-heat-review.md) (dapat dimainkan di W02) | Periksa termometer, ukur suhu, bandingkan peneduh dan ventilasi satu per satu, lalu pasang dan uji keduanya | Pengukuran awal dan empat uji dengan kondisi awal sama, serta kesimpulan kepada Bu Sari |
-| VII 4 Gerak dan Gaya — M04 Kiriman ke Dermaga | Bandingkan rute, jarak, waktu, dan hambatan jalan memakai kendaraan sederhana | Perhitungan kelajuan rata-rata dengan satuan; jelaskan perubahan gerak akibat gaya |
+| VII 4 Gerak dan Gaya — [M04 Kiriman ke Dermaga](cargo-motion-review.md) (dapat dimainkan di W04) | Kendaraan darat listrik, latihan gaya, dua rute uji dan satu pengiriman | Jarak dan waktu terukur, kelajuan rata-rata, bukti parkir dan penyerahan |
 | VII 5 Klasifikasi Makhluk Hidup — M05 Album Kehidupan Rimba | Foto virtual atau amati organisme, catat ciri, kelompokkan dengan kunci sederhana | Pengelompokan berdasarkan beberapa ciri; alasan yang dapat diperiksa |
 | VII 6 Ekologi dan Keanekaragaman Hayati Indonesia — M06 Jaring Kehidupan | Amati hubungan pemakan dan mangsa, temukan gangguan habitat, pilih restorasi | Susunan jaring makanan dan prediksi dampak satu populasi berubah |
 | VII 7 Bumi dan Tata Surya — M07 Catatan dari Observatorium | Amati model siang malam, revolusi, fase Bulan; jalankan simulasi posisi benda langit | Model posisi yang benar serta penjelasan bahwa fase Bulan bukan bayangan Bumi |
@@ -190,7 +190,7 @@ Siswa mampu mengamati, mengukur, mengelompokkan, membaca data sederhana, dan men
 M01 menjadi tutorial penyelidikan. M02 memperkenalkan perubahan wujud benda. M03 membedakan suhu dari perpindahan kalor. M04 melatih kontrol kendaraan di lintasan aman. M05 dan M06 memperkenalkan Rimba. M07 membuka simulasi Antariksa tanpa menuntut materi kelas IX.
 
 ### Contoh penguatan singkat
-Sesudah M04, pemain mengirim dua paket lewat rute berbeda. Rute lebih panjang belum tentu memerlukan waktu lebih lama jika kelajuannya berbeda. Data jarak dan waktu menentukan jawaban, bukan tampilan jalan saja.
+Dalam M04, pemain menguji dua rute dengan peti latihan yang sama, lalu mengirim satu paket penelitian. Rute lebih panjang belum tentu memerlukan waktu lebih lama jika kelajuannya berbeda. Data jarak dan waktu menentukan jawaban, bukan tampilan jalan saja.
 
 ## Pemetaan materi kelas VIII
 | Bab dan misi | Tindakan dalam dunia | Bukti untuk menyelesaikan |

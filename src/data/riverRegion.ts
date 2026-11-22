@@ -1,3 +1,4 @@
+import { cargoPlaces, cargoObstacles } from './cargoRegion';
 import {environmentObstacles} from './environmentLayout';
 import {pontoonPlaces,pontoonObstacles} from './pontoonRegion';
 import {irrigationPlaces,riverWaterObstacles} from './boatRegion';
@@ -5,7 +6,7 @@ import {poolPlaces,poolLandObstacles} from './poolRegion';
 import type { Place } from './content';
 import type { NavigationArea } from '../engine/navigation';
 export const riverPlaces: Place[] = [
-  ...poolPlaces, ...pontoonPlaces,
+  ...poolPlaces, ...pontoonPlaces, ...cargoPlaces,
   {id:'riverCoastDock',name:'Dermaga keberangkatan ke Pesisir',short:'Ke Pesisir',action:'Berangkat',x:0,z:12,color:'#5eaaa8'},
   ...irrigationPlaces,
   {id:'lestari',name:'Kak Lestari · peneliti perairan',short:'Kak Lestari',action:'Bicara',x:-6,z:9,color:'#438e91'},
@@ -20,7 +21,7 @@ export const riverPlaces: Place[] = [
 ];
 /** Water begins at x=3; only the pier (-9 < z < -5) is walkable beyond it. */
 export const riverNavigation: NavigationArea = { bounds:{minX:-17,maxX:24,minZ:-16,maxZ:37},obstacles:[
- ...environmentObstacles.river,  ...poolLandObstacles, ...pontoonObstacles, {x:13.5,z:28,width:21,depth:18},
+ ...environmentObstacles.river, ...cargoObstacles,  ...poolLandObstacles, ...pontoonObstacles, {x:13.5,z:28,width:21,depth:18},
   ...riverWaterObstacles,
   ...irrigationPlaces.filter(p=>!['boatStart','boatObservation'].includes(p.id)).map(p=>({x:p.x,z:p.z-.7,width:1.2,depth:.5})),
   {x:-11,z:11,width:4,depth:3}, {x:-6,z:9,width:.6,depth:.6},

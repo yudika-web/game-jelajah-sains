@@ -1,15 +1,15 @@
 # Cadangan, profil lokal dan Koin Sains
 
-Cadangan aktif **v21** menambahkan rekaman M03. Impor v1–v20 dengan profil yang sama mempertahankan progres dan receipt M03 yang sudah ada. Reset M03 mempertahankan receipt 100 XP dan transaksi 100 koin. IndexedDB tetap skema 2. Rincian di bawah mendokumentasikan perubahan format v19/v20 yang masih didukung.
+Cadangan aktif **v22** menambahkan M04. Impor v1–v21 pada profil yang sama mempertahankan progres dan receipt M04 yang sudah ada. Versi v1–v20 juga mempertahankan M03. Reset M03 atau M04 mempertahankan receipt 100 XP dan transaksi 100 koin. IndexedDB tetap skema 2.
 
-Versi aktif: **cadangan 21**, model wallet **2**, IndexedDB **2**. Cadangan tidak sama dengan versi database. Pembaruan mempertahankan store dan seluruh progres lama.
+Versi aktif: **cadangan 22**, model wallet **2**, IndexedDB **2**. Cadangan tidak sama dengan versi database. Pembaruan mempertahankan store dan seluruh progres lama.
 
-Untuk menyimpan hasil, buka **Pengaturan → Ekspor cadangan**. Tunggu hingga penyimpanan selesai. Berkas v21 memuat M03, pembelian, kepemilikan, misi, penampilan, identitas profil lokal, wallet dan receipt hadiah. Gunakan berkas terbaru dari profil tersebut. ID profil bukan akun daring dan tidak memuat nama siswa.
+Untuk menyimpan hasil, buka **Pengaturan → Ekspor cadangan**. Tunggu hingga penyimpanan selesai. Berkas v22 memuat M04, M03, pembelian, kepemilikan, misi, penampilan, identitas profil lokal, wallet dan receipt hadiah. Gunakan berkas terbaru dari profil tersebut. ID profil bukan akun daring dan tidak memuat nama siswa.
 
 Untuk memulihkan, buka **Pengaturan → Impor cadangan**. Data diperiksa seluruhnya sebelum perubahan disimpan. Jika ada kesalahan, aplikasi tidak menerapkan sebagian berkas. Batas berkas 5 MB. Misi yang tidak tercakup cadangan lama tetap dipertahankan.
 
 - **v1–v18 tanpa ekonomi:** wallet saat ini dipertahankan. Hak misi sah yang belum tercatat dapat diberikan sekali. Impor berulang tidak menambah hadiah yang sama.
-- **v19–v21 profil sama:** riwayat yang lebih lama tidak memangkas transaksi terbaru. Riwayat berurutan direkonsiliasi; saldo tidak dijumlahkan. Dua salinan offline yang bercabang dapat ditolak—gunakan cadangan dari riwayat yang sama dan paling baru.
+- **v19–v22 profil sama:** riwayat yang lebih lama tidak memangkas transaksi terbaru. Riwayat berurutan direkonsiliasi; saldo tidak dijumlahkan. Dua salinan offline yang bercabang dapat ditolak—gunakan cadangan dari riwayat yang sama dan paling baru.
 - **Profil berbeda:** aplikasi menjelaskan bahwa pemulihan mengganti profil dan dompet, bukan mencampur saldo. Ekspor profil aktif dahulu jika ingin menyimpannya. Pilih Pulihkan untuk melanjutkan atau Batal. Checkpoint ledger profil yang pernah dipakai pada browser ini tetap diperiksa ketika profil dipulihkan kembali.
 
 Reset hanya mengulang pembelajaran misi yang dipilih. Koin dan receipt hadiah pertama tetap ada. Status M16/M17 mengikuti episode yang selesai saat ini; reset satu episode dapat membuat status bab belum tuntas tanpa menarik kembali hadiah yang sudah sah.

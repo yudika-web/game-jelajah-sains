@@ -228,7 +228,7 @@ test('M03 full route, fair comparisons, reload, atomic reward, legacy import and
   const download = page.waitForEvent('download');
   await click(page, 'export');
   const file = await download;
-  expect(file.suggestedFilename()).toContain('v21');
+  expect(file.suggestedFilename()).toContain('v22');
   const currentBackup = JSON.parse(readFileSync((await file.path())!, 'utf8'));
   expect(currentBackup.missions.M03).toEqual(first.M03);
   expect(currentBackup.economy).toEqual(first.economy);

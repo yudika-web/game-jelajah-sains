@@ -152,7 +152,7 @@ describe('M03 evidence and storage', () => {
     expect(granted.grants.map(x => x.missionId)).toEqual(['M03']);
     expect(importBackup(v20, game).game.M03).toEqual(game.M03);
     const current = makeBackup(game);
-    expect(current.version).toBe(21);
+    expect(current.version).toBe(22);
     expect(importBackup(current, initialGame()).game).toEqual(game);
     lab.send({ type: 'reset' });
     const reset = { ...game, M03: lab.progress };
