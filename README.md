@@ -204,6 +204,8 @@ Lihat [catatan implementasi, pengujian, dan gambar Kebun](docs/garden-review.md)
 
 ## Menuntaskan Bantu Pos Rimba
 
+Peta W03 menampilkan putaran Pos Penjaga, Jalur Papan, Menara Pandang, Lahan Restorasi, dan Pondok Riset. Pak Damar berada di Pos, alat logistik dan maket berada di Pondok, dan Papan Habitat berada di cabang hutan antara keduanya. [Sketsa, waktu tempuh, dan tangkapan layar](docs/rimba-adventure-plan.md).
+
 Pilih **W03** lalu gunakan gerbang penjaga hutan dari Kota. Terima tugas Pak Damar, baca peta aman dan dua sumber pengetahuan. Periksa A/B, catat kebutuhan C dari peta, lalu pilih total **24 L**. Ambil/bawa ember **4 L**, atau ambil roda dan alat, pasang roda, lalu dorong gerobak **12 L**.
 
 Isi wadah di tandon, bawa melalui dunia 3D, lalu tuangkan jumlah terpilih ke A **8 L**, B **6 L**, C **10 L**. Minta konfirmasi jalur C kepada Pak Damar setelah mulai mengirim A/B. Semua jumlah memakai kelipatan 1 L, dengan pratinjau dan tombol maksimal. Kapasitas berbeda dari isi. Sisa air tetap berada di alat saat ditukar; air berlebih dapat dikembalikan ke sumber. Sumber akhir **16 L**, kedua alat kosong, neraca keseluruhan tetap **40 L**.

@@ -23,9 +23,8 @@ export function buildRegionalEnvironment(parent:THREE.Object3D,region:RegionId){
   k.box(.76,.055,1.7,'#d4c4a2',6.1,-.0275,-9);
  }
  if(region==='rimba'){
-  const backdrop=new EnvironmentKit(k.optional);for(const s of rimbaSceneryGround)(s.optional?backdrop:k).box(s.width,s.height,s.depth,s.color,s.x,s.y,s.z);for(let i=0;i<8;i++)backdrop.tree(i%2?-25:25,-13+Math.floor(i/2)*10,i,['#496743','#6c8554']);backdrop.finish();
-  // All supplies stay on the existing hut footprint, clear of the source/cart lane.
-  for(const x of [-13.2,-10.8])for(let row=0;row<2;row++){k.box(.64,.42,.60,'#ac885b',x,.32+row*.43,12.3);for(const dx of [-.26,.26])k.box(.06,.40,.62,'#d0b884',x+dx,.32+row*.43,12.3);}
+  for (const s of rimbaSceneryGround) k.box(s.width, s.height, s.depth, s.color, s.x, s.y, s.z);
+  // The ambient measurement station remains in the Pondok yard.
   k.box(.72,.08,1.1,'#c0af84',-9.3,-.04,12);
   for(const [x,z]of [[-16,1],[-15,17],[16,3],[-8,-12]]){
    for(let i=0;i<5;i++)k.box(.32,.025,.14,i%2?'#a18c53':'#8b754d',x-.6+i*.30,-.005,z+.8+(i%2)*.24,0,i*.7,0);

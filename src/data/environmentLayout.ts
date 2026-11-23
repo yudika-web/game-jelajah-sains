@@ -20,9 +20,9 @@ export const ambientStation={
  space:{x:-13.5,z:5.2,kind:'explorer',pose:'measure',yaw:Math.PI},
 } as const;
 
-/** Outside the permanent fence; these slabs meet the existing terrain at edges only. */
-export const rimbaSceneryGround=[
- {x:-25,z:1,width:8,depth:43,height:.8,y:-.45,color:'#738361',optional:true},
- {x:25,z:1,width:8,depth:43,height:.8,y:-.45,color:'#738361',optional:true},
- {x:0,z:-25.5,width:58,depth:10,height:.8,y:-.45,color:'#86785b',optional:false},
+/** Extensions meet the legacy Pondok and maket slabs without overlapping their top faces. */
+export const rimbaSceneryGround = [
+  { x: -63, z: 1, width: 84, depth: 43, height: .8, y: -.45, color: '#738361' },
+  { x: 26.5, z: 1, width: 11, depth: 43, height: .8, y: -.45, color: '#738361' },
+  { x: -36.5, z: -81.25, width: 137, depth: 121.5, height: .8, y: -.45, color: '#647b5c' },
 ] as const;

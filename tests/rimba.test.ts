@@ -6,6 +6,7 @@ import { preparedRimba, deliveredRimba, finishedRimba, rimbaAct, transfer, depar
 import { findPath, walkable, sweepAxis } from '../src/engine/navigation';
 import { rimbaNavigation, rimbaPlaces, rimbaCartConfig } from '../src/data/rimbaRegion';
 import { MovementController } from '../src/engine/movement';
+import { rimbaReservations, rimbaZones } from '../src/data/rimbaTrails';
 const balance=(p:RimbaProgress)=>p.source+p.bucket+p.cart+p.targets.A+p.targets.B+p.targets.C;
 describe('W03-LOG01 atomic logistics',()=>{
   it('requires actual mission preparation, quantities, safety and carriage, never only a final answer',()=>{
@@ -96,9 +97,13 @@ describe('real travel metrics and cart footprint',()=>{
     const closed=rimbaNavigation(false,true),area=rimbaNavigation(true,true);
     expect(findPath({x:2,z:10.8},{x:5,z:-6.2},closed)).toEqual([]);
     const starts=rimbaPlaces.map(p=>({x:p.x,z:p.z+rimbaCartConfig.approach}));
-    for(const start of starts)for(const end of starts){const path=findPath(start,end,area);expect(path.length,`${JSON.stringify(start)} -> ${JSON.stringify(end)}`).toBeGreaterThan(0);expect(path.every(p=>walkable(p,area))).toBe(true);
+    const parking = starts[rimbaPlaces.findIndex(p=>p.id==='workshop')];
+    for(const stop of starts)for(const [start,end] of [[parking,stop],[stop,parking]]){
+      const path=findPath(start,end,area);
+      expect(path.length,`${JSON.stringify(start)} -> ${JSON.stringify(end)}`).toBeGreaterThan(0);
+      expect(path.every(p=>walkable(p,area))).toBe(true);
       const motion=new MovementController(),p={...start};let arrives=0;
-      for(let i=0;i<250;i++){const r=motion.step(p,{x:0,z:0},0,true,path,.1,area,rimbaCartConfig);if(r.arrived)arrives++;expect(walkable(p,area)).toBe(true);if(!path.length)break;}
+      for(let i=0;i<1200;i++){const r=motion.step(p,{x:0,z:0},0,true,path,.1,area,rimbaCartConfig);if(r.arrived)arrives++;expect(walkable(p,area)).toBe(true);if(!path.length)break;}
       expect(p).toEqual(end);expect(arrives).toBe(1);
     }
     const playerArea=rimbaNavigation(true,false);expect(area.radius).toBeGreaterThan(playerArea.radius!);
@@ -118,4 +123,37 @@ it('uses the shared Damar rig and keeps the rotating cart within its collision f
   }
   expect(view.wheelAngle()).toBeCloseTo(3/rimbaCartConfig.wheelRadius);const angle=view.wheelAngle();view.frame(new Vector3(),0,0,true,false);expect(view.wheelAngle()).toBe(angle);
   view.frame(new Vector3(4,0,3),0,1,true,true);expect(view.wheelAngle()).toBe(angle);expect(view.cart.position.toArray()).toEqual([4,0,3]);expect(new Box3().setFromObject(view.cart,true).min.y).toBeGreaterThanOrEqual(.04);
+});
+
+it('follows all five IFP legs at walking speed and fences off each future challenge for both footprints', () => {
+  for (const cart of [false, true]) {
+    const area = rimbaNavigation(false, cart);
+    const approach = cart ? rimbaCartConfig.approach : 1.4;
+    for (const reservation of rimbaReservations) {
+      for (let x = reservation.minX + .25; x < reservation.maxX; x += 1) {
+        for (let z = reservation.minZ + .25; z < reservation.maxZ; z += 1) {
+          expect(walkable({ x, z }, area), reservation.name).toBe(false);
+        }
+      }
+    }
+    for (const [index, from] of rimbaZones.entries()) {
+      const to = rimbaZones[(index + 1) % rimbaZones.length];
+      const position = { x: from.x, z: from.z + approach };
+      const end = { x: to.x, z: to.z + approach };
+      const path = findPath(position, end, area), controller = new MovementController();
+      let seconds = 0, distance = 0;
+      while (path.length && seconds < 60) {
+        const step = controller.step(position, { x: 0, z: 0 }, 0, false, path, 1 / 120, area, cart ? rimbaCartConfig : undefined);
+        seconds += 1 / 120;
+        distance += step.distance;
+        if (step.blocked) throw new Error(`Gerak terhenti pada ${from.short} → ${to.short}`);
+      }
+      expect(position, to.short).toEqual(end);
+      if (!cart) {
+        expect(seconds).toBeGreaterThanOrEqual(15);
+        expect(seconds).toBeLessThanOrEqual(25);
+        console.info(`${from.short} → ${to.short}: ${distance.toFixed(2)} m / ${seconds.toFixed(2)} s`);
+      }
+    }
+  }
 });

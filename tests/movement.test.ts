@@ -80,8 +80,15 @@ describe('real movement, independent of renderer, model scale and frame rate', (
       for (const place of r.places.filter(p=>p.id!=='poolBuoy')) for (const run of [false, true]) {
         const p = r===regions.coast&&place.x>18?{x:20,z:-6}:r===regions.river&&place.x>15?{x:17,z:0}:{ ...r.spawn }, goal = { x: place.x, z: place.z + (['poolRamp','boatStart','boatObservation','coastBoatStart','coastBoatObservation'].includes(place.id)?0:1.4) }, path = findPath(p, goal, area);
         expect(path.length).toBeGreaterThan(0);
+        const distance = path.reduce((total, waypoint, index) => {
+          const previous = path[index - 1] ?? p;
+          return total + Math.hypot(waypoint.x - previous.x, waypoint.z - previous.z);
+        }, 0);
+        const speed = run ? movementConfig.runSpeed : movementConfig.walkSpeed;
+        // Allow for acceleration, one fixed substep per waypoint, and idle frames after arrival.
+        const frames = Math.ceil((distance / speed + path.length * movementConfig.simulationStep + 1) * 10);
         const motion = new MovementController(); let arrivals = 0;
-        for (let i = 0; i < 180; i++) {
+        for (let i = 0; i < frames; i++) {
           const result = motion.step(p, { x: 0, z: 0 }, 0, run, path, .1, area);
           if (result.arrived) arrivals++;
           expect(walkable(p, area)).toBe(true);

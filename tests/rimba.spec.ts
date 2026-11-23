@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { makeBackup, initialGame } from '../src/game/gameState';
 import { preparedRimba, transfer } from './helpers/rimba';
+import { rimbaCartConfig } from '../src/data/rimbaRegion';
 const output=process.env.CAPTURE_RIMBA_EVIDENCE==='1'?'docs/evidence/rimba':'test-results/rimba';mkdirSync(output,{recursive:true});
 async function start(page:Page,mode='ifp') {await page.goto('/?avatar=siswi');await expect(page.locator('#world')).toHaveAttribute('data-ready','true',{timeout:15_000});await page.locator('#input-mode').selectOption(mode);await page.locator('#start').click();}
 async function go(page:Page,id:string,title:string|RegExp) {
@@ -90,7 +91,12 @@ test('laptop cart: real wheel distance, controlled Shift speed, enlarged collisi
  await page.mouse.move(1000,600);await page.mouse.down();await page.mouse.move(1000+.25/.006,600);await page.mouse.up();
  await page.keyboard.down('w');await page.keyboard.down('ShiftRight');await expect.poll(async()=>Number(await canvas.getAttribute('data-speed'))).toBeGreaterThan(4.05);expect(Number(await canvas.getAttribute('data-speed'))).toBeLessThan(4.3);
  await page.keyboard.up('ShiftRight');await expect.poll(async()=>Number(await canvas.getAttribute('data-speed'))).toBeLessThan(3.6);
- await expect.poll(async()=>Number(await canvas.getAttribute('data-z')),{timeout:10_000}).toBeLessThan(3.15);await page.waitForTimeout(400);expect(Number(await canvas.getAttribute('data-z'))).toBeGreaterThanOrEqual(3.1);
+ // The M04 base has the 65 cm-deep supply table centered at z=1.3.
+ const stopZ = 1.3 + .65 / 2 + rimbaCartConfig.radius;
+ const cartZ = async () => Number(await canvas.getAttribute('data-z'));
+ await expect.poll(cartZ, { timeout: 10_000 }).toBeLessThan(stopZ + .05);
+ await expect(canvas).toHaveAttribute('data-locomotion', 'idle');
+ expect(await cartZ()).toBeCloseTo(stopZ, 1);
  const angle=Number(await canvas.getAttribute('data-cart-wheel-angle'));expect(Math.abs(angle)).toBeGreaterThan(1);await page.waitForTimeout(300);expect(Number(await canvas.getAttribute('data-cart-wheel-angle'))).toBe(angle);await expect(canvas).toHaveAttribute('data-locomotion','idle');await page.keyboard.up('w');
  await go(page,'workshop','Bengkel Pos Rimba');await page.locator('#rimba-park').click();await expect(canvas).toHaveAttribute('data-pushing','false');await expect(canvas).toHaveAttribute('data-cart-water','12000');
  await page.keyboard.down('a');await page.keyboard.down('ShiftLeft');await expect.poll(async()=>Number(await canvas.getAttribute('data-speed'))).toBeGreaterThan(7.7);await page.keyboard.up('a');await page.keyboard.up('ShiftLeft');

@@ -1,3 +1,4 @@
+import { rimbaSpawn } from './rimbaTrails';
 import { greenhousePlaces, greenhouseObstacles } from './greenhouseRegion';
 import {environmentObstacles} from './environmentLayout';
 import {divePointPlaces} from './diving';
@@ -38,7 +39,7 @@ export const regions = {
   coast:{name:'Pesisir dan Laut',code:'W05',places:coastalPlaces,navigation:coastalNavigation,spawn:{x:-3,z:12},gate:'coastReturn' as PlaceId},
   workshop:{name:'Bengkel dan Energi',code:'W06',places:workshopPlaces,navigation:workshopNavigation,spawn:{x:0,z:8},gate:'workshopTownGate' as PlaceId},
   river:{name:'Sungai dan Danau',code:'W04',places:riverPlaces,navigation:riverNavigation,spawn:{x:-2,z:9},gate:'riverTownGate' as PlaceId},
-  rimba: {name:'Rimba dan Gambut',code:'W03',places:rimbaPlaces,navigation:rimbaNavigation(),spawn:{x:0,z:9},gate:'forestTownGate' as PlaceId},
+  rimba: {name:'Rimba dan Gambut',code:'W03',places:rimbaPlaces,navigation:rimbaNavigation(),spawn:rimbaSpawn,gate:'forestTownGate' as PlaceId},
   town: { name: 'Kota Sains', code: 'W01', places, navigation: { bounds, obstacles }, spawn: { x: -1, z: 6 }, gate: 'gardenGate' as PlaceId },
   garden: { name: 'Kebun Kehidupan', code: 'W02', places: gardenPlaces, navigation: gardenNavigation, spawn: { x: 0, z: 5.5 }, gate: 'townGate' as PlaceId },
 };

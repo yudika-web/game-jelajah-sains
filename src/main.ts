@@ -1,3 +1,5 @@
+import { rimbaMapSvg } from './game/rimbaMap';
+import { rimbaZones } from './data/rimbaTrails';
 import { cargoSteps, cargoTransition, initialCargo, type CargoEvent } from './game/cargoMission';
 import { createCargoUI, cargoMapPaths } from './game/cargoUI';
 import { cargoBay, isCargoPlace } from './data/cargoRegion';
@@ -377,6 +379,14 @@ function interactAt(id: PlaceId) {
   if(world.region==='river'&&(id==='poolRamp'||id==='poolBuoy'||id==='densityBook'||id==='floatBench'||id==='lestari'&&travel.activeMission==='S14')){world.beginInteraction(id,id==='lestari'?'greet':'read');buoyancyUI.interact(id);return;}
   if(world.region==='river'&&(id==='boatStart'||id==='boatObservation'||id==='flowBook'||id==='irrigationNotes'||id==='irrigationScreen'||id==='cleaningRack'||id==='P1'||id==='P2'||id==='P3'||id==='lestari'&&travel.activeMission==='S15')){world.beginInteraction(id,id==='lestari'?'greet':'read');irrigationUI.interact(id);return;}
   if(world.region==='river'){world.beginInteraction(id,id==='lestari'?'greet':'read');riverUI.interact(id);return;}
+  if (world.region === 'rimba') {
+    const zone = rimbaZones.find(zone => zone.id === id);
+    if (zone) {
+      world.beginInteraction(id, 'none');
+      openPanel(zone.short, `<p>${zone.detail}</p>`, 'W03 · JALUR AMAN');
+      return;
+    }
+  }
   if(world.region==='rimba'&&(solidPlaces.some(p=>p.id===id)||id==='damar'&&travel.activeMission==='M16-E3')){world.beginInteraction(id,id==='damar'?'greet':'measure');solidUI.interact(id);return;}
   if(world.region==='rimba') {rimbaSession.flush();world.beginInteraction(id,id==='damar'?'greet':'read');rimbaUI.interact(id);return;}
   if(world.region==='garden' && (isGreenhousePlace(id) || id==='sari' && travel.activeMission==='M03')) {
@@ -465,8 +475,9 @@ function inventory() {
   const parkButton=$('rimba-park-route');if(parkButton)parkButton.onclick=()=>navigate('workshop');
 }
 function regionMapSvg() {
+  if (travel.region === 'rimba') return rimbaMapSvg(world?.position, rimba.cOpen);
   const r = regions[travel.region], navigation=world?.navigation??r.navigation, isTown = travel.region === 'town';
-  return `<svg id="town-map" viewBox="-20 ${travel.region==='workshop'?-35:travel.region==='geopark'?-23:-19} ${travel.region==='workshop'?56:travel.region==='river'||travel.region==='coast'?46:40} ${travel.region==='workshop'?74:travel.region==='geopark'?45:travel.region==='coast'?48:travel.region==='rimba'||travel.region==='river'?60:38}" role="img" aria-label="Peta ${r.name}"><rect x="-20" y="${travel.region==='workshop'?-35:travel.region==='geopark'?-23:-19}" width="${travel.region==='workshop'?56:travel.region==='coast'?46:40}" height="${travel.region==='workshop'?74:travel.region==='geopark'?45:travel.region==='coast'?48:travel.region==='rimba'||travel.region==='river'?60:38}" rx="1" fill="#dce4cb"/>${isTown?'<path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/>':''}<path d="M0-17v34M-17 4h33" stroke="#f6e5bc" stroke-width="3"/>${navigation.obstacles.map(o=>`<rect x="${o.x-o.width/2}" y="${o.z-o.depth/2}" width="${o.width}" height="${o.depth}" fill="#a7b99e"/>`).join('')}${travel.region==='river'?cargoMapPaths():''}${r.places.map(p=>`<circle cx="${p.x}" cy="${p.z}" r=".7" fill="${p.color}" stroke="#fff" stroke-width=".25"/><text x="${p.x-1}" y="${p.z-1}" font-size="1" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x??0}" cy="${world?.position.z??6}" r=".6" fill="#163d34" stroke="#fff" stroke-width=".3"/></svg>`;
+  return `<svg id="town-map" viewBox="-20 ${travel.region==='workshop'?-35:travel.region==='geopark'?-23:-19} ${travel.region==='workshop'?56:travel.region==='river'||travel.region==='coast'?46:40} ${travel.region==='workshop'?74:travel.region==='geopark'?45:travel.region==='coast'?48:travel.region==='river'?60:38}" role="img" aria-label="Peta ${r.name}"><rect x="-20" y="${travel.region==='workshop'?-35:travel.region==='geopark'?-23:-19}" width="${travel.region==='workshop'?56:travel.region==='coast'?46:40}" height="${travel.region==='workshop'?74:travel.region==='geopark'?45:travel.region==='coast'?48:travel.region==='river'?60:38}" rx="1" fill="#dce4cb"/>${isTown?'<path d="M14-19v38" stroke="#80b5bd" stroke-width="4"/>':''}<path d="M0-17v34M-17 4h33" stroke="#f6e5bc" stroke-width="3"/>${navigation.obstacles.map(o=>`<rect x="${o.x-o.width/2}" y="${o.z-o.depth/2}" width="${o.width}" height="${o.depth}" fill="#a7b99e"/>`).join('')}${travel.region==='river'?cargoMapPaths():''}${r.places.map(p=>`<circle cx="${p.x}" cy="${p.z}" r=".7" fill="${p.color}" stroke="#fff" stroke-width=".25"/><text x="${p.x-1}" y="${p.z-1}" font-size="1" fill="#244b42">${p.short}</text>`).join('')}<circle cx="${world?.position.x??0}" cy="${world?.position.z??6}" r=".6" fill="#163d34" stroke="#fff" stroke-width=".3"/></svg>`;
 }
 function map() {
   if(world?.cargo.aboard){cargoUI.map();return;}
@@ -475,7 +486,7 @@ function map() {
   if(world?.rov.active){pressureUI.map();return;}
   const running = world?.running ?? false;
   world?.endInteraction(); const r=regions[travel.region];
-  openPanel(`Peta ${r.name}`, `<p>Pilih tujuan. Pemain berjalan di jalur wilayah ini dan berinteraksi saat tiba. Gerbang menghubungkan Kota, Kebun, Rimba, Sungai dan Danau, Bengkel dan Energi, serta Pesisir melalui dermaga Sungai. Geopark dicapai melalui terminal Bengkel. Simulasi Antariksa dicapai melalui Observatorium Kota. Di selatan W05, Persiapan menyelam → Perlengkapan selam → Tangga teluk membuka eksplorasi 3D terbatas; ROV dan jalur perahu tetap terpisah. Air biasa tetap dibatasi. Jalur bertanda dapat dilalui perahu; naik dan turun melalui dermaga. Ini tidak membuka izin berenang di seluruh sungai. Jalur C memerlukan konfirmasi Pak Damar.</p><div class="map-layout">${regionMapSvg()}<div class="destination-list">${(world?.places??r.places).filter(p=>!world?.boat.aboard||p.id===world.boat.docks.research.place||p.id===world.boat.docks.irrigation.place).map(p=>`<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${p.id==='receiverC'&&!rimba.cOpen?' · terkunci':''}${icon('arrow')}</button>`).join('')}</div></div>`, `${r.code} · JELAJAH WILAYAH`);
+  openPanel(`Peta ${r.name}`, `${travel.region === 'rimba' ? '<p>Pilih salah satu zona atau tujuan misi. Garis putus-putus menandai area tertutup. Jalur C memerlukan konfirmasi Pak Damar.</p>' : '<p>Pilih tujuan. Pemain berjalan di jalur wilayah ini dan berinteraksi saat tiba. Gerbang menghubungkan Kota, Kebun, Rimba, Sungai dan Danau, Bengkel dan Energi, serta Pesisir melalui dermaga Sungai. Geopark dicapai melalui terminal Bengkel. Simulasi Antariksa dicapai melalui Observatorium Kota. Di selatan W05, Persiapan menyelam → Perlengkapan selam → Tangga teluk membuka eksplorasi 3D terbatas; ROV dan jalur perahu tetap terpisah. Air biasa tetap dibatasi. Jalur bertanda dapat dilalui perahu; naik dan turun melalui dermaga. Ini tidak membuka izin berenang di seluruh sungai.</p>'}<div class="map-layout${travel.region === 'rimba' ? ' rimba-map-layout' : ''}">${regionMapSvg()}<div class="destination-list">${(world?.places??r.places).filter(p=>!world?.boat.aboard||p.id===world.boat.docks.research.place||p.id===world.boat.docks.irrigation.place).map(p=>`<button data-destination="${p.id}"><span class="place-dot" style="background:${p.color}"></span>${p.short}${p.id==='receiverC'&&!rimba.cOpen?' · terkunci':''}${icon('arrow')}</button>`).join('')}</div></div>`, `${r.code} · JELAJAH WILAYAH`);
   document.querySelectorAll<HTMLButtonElement>('[data-destination]').forEach(b=>{b.onclick=()=>navigate(b.dataset.destination as PlaceId, running);});
 }
 function updateRegionUI() {

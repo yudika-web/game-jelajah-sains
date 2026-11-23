@@ -77,7 +77,7 @@ import type { RegionId } from '../game/gameState';
 import type { GardenProgress, Group } from '../game/gardenMission';
 import { buildRimba, type RimbaView } from './rimbaWorld';
 import { initialRimba, type RimbaProgress } from '../game/rimbaMission';
-import { rimbaNavigation, rimbaCartConfig, cartParking } from '../data/rimbaRegion';
+import { rimbaNavigation, rimbaCartConfig, cartParking, rimbaPropObstacles } from '../data/rimbaRegion';
 import { buildGarden, type GardenView } from './gardenWorld';
 import { visibleForPicking } from './picking';
 import { MovementController, movementDelta } from './movement';
@@ -432,7 +432,7 @@ export class World {
     disposeRegion(this.regionRoot);
     this.regionRoot.clear(); this.regionRoot = Object.assign(new THREE.Group(),{name:'active-region'});this.regionDisposals++; this.scene.add(this.regionRoot);
     this.ambientView=null;this.townView=null;this.townIndicators=[];this.canvas.dataset.townActors='0';this.canvas.dataset.townAmbientTime='0';this.canvas.dataset.townLabels='0';this.marketView=null;this.marketFocus=null;this.iceParcel.visible=false;this.spaceView=null;this.spaceFocus=null;this.spaceDetail=false;this.spaceInstrumentCamera.reset();this.spaceEarthView=false;this.camera.layers.set(0);this.geoView=null;this.geoFocus=null;this.npcs = []; this.npcLabels.clear(); this.regionLabels = []; this.collisionBoxes = []; this.lastNear = undefined; this.gardenView = null; this.greenhouseView = null; this.rimbaView=null;this.riverView=null;this.workshopView=null;this.electromagnetView=null;this.energyView=null;this.hydraulicView=null;this.solidView=null;this.pontoonView=null;this.pontoonFocus=null;this.solidFocus=false;this.hydraulicFocus=false; this.pushing=false;this.playerAnimator.pushing=false;this.playerRig.tools.bucket.visible=false;
-    this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);(this.scene.fog as THREE.Fog).color.set(sky);this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
+    this.pressureView=null;this.coastalView=null;this.coastalFocus=null;this.region = region;const sky=region==='space'?'#081426':'#d9e9e3';(this.scene.background as THREE.Color).set(sky);const fog=this.scene.fog as THREE.Fog;fog.color.set(sky);fog.near=region==='rimba'?62:environmentStyle.fog.near;fog.far=region==='rimba'?109:environmentStyle.fog.far;this.boat.configure(region==='coast'?coastalDocks:docks); this.barrier.visible = false;
     if (region === 'town') this.buildTown();
     else if(region==='space'){
       const b=(w:number,h:number,d:number,c:string,x:number,y:number,z:number)=>{this.box(this.regionRoot,w,h,d,c,x,y,z,true);};
@@ -500,7 +500,6 @@ export class World {
         this.npcs.push({id:'damar',rig,animator:new CharacterAnimator(rig,1.7),timer:0});
         this.npcLabels.set('damar',this.label('Pak Damar',x,rig.labelSocket.position.y,z,'damar'));
       }});
-      this.collisionBoxes=this.navigation.obstacles.map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,o.z>20?1.2:2.5,o.z+o.depth/2)));
       this.rimbaView.update(this.rimbaProgress);
     }
     if(region==='garden') this.collisionBoxes.push(new THREE.Box3(new THREE.Vector3(-2.2,0,15.7),new THREE.Vector3(2.2,4.2,16.3)));
@@ -514,13 +513,22 @@ export class World {
     const regionGeometries=new Set<THREE.BufferGeometry>();this.regionRoot.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line||o instanceof THREE.Points)regionGeometries.add(o.geometry);});this.canvas.dataset.regionGeometryCount=String(regionGeometries.size);
   }
   private updateRimbaCamera() {
-    this.collisionBoxes=this.navigation.obstacles.filter(o=>o.width>=1.3).map(o=>new THREE.Box3(new THREE.Vector3(o.x-o.width/2,0,o.z-o.depth/2),new THREE.Vector3(o.x+o.width/2,greenhouseObstacles.includes(o)?1.5:o.depth===.65&&o.width===1.45?1.05:o.z>20?1.2:o.width===4?3.9:o.width===1.4&&o.depth===1.5?1.3:2.3,o.z+o.depth/2)));
+    // Fenced forest and the low trail rails restrict feet, but are open above for the camera.
+    this.collisionBoxes = rimbaPropObstacles(this.rimbaProgress.cOpen, this.pushing)
+      .filter(o => o.width >= 1.3).map(o => {
+        const height = o.depth === .65 ? 1.05 : o.z > 20 ? 1.2
+          : o.width === 5 || o.width === 6 ? 3.9 : o.width === 1.4 ? 1.3 : 2.3;
+        return new THREE.Box3(
+          new THREE.Vector3(o.x - o.width / 2, 0, o.z - o.depth / 2),
+          new THREE.Vector3(o.x + o.width / 2, height, o.z + o.depth / 2),
+        );
+      });
     this.followCamera.setObstacles(this.collisionBoxes);
   }
   setRimba(p:RimbaProgress) {
     const opened=p.cOpen!==this.rimbaProgress.cOpen;
     this.rimbaProgress=p;this.rimbaView?.update(p);
-    if(p.activeTool!=='cart'&&this.pushing){this.pushing=false;this.playerAnimator.pushing=false;this.stop();}
+    if (p.activeTool !== 'cart' && this.pushing) this.setPushing(false);
     this.playerRig.tools.bucket.visible=this.region==='rimba'&&p.activeTool==='bucket';
     const gauge=this.playerRig.tools.bucket.getObjectByName('bucket-fill-indicator')!;gauge.scale.y=Math.max(.01,p.bucket/4000);gauge.visible=p.bucket>0;
     const water=this.playerRig.tools.bucket.getObjectByName('bucket-water')!;water.visible=p.bucket>0;water.position.y=-.49+.36*p.bucket/4000;
@@ -768,9 +776,10 @@ export class World {
     if(this.region==='garden'||this.region==='rimba'||this.region==='river'||this.region==='coast') for(const label of this.regionLabels) {
       const nearPlayer=Math.hypot(label.position.x-this.position.x,label.position.z-this.position.z);
       const distance=label.position.distanceTo(this.camera.position), plant=label.userData.plantLabel;
-      label.visible=!this.dive.controlled&&!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && (nearPlayer<(plant?7:9)||label.userData.place===this.interacting) && (!this.interacting || label.userData.place===this.interacting);
+      const trailSign=!!label.userData.rimbaTrailSign;
+      label.visible=!this.dive.controlled&&!this.pontoonFocus&&!this.solidFocus&&!this.rov.active&&!label.userData.regionHidden && distance>2.5 && (nearPlayer<(trailSign?26:plant?7:9)||label.userData.place===this.interacting) && (!this.interacting || label.userData.place===this.interacting);
       const maxPixels=plant?38:Math.min(174,innerWidth*.36);
-      const width=Math.min(plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
+      const width=Math.min(trailSign?5:plant?.65:['sari','damar','lestari','coastLestari'].includes(label.userData.place)?2:3.2,distance*2*Math.tan(this.camera.fov*Math.PI/360)*maxPixels/innerHeight);
       label.scale.set(width,width/(plant?2:512/96),1);
     }
     if (this.greenhouseView) {
